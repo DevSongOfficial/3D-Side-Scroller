@@ -7,4 +7,8 @@ using UnityEngine.UI;
 public class ObjectSelectionButton : Button
 {
     public PlaceableObject placeableObject;
+    public void SetPlaceableObject(PlaceableObject newObjectPrefab)
+    {
+        placeableObject = newObjectPrefab;
+    }
 }

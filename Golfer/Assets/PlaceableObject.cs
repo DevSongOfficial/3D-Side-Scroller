@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class PlaceableObject : MonoBehaviour
 {
-    public static PlaceableObject[] Prefabs_PlaceableObject;
     public static PlaceableObject SelectedObject { get; private set;  }
 
     public static void SelectObject(PlaceableObject placeableObject)
