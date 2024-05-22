@@ -358,6 +358,7 @@
 "Assets/LevelEditorUI.cs"
 "Assets/ObjectSelectionButton.cs"
 "Assets/PlaceableObject.cs"
+"Assets/Utility.cs"
 -langversion:9.0
 /deterministic
 /optimize+

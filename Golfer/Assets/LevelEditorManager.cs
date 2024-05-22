@@ -13,7 +13,7 @@ public enum EditorMode
 public class LevelEditorManager : MonoBehaviour
 {
     [SerializeField] private LayerMask layerMask;
-    [SerializeField] private GameObject TEST_OBJECT;
+    [SerializeField] public static GameObject TEST_OBJECT;
 
     [SerializeField] private Camera LevelEditorCamera;
 
@@ -44,7 +44,7 @@ public class LevelEditorManager : MonoBehaviour
     // Main routine for the Level Editor
     private void Update()
     {
-        TEST_OBJECT.transform.position = GetPositionFromMousePosition();
+        if (TEST_OBJECT != null) TEST_OBJECT.transform.position = GetPositionFromMousePosition();
         // Canvas.CameraMovement(); // 마우스를 가장자리로 움직이면 화면도 움직이는 코드
     }
 

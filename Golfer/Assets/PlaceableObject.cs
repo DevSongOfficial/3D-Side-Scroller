@@ -5,16 +5,10 @@ using UnityEngine;
 
 public class PlaceableObject : MonoBehaviour
 {
-    public static PlaceableObject SelectedObject { get; private set;  }
-
-    public static void SelectObject(PlaceableObject placeableObject)
+    // This function is called when player click a certain object selection button in the level editor
+    public void SelectObject()
     {
-        
-    }
-
-    public static void SelectObject()
-    {
-
+        LevelEditorManager.TEST_OBJECT = GameObject.Instantiate(gameObject);
     }
     
     public void Place()

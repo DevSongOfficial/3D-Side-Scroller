@@ -11,4 +11,9 @@ public class ObjectSelectionButton : Button
     {
         placeableObject = newObjectPrefab;
     }
+
+    public void SetPlaceableObject(GameObject newObjectPrefab)
+    {
+        SetPlaceableObject(newObjectPrefab.GetComponent<PlaceableObject>());
+    }
 }

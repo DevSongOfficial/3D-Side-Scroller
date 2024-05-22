@@ -10,32 +10,31 @@ public class LevelEditorUI : MonoBehaviour
     [SerializeField] private Image ObjectSelectionButtonsPanel;
 
     private ObjectSelectionButton[] ObjectSelectionButtons; // Buttons in LevelEditorUI
-    enum ObjectSelectionButtonType : Int16 { Cube = 0,  }
+    private enum ObjectSelectionButtonType : Int16 { Cube = 0,  } // 기획 실수 방지용, 로직에 직접적으로 작용하지는 않음.
 
     private void Awake()
     {
         int count = Enum.GetValues(typeof(ObjectSelectionButtonType)).Length;
         ObjectSelectionButtons = new ObjectSelectionButton[count];
+
         if(count != ObjectSelectionButtonsPanel.transform.childCount) Debug.LogWarning("Enum Length and Button Counts don't match", transform);
 
-
+        // Buttons Setting
         for (int i = 0; i < count; i++)
         {
-            var button = ObjectSelectionButtons[i];
-            button = ObjectSelectionButtonsPanel.transform.GetChild(i).GetComponent<ObjectSelectionButton>();
-            var prefab = AssetsManager.GetAsset().Prefab_Cube;
-            // AssetManager 수정 ! 후 아래 (1) (2) 여기다 구현
+            var button = ObjectSelectionButtonsPanel.transform.GetChild(i).GetComponent<ObjectSelectionButton>();
+            ObjectSelectionButtons[i] = button;
+            var prefab = AssetsManager.GetPrefab(AssetsManager.PrefabType.Cube).GetComponent<PlaceableObject>();
+
+            // Initialize the button and connect it with the event
+            button.SetPlaceableObject(prefab);
+            button.onClick.AddListener(delegate { prefab.SelectObject(); });
         }
+    }
 
-        for (int i = 0; i < count; i++)
-        {
-            // (1) Initialize the button
-           // ObjectSelectionButtons[i].placeableObject = PlaceableObject.Prefabs_PlaceableObject[i];
-
-            // (2) Connect it with the event
-            //ObjectSelectionButtons[i].onClick.AddListener(delegate { PlaceableObject.SelectObject(ObjectSelectionButtons[i].placeableObject); });
-        }
-
+    private void Start()
+    {
+        Debug.Log(ObjectSelectionButtons[0].placeableObject);
     }
 
     // Get mouse position depending on the resolution of the screen
@@ -49,6 +48,6 @@ public class LevelEditorUI : MonoBehaviour
 
     private void Update()
     {
-        print(GetMousePositionFromTheCanvas());
+        //print(GetMousePositionFromTheCanvas());
     }
 }
