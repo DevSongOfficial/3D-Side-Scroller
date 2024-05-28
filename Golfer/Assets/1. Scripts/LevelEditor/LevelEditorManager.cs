@@ -63,27 +63,30 @@ public class LevelEditorManager : MonoBehaviour
                 Camera.main.depth = 0;
                 Main.LevelEditorUI.gameObject.SetActive(false);
                 Main.LevelEditorUI.ObjectSelectionButtonsPanel.gameObject.SetActive(true);
-                PlaceableObject.SetTriggerAll(true);
+                PlaceableObject.SetConvexAll(false);
+                PlaceableObject.SetCollisionAll(true);
                 break;
             case EditorMode.Editing:
                 Camera.main.depth = -1;
                 Main.LevelEditorUI.gameObject.SetActive(true);
                 Main.LevelEditorUI.ObjectSelectionButtonsPanel.gameObject.SetActive(true);
-                PlaceableObject.SetTriggerAll(false);
+                PlaceableObject.SetConvexAll(true);
+                PlaceableObject.SetCollisionAll(false);
                 break;
             case EditorMode.Placing:
                 Camera.main.depth = -1;
                 Main.LevelEditorUI.gameObject.SetActive(true);
                 Main.LevelEditorUI.ObjectSelectionButtonsPanel.gameObject.SetActive(false);
-                PlaceableObject.SetTriggerAll(false);
+                PlaceableObject.SetConvexAll(true);
+                PlaceableObject.SetCollisionAll(false);
                 break;
         }
-
-        // Swift Camera
     }    
 
     private void PlaceObject()
     {
+        if (!PlaceableObject.Current.CanBePlaced) return;
+
         PlaceableObject.SetCurrentObjectTo(null);
         SetEditorMode(EditorMode.Editing);
     }
@@ -98,6 +101,8 @@ public class LevelEditorManager : MonoBehaviour
         }
 
         PlaceableObject.Current.transform.position = GetWorldPositionFromMousePosition();
+
+        
     }
 
     private Vector3 GetWorldPositionFromMousePosition()

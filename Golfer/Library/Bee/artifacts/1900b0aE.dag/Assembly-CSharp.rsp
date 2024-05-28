@@ -358,6 +358,7 @@
 "Assets/1. Scripts/LevelEditor/ObjectSelectionButton.cs"
 "Assets/1. Scripts/LevelEditor/PlaceableObject.cs"
 "Assets/AssetsManager.cs"
+"Assets/GameManager.cs"
 "Assets/Utility.cs"
 -langversion:9.0
 /deterministic
