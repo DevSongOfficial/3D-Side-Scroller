@@ -36,7 +36,7 @@ TagManager:
   - 
   - 
   - 
-  - Raycast Blocker for Level Editor
+  - RaycastBlockerForLevelEditor
   m_SortingLayers:
   - name: Default
     uniqueID: 0

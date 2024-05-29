@@ -13,21 +13,27 @@ public class PlaceableObject : MonoBehaviour
     private MeshCollider mainCollider;
     private List<Collider> childColliders = new List<Collider>();
     private bool isOverlapped;
-    [HideInInspector] public bool CanBePlaced { get { return !isOverlapped; } }
+    public bool CanBePlaced { get { return !isOverlapped; } }
 
-    public static event EventHandler<PlaceableObject> OnObjectSelected;
+    public static event EventHandler<PlaceableObject> OnObjectSelectedForPlacing;
+    public static event EventHandler<PlaceableObject> OnObjectSelectedForEditing;
 
     public static PlaceableObject Current { get; private set; } // The object player's dealing with at the moment
     public static void SetCurrentObjectTo(PlaceableObject newPlaceableObject) { Current = newPlaceableObject; }
 
     // This function is called only when player click a button in the level editor in order to create new object
-    public void OnSelectObject()
+    public void OnSelectObjectForPlacing()
     {
         var selectedObject = CreatePlaceableObject();
 
-        OnObjectSelected.Invoke(this, selectedObject);
+        OnObjectSelectedForPlacing.Invoke(this, selectedObject);
         SetCurrentObjectTo(selectedObject);
         RegisterPlaceableObject(selectedObject);
+    }
+
+    public void OnSelectObjectForEditing()
+    {
+        //  OnObjectSelectedForEditing.Invoke(this, );
     }
 
 
@@ -36,11 +42,25 @@ public class PlaceableObject : MonoBehaviour
     {
         PlaceableObjectsInTheScene.Add(newPlaceableObject);
     }
+
+    public static void UnregisterPlaceableObject(PlaceableObject newPlaceableObject)
+    {
+        if (PlaceableObjectsInTheScene.Contains(newPlaceableObject))
+        {
+            PlaceableObjectsInTheScene.Remove(newPlaceableObject);
+        }
+        else Debug.LogWarning("No Placeable Object Matches in the List");
+    }
+
+    public void SetActive(bool active)
+    {
+        gameObject.SetActive(active);
+    }
     public static void SetActiveAll(bool active) 
     {
         for(int i = 0; i < PlaceableObjectsInTheScene.Count; i++)
         {
-            PlaceableObjectsInTheScene[i].gameObject.SetActive(active);
+            PlaceableObjectsInTheScene[i].SetActive(active);
         }
     }
     public void SetConvex(bool enabled) 
