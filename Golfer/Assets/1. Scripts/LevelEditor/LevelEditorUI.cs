@@ -9,7 +9,8 @@ public class LevelEditorUI : MonoBehaviour
 {
     // Screen Movement with Mouse Cursor Position
     public enum ScreenMovementDirection { Middle, Left, Right, Up, Down }
-    [SerializeField] private Dictionary<ScreenMovementDirection, Image> mouseCursorDetector; // Assign this variable in inspector window
+    private Dictionary<ScreenMovementDirection, Image> mouseCursorDetector = new Dictionary<ScreenMovementDirection, Image>(); // Assign this variable in inspector window 
+    [SerializeField] private Image[] mouseCursorDetectorImages;
 
     // Object Selection Button
     private enum ObjectSelectionButtonType : Int16 { Cube = 0,  } // 기획 실수 방지용, 로직에 직접적으로 작용하지는 않음, 나중에 삭제.
@@ -38,11 +39,32 @@ public class LevelEditorUI : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        mouseCursorDetector.Add(ScreenMovementDirection.Left, mouseCursorDetectorImages[0]);
+        mouseCursorDetector.Add(ScreenMovementDirection.Right, mouseCursorDetectorImages[1]);
+        mouseCursorDetector.Add(ScreenMovementDirection.Up, mouseCursorDetectorImages[2]);
+        mouseCursorDetector.Add(ScreenMovementDirection.Down, mouseCursorDetectorImages[3]);
+    }
+
     private void Update()
     {
-        if(GetScreenMovementDirectionFromMousePosition() == ScreenMovementDirection.Left)
+        float speed = 5;
+
+        switch(GetScreenMovementDirectionFromMousePosition())
         {
-            Debug.Log("Left");
+            case ScreenMovementDirection.Left:
+                LevelEditorManager.Main.Camera.transform.position += new Vector3(- speed * Time.deltaTime, 0, 0);
+                break;
+            case ScreenMovementDirection.Right:
+                LevelEditorManager.Main.Camera.transform.position += new Vector3(speed * Time.deltaTime, 0, 0);
+                break;
+            case ScreenMovementDirection.Up:
+                LevelEditorManager.Main.Camera.transform.position += new Vector3(0, speed * Time.deltaTime, 0);
+                break;
+            case ScreenMovementDirection.Down:
+                LevelEditorManager.Main.Camera.transform.position += new Vector3(0, -speed * Time.deltaTime, 0);
+                break;
         }
     }
 

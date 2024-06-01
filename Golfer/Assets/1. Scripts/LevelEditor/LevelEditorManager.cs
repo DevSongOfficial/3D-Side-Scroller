@@ -15,8 +15,6 @@ public enum EditorMode
 
 public class LevelEditorManager : MonoBehaviour
 {
-    [SerializeField] private Camera LevelEditorCamera;
-
     #region Singleton - LevelEditorMain
     public static LevelEditorMain Main 
     { 
@@ -165,7 +163,7 @@ public class LevelEditorManager : MonoBehaviour
     private Vector3 GetWorldPositionFromMousePosition(bool ignorePlaceableObjectLayer = true)
     {
         var position = Vector3.zero;
-        Ray ray = LevelEditorCamera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = Main.Camera.ScreenPointToRay(Input.mousePosition);
 
         if(!ignorePlaceableObjectLayer)
         {
@@ -186,7 +184,7 @@ public class LevelEditorManager : MonoBehaviour
     private PlaceableObject GetPlaceableObjectFromMousePosition()
     {
         PlaceableObject placeableObject = null;
-        Ray ray = LevelEditorCamera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = Main.Camera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, 1 << (int)Layer.PlaceableObject))
         {
             placeableObject = raycastHit.collider.GetComponent<PlaceableObject>();
