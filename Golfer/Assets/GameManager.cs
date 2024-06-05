@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public enum Layer
@@ -13,5 +14,15 @@ public class GameManager : MonoBehaviour
     public int GetLayerMask(Layer layer)
     {
         return (int)layer;
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.P))
+        {
+            if (LevelEditorManager.Mode == EditorMode.None) LevelEditorManager.SetEditorMode(EditorMode.Editing);
+            else if (LevelEditorManager.Mode == EditorMode.Editing) LevelEditorManager.SetEditorMode(EditorMode.None);
+        }
+
     }
 }

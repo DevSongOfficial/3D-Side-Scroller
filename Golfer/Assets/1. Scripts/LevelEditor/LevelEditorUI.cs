@@ -8,17 +8,22 @@ using UnityEngine.UI;
 public class LevelEditorUI : MonoBehaviour
 {
     // Screen Movement with Mouse Cursor Position
-    public enum ScreenMovementDirection { Middle, Left, Right, Up, Down }
-    private Dictionary<ScreenMovementDirection, Image> mouseCursorDetector = new Dictionary<ScreenMovementDirection, Image>(); // Assign this variable in inspector window 
+    public enum MouseSectionType { Middle, Left, Right, Up, Down }
+    private Dictionary<MouseSectionType, Image> mouseCursorDetector = new Dictionary<MouseSectionType, Image>(); // Assign this variable in inspector window 
     [SerializeField] private Image[] mouseCursorDetectorImages;
 
     // Object Selection Button
     private enum ObjectSelectionButtonType : Int16 { Cube = 0,  } // 기획 실수 방지용, 로직에 직접적으로 작용하지는 않음, 나중에 삭제.
-    [SerializeField] private Image objectSelectionButtonsPanel;
+    public Image objectSelectionButtonsPanel;
     private ObjectSelectionButton[] objectSelectionButtons; // Buttons in LevelEditorUI
 
     private void Awake()
     {
+        mouseCursorDetector.Add(MouseSectionType.Left, mouseCursorDetectorImages[0]);
+        mouseCursorDetector.Add(MouseSectionType.Right, mouseCursorDetectorImages[1]);
+        mouseCursorDetector.Add(MouseSectionType.Up, mouseCursorDetectorImages[2]);
+        mouseCursorDetector.Add(MouseSectionType.Down, mouseCursorDetectorImages[3]);
+
         int count = Enum.GetValues(typeof(ObjectSelectionButtonType)).Length;
         objectSelectionButtons = new ObjectSelectionButton[count];
 
@@ -39,58 +44,27 @@ public class LevelEditorUI : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        mouseCursorDetector.Add(ScreenMovementDirection.Left, mouseCursorDetectorImages[0]);
-        mouseCursorDetector.Add(ScreenMovementDirection.Right, mouseCursorDetectorImages[1]);
-        mouseCursorDetector.Add(ScreenMovementDirection.Up, mouseCursorDetectorImages[2]);
-        mouseCursorDetector.Add(ScreenMovementDirection.Down, mouseCursorDetectorImages[3]);
-    }
 
-    private void Update()
+    public void MoveScreenDependingOnMousePosition(int speed)
     {
-        float speed = 5;
+        if (LevelEditorManager.Mode == EditorMode.None) return;
 
-        switch(GetScreenMovementDirectionFromMousePosition())
+        switch (GetScreenMovementDirectionFromMousePosition())
         {
-            case ScreenMovementDirection.Left:
-                LevelEditorManager.Main.Camera.transform.position += new Vector3(- speed * Time.deltaTime, 0, 0);
+            case MouseSectionType.Left:
+                LevelEditorManager.Main.Camera.transform.position += new Vector3(-speed * Time.deltaTime, 0, 0);
                 break;
-            case ScreenMovementDirection.Right:
+            case MouseSectionType.Right:
                 LevelEditorManager.Main.Camera.transform.position += new Vector3(speed * Time.deltaTime, 0, 0);
                 break;
-            case ScreenMovementDirection.Up:
+            case MouseSectionType.Up:
                 LevelEditorManager.Main.Camera.transform.position += new Vector3(0, speed * Time.deltaTime, 0);
                 break;
-            case ScreenMovementDirection.Down:
+            case MouseSectionType.Down:
                 LevelEditorManager.Main.Camera.transform.position += new Vector3(0, -speed * Time.deltaTime, 0);
                 break;
         }
     }
-
-    public ScreenMovementDirection GetScreenMovementDirectionFromMousePosition()
-    {
-        var direction = ScreenMovementDirection.Middle;
-        if (IsMouseCursorOnTheArea(mouseCursorDetector[ScreenMovementDirection.Left].rectTransform))
-        {
-            return ScreenMovementDirection.Left;
-        }
-        if (IsMouseCursorOnTheArea(mouseCursorDetector[ScreenMovementDirection.Right].rectTransform))
-        {
-            return ScreenMovementDirection.Right;
-        }
-        if (IsMouseCursorOnTheArea(mouseCursorDetector[ScreenMovementDirection.Up].rectTransform))
-        {
-            return ScreenMovementDirection.Up;
-        }
-        if (IsMouseCursorOnTheArea(mouseCursorDetector[ScreenMovementDirection.Down].rectTransform))
-        {
-            return ScreenMovementDirection.Down;
-        }
-
-
-        return direction;
-    }    
 
     // Get mouse position depending on the resolution of the screen
     public Vector3 GetMousePositionFromTheCanvas()
@@ -114,4 +88,49 @@ public class LevelEditorUI : MonoBehaviour
 
         return false;
     }
+
+    public Vector3 GetWorldPositionFromMousePosition(bool ignorePlaceableObjectLayer = true)
+    {
+        var position = Vector3.zero;
+        Ray ray = LevelEditorManager.Main.Camera.ScreenPointToRay(Input.mousePosition);
+
+        if (!ignorePlaceableObjectLayer)
+        {
+            if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue))
+            {
+                position = new Vector3(hit.point.x, hit.point.y, 0);
+                return position;
+            }
+        }
+
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, 1 << (int)Layer.RaycastBlockerForLevelEditor))
+        {
+            position = new Vector3(raycastHit.point.x, raycastHit.point.y, 0);
+        }
+        return position;
+    }
+
+    public MouseSectionType GetScreenMovementDirectionFromMousePosition()
+    {
+        var direction = MouseSectionType.Middle;
+        if (IsMouseCursorOnTheArea(mouseCursorDetector[MouseSectionType.Left].rectTransform))
+        {
+            return MouseSectionType.Left;
+        }
+        if (IsMouseCursorOnTheArea(mouseCursorDetector[MouseSectionType.Right].rectTransform))
+        {
+            return MouseSectionType.Right;
+        }
+        if (IsMouseCursorOnTheArea(mouseCursorDetector[MouseSectionType.Up].rectTransform))
+        {
+            return MouseSectionType.Up;
+        }
+        if (IsMouseCursorOnTheArea(mouseCursorDetector[MouseSectionType.Down].rectTransform))
+        {
+            return MouseSectionType.Down;
+        }
+
+
+        return direction;
+    }    
 }

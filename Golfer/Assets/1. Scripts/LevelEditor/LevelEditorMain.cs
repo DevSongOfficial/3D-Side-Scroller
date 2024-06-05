@@ -5,7 +5,7 @@ using UnityEngine;
 public class LevelEditorMain : MonoBehaviour
 {
     [HideInInspector] public LevelEditorManager LevelEditorManager;
-    public LevelEditorUI LevelEditorUI;
+    public LevelEditorUI UI;
     public Camera Camera;
 
 

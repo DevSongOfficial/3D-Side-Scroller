@@ -13,8 +13,14 @@ public class PlaceableObject : MonoBehaviour
     private MeshCollider mainCollider;
     private List<Collider> childColliders = new List<Collider>();
     private bool isOverlapped;
+
+    // Movement
+    private bool isBeingDragged;
+    private Vector3 movementOffset;
+
     public bool CanBePlaced { get { return !isOverlapped; } }
 
+    // Events
     public static event EventHandler<PlaceableObject> OnObjectSelectedForPlacing;
     public static event EventHandler<PlaceableObject> OnObjectSelectedForEditing;
 
@@ -24,6 +30,8 @@ public class PlaceableObject : MonoBehaviour
     // This function is called only when player click a button in the level editor in order to create new object
     public void OnSelectObjectForPlacing()
     {
+        if (PlaceableObject.Current != null) return;
+
         var selectedObject = CreatePlaceableObject();
 
         OnObjectSelectedForPlacing.Invoke(this, selectedObject);
@@ -36,7 +44,7 @@ public class PlaceableObject : MonoBehaviour
         //  OnObjectSelectedForEditing.Invoke(this, );
     }
 
-
+    #region Registration of Object Placement
     private static List<PlaceableObject> PlaceableObjectsInTheScene;
     private static void RegisterPlaceableObject(PlaceableObject newPlaceableObject) 
     {
@@ -50,6 +58,34 @@ public class PlaceableObject : MonoBehaviour
             PlaceableObjectsInTheScene.Remove(newPlaceableObject);
         }
         else Debug.LogWarning("No Placeable Object Matches in the List");
+    }
+    #endregion
+
+    #region Movement
+    public void StartDrag()
+    {
+        movementOffset = transform.position - LevelEditorManager.Main.UI.GetWorldPositionFromMousePosition(ignorePlaceableObjectLayer: false);
+        isBeingDragged = true;
+    }
+
+    private void Move()
+    {
+        if (isBeingDragged)
+        {
+            transform.position = LevelEditorManager.Main.UI.GetWorldPositionFromMousePosition() + movementOffset;
+        }
+    }
+
+    public void EndDrag()
+    {
+        movementOffset = Vector3.zero;
+        isBeingDragged = false;
+    }
+    #endregion
+
+    private void Update()
+    {
+        // Move();
     }
 
     public void SetActive(bool active)

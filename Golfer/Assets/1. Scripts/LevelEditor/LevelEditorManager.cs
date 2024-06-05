@@ -38,7 +38,7 @@ public class LevelEditorManager : MonoBehaviour
         PlaceableObject.Initialization();
         PlaceableObject.OnObjectSelectedForPlacing += delegate { SetEditorMode(EditorMode.Placing); };
 
-        SetEditorMode(EditorMode.Editing);
+        SetEditorMode(EditorMode.None);
     }
 
 
@@ -49,18 +49,21 @@ public class LevelEditorManager : MonoBehaviour
         HandleObjectSelection();
         HandleObjectPlacement();
         HandleObjectRemovement();
-        // Canvas.CameraMovement(); // 마우스를 가장자리로 움직이면 화면도 움직이는 코드 추가
+
+        Main.UI.MoveScreenDependingOnMousePosition(speed: 5);
     }
 
-    private static void SetEditorMode(EditorMode editorMode)
+    public static void SetEditorMode(EditorMode editorMode)
     {
+        Debug.Log(editorMode);
+
         Mode = editorMode;
 
         switch(Mode)
         {
             case EditorMode.None:
                 Camera.main.depth = 0;
-                Main.LevelEditorUI.gameObject.SetActive(false);
+                Main.UI.gameObject.SetActive(false);
                 //Main.LevelEditorUI.ObjectSelectionButtonsPanel.gameObject.SetActive(true);
                 PlaceableObject.SetConvexAll(false);
                 PlaceableObject.SetCollisionAll(true);
@@ -68,7 +71,7 @@ public class LevelEditorManager : MonoBehaviour
                 break;
             case EditorMode.Editing:
                 Camera.main.depth = -1;
-                Main.LevelEditorUI.gameObject.SetActive(true);
+                Main.UI.gameObject.SetActive(true);
                 //Main.LevelEditorUI.ObjectSelectionButtonsPanel.gameObject.SetActive(true);
                 PlaceableObject.SetConvexAll(true);
                 PlaceableObject.SetCollisionAll(false);
@@ -76,7 +79,7 @@ public class LevelEditorManager : MonoBehaviour
                 break;
             case EditorMode.Placing:
                 Camera.main.depth = -1;
-                Main.LevelEditorUI.gameObject.SetActive(true);
+                Main.UI.gameObject.SetActive(true);
                 //Main.LevelEditorUI.ObjectSelectionButtonsPanel.gameObject.SetActive(false);
                 PlaceableObject.SetConvexAll(true);
                 PlaceableObject.SetCollisionAll(false);
@@ -105,6 +108,7 @@ public class LevelEditorManager : MonoBehaviour
     private void HandleObjectPlacement()
     {
         if (Mode != EditorMode.Placing) return;
+        if (Main.UI.IsMouseCursorOnTheArea(Main.UI.objectSelectionButtonsPanel.rectTransform)) return;
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -149,7 +153,7 @@ public class LevelEditorManager : MonoBehaviour
             else Debug.Log($"Detected Object: {selectedObject}");
 
             PlaceableObject.SetCurrentObjectTo(selectedObject);
-            movementOffset = selectedObject.transform.position - GetWorldPositionFromMousePosition(ignorePlaceableObjectLayer: false);
+            movementOffset = selectedObject.transform.position - Main.UI.GetWorldPositionFromMousePosition(ignorePlaceableObjectLayer: false);
         }
     }
 
@@ -157,28 +161,7 @@ public class LevelEditorManager : MonoBehaviour
     private void HandleObjectMovement()
     {
         if (PlaceableObject.Current == null) return;
-        PlaceableObject.Current.transform.position = GetWorldPositionFromMousePosition() + movementOffset;
-    }
-
-    private Vector3 GetWorldPositionFromMousePosition(bool ignorePlaceableObjectLayer = true)
-    {
-        var position = Vector3.zero;
-        Ray ray = Main.Camera.ScreenPointToRay(Input.mousePosition);
-
-        if(!ignorePlaceableObjectLayer)
-        {
-            if (Physics.Raycast(ray, out RaycastHit hit, float.MaxValue))
-            {
-                position = new Vector3(hit.point.x, hit.point.y, 0);
-                return position;
-            }
-        }
-
-        if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, 1 << (int)Layer.RaycastBlockerForLevelEditor))
-        {
-            position = new Vector3(raycastHit.point.x, raycastHit.point.y, 0);
-        }
-        return position;
+        PlaceableObject.Current.transform.position = Main.UI.GetWorldPositionFromMousePosition() + movementOffset;
     }
 
     private PlaceableObject GetPlaceableObjectFromMousePosition()
