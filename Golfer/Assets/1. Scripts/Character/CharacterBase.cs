@@ -15,12 +15,23 @@ public abstract class CharacterBase : MonoBehaviour
 
     // Character Movement & Direction
     public enum EMovementDirection { Left = -1, None = 0, Right = 1 }
-    protected virtual EMovementDirection MovementDirection { get; set; }
-    public float Xspeed { get; protected set; }
 
     // Character Animation
-    protected CharacterAnimation.State CurrentAnimationState { get; private set; }
-    protected CharacterCondition CurrentCondition { get; private set; }
+    protected PlayerCharacterAnimation.State CurrentAnimationState { get; private set; }
+
+    // State
+    public StateBase CurrenState { get; private set; }
+
+    public void ChangeState(StateBase newState)
+    {
+        CurrenState?.ExitState();
+        CurrenState = newState;
+        CurrenState.EnterState();
+    }
+    public void SelectState()
+    {
+        
+    }
 
     protected virtual void Awake()
     {
@@ -28,12 +39,34 @@ public abstract class CharacterBase : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
     }
 
+    protected virtual void Start()
+    {
+
+    }
+
+    protected virtual void Update()
+    {
+        if (CurrenState == null) return;
+        
+        if (CurrenState.isComplete)
+        {
+            SelectState();
+        }
+
+        CurrenState.UpdateState();
+    }
+
+    protected virtual void FixedUpdate()
+    {
+        CurrenState?.FixedUpdateState();
+    }
+
     public virtual void TakeDamage(DamageEvent damageEvent)
     {
         characterInfo.TakeDamage(damageEvent.damage);
     }
 
-    protected virtual bool ChangeAnimationState(CharacterAnimation.State state)
+    public virtual bool ChangeAnimationState(PlayerCharacterAnimation.State state)
     {
         if (CurrentAnimationState == state) return false;
 
@@ -43,21 +76,15 @@ public abstract class CharacterBase : MonoBehaviour
         return true;
     }
 
-    protected virtual void ChangeConditionState(CharacterCondition condition)
-    {
-        CurrentCondition = condition;
-    }
-
-    public static class CharacterAnimation
+    public static class PlayerCharacterAnimation
     {
         public enum State { BT_Move, Jump, Swing }
 
         public enum Parameter { MoveSpeed }
     }
 
-    // 클래스로는 State 체크 + 내부 프로퍼티들로는 Condition 체크
-    public class CharacterCondition
+    public virtual PlayerCharacter AsPlayer()
     {
-        public bool canMove;
+        return null;
     }
 }
