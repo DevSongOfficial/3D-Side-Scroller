@@ -1,0 +1,6 @@
+﻿공용 변수들 전부 블랙보드에 넣기
+States들은 프로퍼티/이벤트 전부 블랙보드를 통해서만 접근함 (빌더패턴)
+예외) Monobehaviour 기본 프로퍼티들은 Character를 통해 접근함
+
+컨디션 체커 클래스 만들기 ex) onGround wallDetectable enemyDetectable
+컴포넌트 패턴으로..? 
