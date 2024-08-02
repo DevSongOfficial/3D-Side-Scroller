@@ -22,7 +22,7 @@ public class PlaceableObject : MonoBehaviour
 
     // Events
     public static event EventHandler<PlaceableObject> OnObjectSelectedForPlacing;
-    public static event EventHandler<PlaceableObject> OnObjectSelectedForEditing;
+    //public static event EventHandler<PlaceableObject> OnObjectSelectedForEditing;
 
     public static PlaceableObject Current { get; private set; } // The object player's dealing with at the moment
     public static void SetCurrentObjectTo(PlaceableObject newPlaceableObject) { Current = newPlaceableObject; }
@@ -41,7 +41,7 @@ public class PlaceableObject : MonoBehaviour
 
     public void OnSelectObjectForEditing()
     {
-        //  OnObjectSelectedForEditing.Invoke(this, );
+        //OnObjectSelectedForEditing.Invoke(this, );
     }
 
     #region Registration of Object Placement

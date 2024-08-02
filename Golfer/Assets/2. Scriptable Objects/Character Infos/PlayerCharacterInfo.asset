@@ -15,5 +15,4 @@ MonoBehaviour:
   health: 100
   movementSpeed: 5
   acceleration: 10
-  movementSpeedOnRotate: 100
-  rotationSpeed: 1000
+  jumpPower: 4

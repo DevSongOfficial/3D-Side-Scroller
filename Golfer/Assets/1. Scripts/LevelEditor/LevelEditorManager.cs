@@ -55,8 +55,6 @@ public class LevelEditorManager : MonoBehaviour
 
     public static void SetEditorMode(EditorMode editorMode)
     {
-        Debug.Log(editorMode);
-
         Mode = editorMode;
 
         switch(Mode)

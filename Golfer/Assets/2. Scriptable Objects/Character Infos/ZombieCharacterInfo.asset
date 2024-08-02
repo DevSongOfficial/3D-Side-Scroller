@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: ZombieCharacterInfo
   m_EditorClassIdentifier: 
   health: 50
-  movementSpeed: 5
+  movementSpeed: 200
   acceleration: 10
   movementSpeedOnRotate: 100
   rotationSpeed: 1000
-  detectionDistance: 10
+  detectionDistance: 3

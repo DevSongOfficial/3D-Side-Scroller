@@ -818,13 +818,19 @@ Animator:
   m_GameObject: {fileID: 3591578490810969588}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 73cb26eb09383b543964e83a452a3be8, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 36799582c5b647a4c96dbb351c61d75d, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_WarningMessage: 
+  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
+    are already bound by a Humanoid avatar. These transforms can only be changed
+    by Humanoid clips.\n\tTransform 'mixamorig:Hips'\n\tTransform 'mixamorig:LeftFoot'\n\tTransform
+    'mixamorig:LeftHandIndex1'\n\tTransform 'mixamorig:LeftHandPinky2'\n\tTransform
+    'mixamorig:RightArm'\n\tTransform 'mixamorig:LeftLeg'\n\tTransform 'mixamorig:LeftShoulder'\n\tTransform
+    'mixamorig:RightHandRing1'\n\tTransform 'mixamorig:RightHandIndex3'\n\tTransform
+    'mixamorig:LeftHandRing1'\n\tand more ...\n\tFrom animation clip 'Zombie Idle'"
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
@@ -1443,6 +1449,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3505847939801723452}
   - component: {fileID: 4544250225649131715}
+  - component: {fileID: 7358812187563694209}
+  - component: {fileID: 1439662368094629562}
   m_Layer: 0
   m_Name: ZombieCharacter
   m_TagString: Untagged
@@ -1460,8 +1468,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 2.317, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.95, y: 0.95, z: 0.95}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3829302567358879151}
   m_Father: {fileID: 0}
@@ -1478,8 +1486,57 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26520dd33234a3143aa386173162d3ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterInfo: {fileID: 11400000, guid: bf3a136dd831d46439e58f338e1b3e5e, type: 2}
-  zomebieMovementType: {fileID: 11400000, guid: 61fde9025cafa364eba295a0d55ada1d, type: 2}
+  info: {fileID: 11400000, guid: 65291048840a041479972dc563f75b64, type: 2}
+  movementOnPatrol: {fileID: 11400000, guid: 61fde9025cafa364eba295a0d55ada1d, type: 2}
+  movementOnChase: {fileID: 11400000, guid: 61fde9025cafa364eba295a0d55ada1d, type: 2}
+--- !u!54 &7358812187563694209
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6444936535324996438}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 112
+  m_CollisionDetection: 0
+--- !u!65 &1439662368094629562
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6444936535324996438}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.46944472, y: 1.6691122, z: 0.4725654}
+  m_Center: {x: 0, y: 0.83767223, z: 0}
 --- !u!1 &6632639897013889090
 GameObject:
   m_ObjectHideFlags: 0

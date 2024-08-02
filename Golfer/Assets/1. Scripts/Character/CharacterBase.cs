@@ -1,22 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
+[RequireComponent(typeof(MovementController))]
+[RequireComponent(typeof(AnimationController))]
 public abstract class CharacterBase : MonoBehaviour
 {
-    // Basic components
-    protected Rigidbody rigidBody;
-    protected Animator animator;
+    // Movement Controller
+    public MovementController movementController { get; private set; }
 
-    // Character Movement & Direction
-    public enum EMovementDirection { Left = -1, None = 0, Right = 1 }
+    // Animation Controller
+    public AnimationController animationController { get; private set; }
 
-    // Character Animation
-    protected Animation.State CurrentAnimationState { get; private set; }
-
-    // State
+    // State (Each character runs as a single state machine)
+    // todo: 나중에 독립적인 클래스로 분리?
     public StateBase CurrenState { get; private set; }
 
     public void ChangeState(StateBase newState)
@@ -32,13 +31,13 @@ public abstract class CharacterBase : MonoBehaviour
 
     protected virtual void Awake()
     {
-        rigidBody = GetComponent<Rigidbody>();
-        animator = GetComponentInChildren<Animator>();
+        movementController = GetComponent<MovementController>();
+        animationController = GetComponent<AnimationController>();
     }
 
     protected virtual void Start()
     {
-
+        gameObject.layer = (int)Layer.Character;
     }
 
     protected virtual void Update()
@@ -63,24 +62,14 @@ public abstract class CharacterBase : MonoBehaviour
         //characterInfo.TakeDamage(damageEvent.damage);
     }
 
-    public virtual bool ChangeAnimationState(Animation.State state)
-    {
-        if (CurrentAnimationState == state) return false;
-
-        CurrentAnimationState = state;
-        animator.Play(CurrentAnimationState.ToString());
-
-        return true;
-    }
-
     public virtual void FadeOut()
     {
-
+        transform.GetChild(0).gameObject.SetActive(false);
     }
 
     public virtual void FadeIn()
     {
-
+        transform.GetChild(0).gameObject.SetActive(true);
     }
 
 

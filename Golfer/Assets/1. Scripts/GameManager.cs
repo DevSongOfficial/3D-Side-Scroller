@@ -5,6 +5,9 @@ using UnityEngine;
 
 public enum Layer
 {
+    Character = 8,
+    Ground = 9,
+    Wall = 10,
     PlaceableObject = 20,
     InteractableObject = 25,
     RaycastBlockerForLevelEditor = 31,
