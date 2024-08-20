@@ -1,10 +1,8 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.PlayerLoop;
 
 public enum EditorMode
 {
@@ -15,19 +13,33 @@ public enum EditorMode
 
 public class LevelEditorManager : MonoBehaviour
 {
+    // todo: use input system instead.
+    [Header("Key Binding")]
+    [SerializeField] private KeyCode switchMode = KeyCode.P;
+    [SerializeField] private KeyCode reverseRotation = KeyCode.R;
+    [SerializeField] private KeyCode selectObject = KeyCode.Mouse0;
+    [SerializeField] private KeyCode placeObject = KeyCode.Mouse0;
+    [SerializeField] private KeyCode removeObject = KeyCode.Mouse1;
+
+
     #region Singleton - LevelEditorMain
-    public static LevelEditorMain Main 
+    public static LevelEditorMain GetReferenceTo 
     { 
         get 
         {
-            if(main == null) main = GameObject.Find("Level Editor").AddComponent<LevelEditorMain>();
+            if(main is null) main = GameObject.Find("Level Editor").AddComponent<LevelEditorMain>();
             return main;
         } 
     }
     private static LevelEditorMain main;
     #endregion
 
+    // Current Editor Mode
     public static EditorMode Mode { get; private set; }
+    public static bool IsEditorActive => Mode == EditorMode.None ? false : true; 
+
+    public static event Action<bool> OnEditorModeTriggered;
+
 
     private void Awake()
     {
@@ -45,60 +57,63 @@ public class LevelEditorManager : MonoBehaviour
     // Main routine for the Level Editor
     private void Update()
     {
+        SwitchMode();
+
+        if (Mode != EditorMode.Placing && Mode != EditorMode.Editing) return;
+
         HandleObjectMovement();
+        HandleObjectRotation();
         HandleObjectSelection();
         HandleObjectPlacement();
         HandleObjectRemovement();
 
-        Main.UI.MoveScreenDependingOnMousePosition(speed: 5);
+        GetReferenceTo.EditorUI.MoveScreenDependingOnMousePosition(speed: 5);
     }
 
     public static void SetEditorMode(EditorMode editorMode)
     {
         Mode = editorMode;
+        OnEditorModeTriggered.Invoke(IsEditorActive);
 
-        switch(Mode)
+        // Switch Camera
+        Camera.main.depth = IsEditorActive ? -1 : 0;
+
+        switch (Mode)
         {
             case EditorMode.None:
-                Camera.main.depth = 0;
-                Main.UI.gameObject.SetActive(false);
-                //Main.LevelEditorUI.ObjectSelectionButtonsPanel.gameObject.SetActive(true);
-                PlaceableObject.SetConvexAll(false);
-                PlaceableObject.SetCollisionAll(true);
-                PlaceableObject.SetCurrentObjectTo(null);
+                PlaceableObject.SelectCurrentObject(null);
                 break;
             case EditorMode.Editing:
-                Camera.main.depth = -1;
-                Main.UI.gameObject.SetActive(true);
-                //Main.LevelEditorUI.ObjectSelectionButtonsPanel.gameObject.SetActive(true);
-                PlaceableObject.SetConvexAll(true);
-                PlaceableObject.SetCollisionAll(false);
-                PlaceableObject.SetCurrentObjectTo(null);
+                PlaceableObject.SelectCurrentObject(null);
                 break;
             case EditorMode.Placing:
-                Camera.main.depth = -1;
-                Main.UI.gameObject.SetActive(true);
-                //Main.LevelEditorUI.ObjectSelectionButtonsPanel.gameObject.SetActive(false);
-                PlaceableObject.SetConvexAll(true);
-                PlaceableObject.SetCollisionAll(false);
                 break;
         }
     }    
 
+    private void SwitchMode()
+    {
+        if (Input.GetKeyDown(switchMode))
+        {
+            if (Mode == EditorMode.None) SetEditorMode(EditorMode.Editing);
+            else if (Mode == EditorMode.Editing) SetEditorMode(EditorMode.None);
+        }
+    }
+
     private void PlaceSelectedObject()
     {
-        if (PlaceableObject.Current == null) return;
-        if (!PlaceableObject.Current.CanBePlaced) return;
+        if (PlaceableObject.CurrentlySelected is null) return;
+        if (!PlaceableObject.CurrentlySelected.CanBePlaced) return;
 
         SetEditorMode(EditorMode.Editing);
     }
 
     private void RemoveSelectedObject()
     {
-        if (PlaceableObject.Current == null) return;
+        if (PlaceableObject.CurrentlySelected is null) return;
 
-        PlaceableObject.UnregisterPlaceableObject(PlaceableObject.Current);
-        PlaceableObject.Current.SetActive(false);
+        PlaceableObject.UnregisterPlaceableObject(PlaceableObject.CurrentlySelected);
+        PlaceableObject.CurrentlySelected.SetActive(false);
 
         SetEditorMode(EditorMode.Editing);
     }
@@ -106,9 +121,9 @@ public class LevelEditorManager : MonoBehaviour
     private void HandleObjectPlacement()
     {
         if (Mode != EditorMode.Placing) return;
-        if (Main.UI.IsMouseCursorOnTheArea(Main.UI.objectSelectionButtonsPanel.rectTransform)) return;
+        if (GetReferenceTo.EditorUI.IsMouseCursorOnTheArea(GetReferenceTo.EditorUI.objectSelectionButtonsPanel.rectTransform)) return;
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(placeObject))
         {
             PlaceSelectedObject();
             movementOffset = Vector3.zero;
@@ -118,10 +133,9 @@ public class LevelEditorManager : MonoBehaviour
 
     private void HandleObjectRemovement()
     {
-        if(PlaceableObject.Current == null) return;
-        if(Mode != EditorMode.Placing && Mode != EditorMode.Editing) return;
+        if(PlaceableObject.CurrentlySelected is null) return;
 
-        if(Input.GetMouseButtonDown(1))
+        if (Input.GetKeyDown(removeObject))
         {
             RemoveSelectedObject();
         }
@@ -131,46 +145,44 @@ public class LevelEditorManager : MonoBehaviour
     {
         if (Mode != EditorMode.Editing) return;
         
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetKeyDown(selectObject))
         {
-            if(PlaceableObject.Current != null)
+            if(PlaceableObject.CurrentlySelected != null)
             {
-                if (!PlaceableObject.Current.CanBePlaced) return;
+                if (!PlaceableObject.CurrentlySelected.CanBePlaced) return;
 
-                PlaceableObject.SetCurrentObjectTo(null);
+                PlaceableObject.SelectCurrentObject(null);
                 movementOffset = Vector3.zero;
                 return;
             }
 
-            var selectedObject = GetPlaceableObjectFromMousePosition();
-            if (selectedObject == null)
+            if(!GetReferenceTo.EditorUI.TryGetComponentFromMousePosition(out PlaceableObject selectedObject, Layer.PlaceableObject))
             {
                  Debug.Log("Detected Object: NOTHING");
                  return;
             }
             else Debug.Log($"Detected Object: {selectedObject}");
 
-            PlaceableObject.SetCurrentObjectTo(selectedObject);
-            movementOffset = selectedObject.transform.position - Main.UI.GetWorldPositionFromMousePosition(ignorePlaceableObjectLayer: false);
+            PlaceableObject.SelectCurrentObject(selectedObject);
+            movementOffset = selectedObject.transform.position - GetReferenceTo.EditorUI.GetWorldPositionFromMousePosition(ignorePlaceableObjectLayer: false);
         }
     }
 
     private Vector3 movementOffset;
     private void HandleObjectMovement()
     {
-        if (PlaceableObject.Current == null) return;
-        PlaceableObject.Current.transform.position = Main.UI.GetWorldPositionFromMousePosition() + movementOffset;
+        if (PlaceableObject.CurrentlySelected is null) return;
+        PlaceableObject.CurrentlySelected.transform.position = GetReferenceTo.EditorUI.GetWorldPositionFromMousePosition() + movementOffset;
     }
 
-    private PlaceableObject GetPlaceableObjectFromMousePosition()
+    private void HandleObjectRotation()
     {
-        PlaceableObject placeableObject = null;
-        Ray ray = Main.Camera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, 1 << (int)Layer.PlaceableObject))
-        {
-            placeableObject = raycastHit.collider.GetComponent<PlaceableObject>();
-        }
+        if (PlaceableObject.CurrentlySelected is null) return;
+        if (Mode != EditorMode.Placing && Mode != EditorMode.Editing) return;
 
-        return placeableObject;
+        if (Input.GetKeyDown(reverseRotation))
+        {
+            PlaceableObject.CurrentlySelected.InverseRotation();
+        }
     }
 }

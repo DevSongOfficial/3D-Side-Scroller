@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "PlayerInfo", menuName = "Scriptable Object/Player Info")]
+[CreateAssetMenu(fileName = "PlayerInfo", menuName = "Scriptable Object/Character Info/Player Info")]
 public class PlayerInfo : CharacterInfo
 {
     [SerializeField] private int jumpPower = 4;

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public sealed class ZombiePatrolState : ZombieStateBase
 {
@@ -24,8 +23,6 @@ public sealed class ZombiePatrolState : ZombieStateBase
     {
         base.UpdateState();
 
-        Patrol();
-        
         // For Debugging
         if (Input.GetKeyDown(KeyCode.X)) { movementDirection = EMovementDirection.Right; }
         if (Input.GetKeyDown(KeyCode.Z)) { movementDirection = EMovementDirection.Left; }
@@ -34,6 +31,8 @@ public sealed class ZombiePatrolState : ZombieStateBase
     public override void FixedUpdateState()
     {
         base.FixedUpdateState();
+
+        Patrol();
     }
 
     public override void ExitState()
@@ -43,13 +42,16 @@ public sealed class ZombiePatrolState : ZombieStateBase
 
     private void Patrol()
     {
-        movement.Execute(zombie.MovementController, zombie.Info, movementDirection);
-
         RayInfo rayInfo = new RayInfo(zombie.MovementController.Direction, zombie.Info.DetectionDistance);
+        
         if (zombie.Detector.CharacterDetected(rayInfo, out PlayerCharacter target))
         {
             sharedData.targetCharacter = target;
             zombie.ChangeState(zombie.ChaseState);
+            return;
         }
+
+        movement.ApplyVelocityMultiplier(GetProperMultiplierOnMove(movement));
+        movement.Execute(zombie.MovementController, zombie.Info, movementDirection);
     }
 }

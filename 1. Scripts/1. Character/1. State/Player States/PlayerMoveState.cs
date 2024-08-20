@@ -12,18 +12,16 @@ public class PlayerMoveState : PlayerStateBase
         sharedData.OnMove += OnMove;
     }
 
-    private float velocityX;
+    private float velocityToBeSet;
 
-    // [MovementController.Direction] refers to the direction the character is facing at tho moment,
-    // On the other hand, [directionToMove] refers to the way to be aksed to go at the moment.
-    private EMovementDirection directionToMove;
+    private const float animationTransitionTime = 0.1f;
 
     public override void EnterState()
     {
         base.EnterState();
 
         player.AnimationController.SetSpeed(AnimationController.Speed.Normal);
-        player.AnimationController.ChangeState(AnimationController.State.PlayerMove1);
+        player.AnimationController.ChangeState(AnimationController.Player.Movement.BT_1, animationTransitionTime);
     }
 
     public override void UpdateState()
@@ -37,7 +35,7 @@ public class PlayerMoveState : PlayerStateBase
     {
         base.FixedUpdateState();
 
-        MoveTowards(directionToMove);
+        MoveTowards(sharedData.directionToMove);
     }
 
     public override void ExitState()
@@ -50,10 +48,10 @@ public class PlayerMoveState : PlayerStateBase
         if (direction == EMovementDirection.None) return;
         if (direction != player.MovementController.Direction) return;
 
-        if (Math.Abs(velocityX) < player.Info.MovementSpeed)
+        if (Math.Abs(velocityToBeSet) < player.Info.MovementSpeed)
         {
-            velocityX += player.Info.Acceleration * Time.deltaTime;
-            player.MovementController.SetVelocity(velocityX);
+            velocityToBeSet += player.Info.Acceleration * Time.deltaTime;
+            player.MovementController.SetVelocity(velocityToBeSet);
         }
         else
         {
@@ -63,6 +61,8 @@ public class PlayerMoveState : PlayerStateBase
 
     private void HandleAnimation()
     {
+        //if (time < animationTransitionTime) return;
+
         var param_MoveSpeed = AnimationController.Parameter.MoveSpeed;
         var velocity = MathF.Abs(player.MovementController.GetVelocity());
 
@@ -71,17 +71,20 @@ public class PlayerMoveState : PlayerStateBase
 
     private void OnMove(EMovementDirection newDirection)
     {
-        velocityX = 0;
-        directionToMove = newDirection;
-        player.MovementController.ChangeMovementDirection(directionToMove);
+        velocityToBeSet = 0;
+        sharedData.directionToMove = newDirection;
+
+        if (!player.CurrenState.CompareState(player.MoveState)) return;
+
+        player.MovementController.ChangeMovementDirection(sharedData.directionToMove);
     }
 
     private void OnLand(EMovementDirection direction)
     {
-        if (directionToMove == EMovementDirection.None) return;
-        if (directionToMove == direction) return;
+        if (sharedData.directionToMove == EMovementDirection.None) return;
+        if (sharedData.directionToMove == direction) return;
 
-        player.MovementController.ChangeMovementDirection(directionToMove);
-        player.MovementController.SetVelocity(velocityX = 0);
+        player.MovementController.ChangeMovementDirection(sharedData.directionToMove);
+        player.MovementController.SetVelocity(velocityToBeSet = 0);
     }
 }

@@ -5,43 +5,34 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(MeshCollider))]
+[RequireComponent(typeof(Rigidbody))]
 public class PlaceableObject : MonoBehaviour
 {
-    // PlacebleObject의 Collider는 오브젝트 자신에 필수적으로 메인 콜라이더 하나 + (필요하다면) 자식으로 여러개를 가진다.
-    // mainCollider is only for checking if placeableObjects are overlapped with MeshCollider Component.
-    // Actual collider when playing game is List - childColliders.
-    private MeshCollider mainCollider;
-    private List<Collider> childColliders = new List<Collider>();
-    private bool isOverlapped;
+    // [editorCollider] is only for checking if placeableObjects are overlapped with MeshCollider Component.
+    // Actual collider when playing game is [gameColliders]. (In case one has more than two colliders, I used generic list.)
+    protected MeshCollider editorCollider;
+    private List<Collider> gameColliders = new List<Collider>();
 
-    // Movement
-    private bool isBeingDragged;
-    private Vector3 movementOffset;
-
-    public bool CanBePlaced { get { return !isOverlapped; } }
+    public bool CanBePlaced { get { return overlappedObjectsCount == 0; } }
+    private int overlappedObjectsCount;
 
     // Events
-    public static event EventHandler<PlaceableObject> OnObjectSelectedForPlacing;
-    //public static event EventHandler<PlaceableObject> OnObjectSelectedForEditing;
+    public static event Action<PlaceableObject> OnObjectSelectedForPlacing;
 
-    public static PlaceableObject Current { get; private set; } // The object player's dealing with at the moment
-    public static void SetCurrentObjectTo(PlaceableObject newPlaceableObject) { Current = newPlaceableObject; }
+    public static PlaceableObject CurrentlySelected { get; private set; } // The object player's dealing with at the moment
+    public static void SelectCurrentObject(PlaceableObject newPlaceableObject) { CurrentlySelected = newPlaceableObject; }
 
     // This function is called only when player click a button in the level editor in order to create new object
-    public void OnSelectObjectForPlacing()
+    public void OnSelectObjectWhenPlacing()
     {
-        if (PlaceableObject.Current != null) return;
+        if (CurrentlySelected != null) return;
 
         var selectedObject = CreatePlaceableObject();
 
-        OnObjectSelectedForPlacing.Invoke(this, selectedObject);
-        SetCurrentObjectTo(selectedObject);
+        OnObjectSelectedForPlacing.Invoke(selectedObject);
+        SelectCurrentObject(selectedObject);
         RegisterPlaceableObject(selectedObject);
-    }
-
-    public void OnSelectObjectForEditing()
-    {
-        //OnObjectSelectedForEditing.Invoke(this, );
     }
 
     #region Registration of Object Placement
@@ -61,70 +52,66 @@ public class PlaceableObject : MonoBehaviour
     }
     #endregion
 
-    #region Movement
-    public void StartDrag()
+    protected virtual void Awake()
     {
-        movementOffset = transform.position - LevelEditorManager.Main.UI.GetWorldPositionFromMousePosition(ignorePlaceableObjectLayer: false);
-        isBeingDragged = true;
-    }
+        editorCollider = GetComponent<MeshCollider>();
 
-    private void Move()
-    {
-        if (isBeingDragged)
+        gameObject.SetLayer(Layer.PlaceableObject);
+
+        // Initialize actual collider(s) of the body.
+        for (int i = 0; i < transform.childCount; i++)
         {
-            transform.position = LevelEditorManager.Main.UI.GetWorldPositionFromMousePosition() + movementOffset;
+            var childCollider = transform.GetChild(i).GetComponent<Collider>();
+            if (childCollider != null)
+            {
+                gameColliders.Add(childCollider);
+            }
         }
     }
 
-    public void EndDrag()
-    {
-        movementOffset = Vector3.zero;
-        isBeingDragged = false;
-    }
-    #endregion
+    protected virtual void Start() { }
 
-    private void Update()
+    private void OnEnable()
     {
-        // Move();
+        OnLevelEditorTriggered(true);
+
+        LevelEditorManager.OnEditorModeTriggered += OnLevelEditorTriggered;
+    }
+
+    private void OnDisable()
+    {
+        LevelEditorManager.OnEditorModeTriggered -= OnLevelEditorTriggered;
+    }
+
+    public virtual void InverseRotation()
+    {
+        transform.Rotate(0, 180, 0);
+    }
+
+    protected virtual void OnLevelEditorTriggered(bool active)
+    {
+        SetBodyCollision(!active);
+        SetEditorCollision(active);
     }
 
     public void SetActive(bool active)
     {
         gameObject.SetActive(active);
     }
-    public static void SetActiveAll(bool active) 
+
+    private void SetEditorCollision(bool enabled)
     {
-        for(int i = 0; i < PlaceableObjectsInTheScene.Count; i++)
+        editorCollider.enabled = enabled;
+    }
+
+    private void SetBodyCollision(bool enabled) 
+    {
+        for(int i = 0; i < gameColliders.Count; i++)
         {
-            PlaceableObjectsInTheScene[i].SetActive(active);
+            gameColliders[i].enabled = enabled;
         }
     }
-    public void SetConvex(bool enabled) 
-    {
-        mainCollider.convex = enabled;
-        mainCollider.isTrigger = enabled;
-    }
-    public static void SetConvexAll(bool enabled)
-    {
-        for (int i = 0; i < PlaceableObjectsInTheScene.Count; i++)
-        {
-            PlaceableObjectsInTheScene[i].SetConvex(enabled);
-        }
-    }
-    public void SetCollision(bool enabled) 
-    {
-        for(int i = 0; i < childColliders.Count; i++)
-        {
-            childColliders[i].enabled = enabled;
-        }
-    }
-    public static void SetCollisionAll(bool enabled)
-    {
-        for (int i = 0; i < PlaceableObjectsInTheScene.Count; i++)
-        {
-            PlaceableObjectsInTheScene[i].SetCollision(enabled);
-        }
-    }
+
     public static void Initialization()
     {
         PlaceableObjectsInTheScene = new List<PlaceableObject>();
@@ -133,41 +120,20 @@ public class PlaceableObject : MonoBehaviour
     private PlaceableObject CreatePlaceableObject()
     {
         var newObject = Instantiate(gameObject).GetComponent<PlaceableObject>();
-        newObject.InitializeOnInstantiated();
         return newObject;
-    }
-
-    private void InitializeOnInstantiated()
-    {
-        gameObject.layer = (int)Layer.PlaceableObject;
-
-        mainCollider = GetComponent<MeshCollider>();
-        SetConvex(true);
-
-        for (int i = 0; i < transform.childCount; i++) 
-        {
-            var childCollider = transform.GetChild(i).GetComponent<Collider>();
-            if (childCollider != null)
-            {
-                childColliders.Add(childCollider);
-            }
-        }
-        SetCollision(false);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer != (int)Layer.PlaceableObject) return;
-
-        isOverlapped = true;
-        // 경고 띄우기
+        if (!other.CompareLayer(Layer.PlaceableObject)) return;
+        
+        overlappedObjectsCount++;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.layer != (int)Layer.PlaceableObject) return;
+        if (!other.CompareLayer(Layer.PlaceableObject)) return;
 
-        isOverlapped = !isOverlapped;
-        // 경고 제거
+        overlappedObjectsCount--;
     }
 }

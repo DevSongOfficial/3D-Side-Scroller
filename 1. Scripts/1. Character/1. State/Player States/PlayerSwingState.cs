@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,8 +8,7 @@ public class PlayerSwingState : PlayerStateBase
 {
     public PlayerSwingState(PlayerCharacter playerCharacter, PlayerBlackboard playerBlackboard) : base(playerCharacter, playerBlackboard) 
     {
-        sharedData.OnClick += StartDownSwing;
-        sharedData.OnDrag += BackSwing;
+        sharedData.OnMouseUp += StartDownSwing;
     }
 
     // Steps to swing
@@ -21,24 +21,24 @@ public class PlayerSwingState : PlayerStateBase
     private const int maxFrameOnDownSwing = 110;
     private float currentFrame;
 
-    private Vector2 mousePosition;
-
     public override void EnterState()
     {
         base.EnterState();
 
-        player.AnimationController.SetSpeed(AnimationController.Speed.Pause);
-        player.AnimationController.ChangeState(AnimationController.State.Swing);
+        player.AnimationController.ChangeState(AnimationController.Player.Attack.Swing, 0.01f);
 
         swingStep = SwingStep.BackSwing;
         currentFrame = 0;
-        player.MovementController.SetRotation(90);
+        player.MovementController.ChangeMovementDirection(EMovementDirection.Right, smoothRotation: false);
     }
 
     public override void UpdateState()
     {
         base.UpdateState();
 
+        if (time < 0.1f) return;
+
+        BackSwing();
         HandleSwingAnimation(currentFrame);
     }
 
@@ -51,25 +51,18 @@ public class PlayerSwingState : PlayerStateBase
         Cursor.lockState = CursorLockMode.None;
     }
 
-
-    private void BackSwing(Vector2 newMousePosition)
+    private void BackSwing()
     {
         if (swingStep != SwingStep.BackSwing) return;
 
-        if (newMousePosition.x < mousePosition.x)
-        {
-            if (currentFrame < maxFrameOnBackSwing) currentFrame += 120 * Time.deltaTime;
-            if (currentFrame > maxFrameOnBackSwing) currentFrame = maxFrameOnBackSwing;
-        }
-
-        mousePosition = newMousePosition;
+        if (currentFrame < maxFrameOnBackSwing) currentFrame += 60 * Time.deltaTime;
+        if (currentFrame > maxFrameOnBackSwing) currentFrame = maxFrameOnBackSwing;
     }
 
     private void StartDownSwing()
     {
         if (!player.CurrenState.CompareState(player.SwingState)) return;
         if (swingStep != SwingStep.BackSwing) return;
-        if (currentFrame > 34 || currentFrame == 0) return;
         if (downSwingCoroutine != null) return;
 
         downSwingCoroutine = player.StartCoroutine(DownSwingRoutine());
@@ -111,6 +104,7 @@ public class PlayerSwingState : PlayerStateBase
 
     private void HandleSwingAnimation(float frame)
     {
+        player.AnimationController.SetSpeed(AnimationController.Speed.Pause);
         player.AnimationController.Play(frame / maxFrame);
     }
 }

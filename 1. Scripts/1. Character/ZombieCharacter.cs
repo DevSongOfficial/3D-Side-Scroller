@@ -10,12 +10,17 @@ public sealed class ZombieCharacter : CharacterBase
     [SerializeField] private ZombieInfo info;
     public ZombieInfo Info => info;
 
+
     [Space(10)]
     [Header("Zomebie Movement Type")]
     // Needs to be set from the inspector
-    // Must excute "SetAnimationType()" Function in Awake() after adding new one.
     [SerializeField, RequiredMember] private ZombieMovementBase movementOnPatrol;
     [SerializeField, RequiredMember] private ZombieMovementBase movementOnChase;
+
+    [Space(10)]
+    [Header("Zomebie Attack Type")]
+    // Needs to be set from the inspector
+    [SerializeField, RequiredMember] private ZombieAttackBase attackDefault;
 
     // States
     // Must excute the contructor in Awake() after adding new state.
@@ -30,20 +35,19 @@ public sealed class ZombieCharacter : CharacterBase
     {
         base.Awake();
 
-        zombieBlackboard = new ZombieBlackboard();
+        transform.GetChild(0).gameObject.SetLayer(Layer.Character);
 
-        movementOnPatrol.SetAnimationType();
-        movementOnChase.SetAnimationType();
+        zombieBlackboard = new ZombieBlackboard();
 
         PatrolState = new ZombiePatrolState(this, zombieBlackboard, movementOnPatrol);
         ChaseState = new ZombieChaseState(this, zombieBlackboard, movementOnChase);
-        AttackState = new ZombieAttackState(this, zombieBlackboard);
+        AttackState = new ZombieAttackState(this, zombieBlackboard, attackDefault);
     }
 
     protected override void Start()
     {
         base.Start();
-        
+
         ChangeState(PatrolState);
     }
 
@@ -57,6 +61,10 @@ public sealed class ZombieCharacter : CharacterBase
         base.FixedUpdate();
     }
 
+    public override void ChangeState(StateBase newState)
+    {
+        base.ChangeState(newState);
+    }
 
     public override ZombieCharacter AsZombie()
     {

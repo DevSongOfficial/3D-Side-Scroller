@@ -24,7 +24,7 @@ public class GolfCart : MonoBehaviour, IInteractable
     {
         OnCharacterInteract?.Invoke(character);
 
-        if (driver == null)
+        if (driver is null)
         {
             GetInTheCart(character);
         }
@@ -36,7 +36,7 @@ public class GolfCart : MonoBehaviour, IInteractable
 
     private void Update()
     {
-        if (driver == null) return;
+        if (driver is null) return;
 
         Vector3 offset = new Vector3(0, 1.5f, 0);
         transform.position = driver.transform.position + offset;

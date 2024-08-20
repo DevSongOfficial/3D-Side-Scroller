@@ -23,51 +23,60 @@ public class MovementController : MonoBehaviour
     #region Direction
     public event Action<EMovementDirection> OnDirectionChange;
     public EMovementDirection Direction { get; private set; }
-    public void ChangeMovementDirection(EMovementDirection newDirection)
+
+    public void ChangeMovementDirection(EMovementDirection newDirection, bool smoothRotation = true)
     {
         if (newDirection == EMovementDirection.None) return;
         if (newDirection == Direction) return;
 
         Direction = newDirection;
 
-        if (directionChangeCoroutine != null) return;
-        directionChangeCoroutine = StartCoroutine(UpdateDirectionRoutine(newDirection));
+        if (directionChangeCoroutine != null)
+        {
+            StopCoroutine(directionChangeCoroutine);
+            directionChangeCoroutine = null;
+        }
+
+        if (smoothRotation)
+            directionChangeCoroutine = StartCoroutine(UpdateDirectionRoutine(newDirection));
+        else
+            SetRotation(Direction.GetYAngle());
+        
+
         OnDirectionChange?.Invoke(newDirection);
     }
 
     private Coroutine directionChangeCoroutine;
     private IEnumerator UpdateDirectionRoutine(EMovementDirection wishDirection)
     {
-        int wishYAngle = wishDirection == EMovementDirection.Left ? 270 : 90;
-
         while (wishDirection != EMovementDirection.None)
         {
             if (wishDirection == EMovementDirection.Left)
             {
-                if (transform.eulerAngles.y < wishYAngle)
+                if (transform.eulerAngles.y < wishDirection.GetYAngle())
                 {
                     Rotate(rotationSpeed * Time.deltaTime);
                 }
                 else
                 {
-                    SetRotation(wishYAngle);
+                    SetRotation(wishDirection.GetYAngle());
                     wishDirection = EMovementDirection.None;
                 }
             }
             else if (wishDirection == EMovementDirection.Right)
             {
-                if (transform.eulerAngles.y > wishYAngle)
+                if (transform.eulerAngles.y > wishDirection.GetYAngle())
                 {
                     Rotate(-rotationSpeed * Time.deltaTime);
                 }
                 else
                 {
-                    SetRotation(wishYAngle);
+                    SetRotation(wishDirection.GetYAngle());
                     wishDirection = EMovementDirection.None;
                 }
             }
 
-            yield return null;
+            yield return new WaitForFixedUpdate();
         }
 
         directionChangeCoroutine = null;
@@ -111,6 +120,12 @@ public class MovementController : MonoBehaviour
     public void Jump(float velocityOnJump)
     {
         rigidBody.velocity = new Vector3(rigidBody.velocity.x, velocityOnJump, 0);
+    }
+
+    public void StopMovement()
+    {
+        Direction = EMovementDirection.None;
+        SetVelocity(0);
     }
     #endregion
 }

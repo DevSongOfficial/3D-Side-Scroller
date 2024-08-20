@@ -9,6 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e8d8316723696342b2a7a14e9386200, type: 3}
-  m_Name: ZombieWalk2
+  m_Script: {fileID: 11500000, guid: c569477383be48a4487fbb751348ff9c, type: 3}
+  m_Name: ZombieAttack1
   m_EditorClassIdentifier: 
+  cooldownTime: 1.5
+  animationType: 1

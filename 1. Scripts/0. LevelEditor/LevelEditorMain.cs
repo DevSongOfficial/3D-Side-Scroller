@@ -1,16 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class LevelEditorMain : MonoBehaviour
 {
-    [HideInInspector] public LevelEditorManager LevelEditorManager;
-    public LevelEditorUI UI;
-    public Camera Camera;
+    public LevelEditorManager LevelEditorManager => levelEditorManager;
+    public LevelEditorUI EditorUI => ui;
+    public Camera EditorCamera => camera;
 
-
-    private void Awake()
-    {
-        LevelEditorManager = GetComponent<LevelEditorManager>();
-    }
+    [SerializeField] private LevelEditorManager levelEditorManager;
+    [SerializeField] private LevelEditorUI ui;
+    [SerializeField] private new Camera camera;
 }

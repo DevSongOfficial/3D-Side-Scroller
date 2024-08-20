@@ -13,14 +13,22 @@ public class AnimationController : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
     }
 
-    public bool ChangeState(string state)
+    public bool ChangeState(string state, float transitionDuration = 0.1f)
     {
-        if (CurrentState == state) return false;
+        if (CurrentState == state)
+        {
+            return false;
+        }
 
         CurrentState = state;
-        animator.Play(CurrentState);
+        animator.CrossFade(CurrentState, transitionDuration);
 
         return true;
+    }
+
+    public bool ChangeState<T>(T newState, float transitionDuration = 0.1f) where T : System.Enum
+    {
+        return ChangeState(newState.ToString(), transitionDuration);
     }
 
     public void Play(float value)
@@ -38,19 +46,55 @@ public class AnimationController : MonoBehaviour
         animator.speed = speed;
     }
 
-    // Must be the same as the animation nodes in the controllers.
-    public static class State
+    public int GetCurrentFrame(int maxFrame)
     {
-        public const string None = "None";
+        try
+        {
+            AnimatorClipInfo[] animationClip = animator.GetCurrentAnimatorClipInfo(0);
+            int currentFrame = (int)(animator.GetCurrentAnimatorStateInfo(0).normalizedTime * animationClip [0].clip.length * animationClip[0].clip.frameRate);
+            currentFrame %= maxFrame;
         
-        // For Player
-        public const string PlayerMove1 = "PlayerMove1";
-        public const string Jump = "Jump";
-        public const string Swing = "Swing";
+            return currentFrame;
+        }
+        catch
+        {
+            return 0;
+        }
+    }
 
-        // For Zombies
-        public const string ZombieMove1 = "ZombieMove1";
-        public const string ZombieMove2 = "ZombieMove2"; // Same as [ZombieMove1] but twice as fast
+    // Must be the same as the animation nodes in the controllers.
+    // I used enum for creating dropdown menu in scriptable objects.
+    public static class Player
+    {
+        public enum Movement
+        {
+            BT_1, // Movement behaviour tree depending on [MoveSpeed]
+            Jump,
+        }
+
+        public enum Attack
+        {
+            Downward_1,
+            Swing,
+        }
+    }
+
+    public static class Zombie
+    {
+        public enum Movement
+        {
+            Idle,
+            ZombieMove1, // Walk
+            ZombieMove2, // Walk, twice as fast
+            ZombieMove3, // Run
+        }
+
+        public enum Attack
+        {
+            ZombieThreaten,
+            ZombieAttack1,
+            ZombieAttack2,
+        }
     }
 
     public static class Parameter

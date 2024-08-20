@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,22 +12,33 @@ public sealed class PlayerCharacter : CharacterBase
 
     // States
     // Must excute the contructor in Awake() after adding new state.
-    public StateBase MoveState { get; private set; } // Player Walk & Jump & >> Idle <<
-    public StateBase SwingState { get; private set; } // Player golf swing
+    public StateBase MoveState { get; private set; } // Player Walk & Jump & Idle.
+    public StateBase SwingState { get; private set; } // Player golf swing which can be a normal swing or a powerful attack.
+    public StateBase AttackState { get; private set; } // Player basic attack.
     public StateBase JumpState { get; private set; }
 
     // Black Board
-    private PlayerBlackboard playerBlackboard;
+    private PlayerBlackboard sharedData;
+
+    // Input Action
+    private PlayerInput input;
 
     protected override void Awake()
     {
         base.Awake();
 
-        playerBlackboard = new PlayerBlackboard();
+        gameObject.SetLayer(Layer.Character);
 
-        MoveState = new PlayerMoveState(this, playerBlackboard);
-        SwingState = new PlayerSwingState(this, playerBlackboard);
-        JumpState = new PlayerJumpState(this, playerBlackboard);
+        input = GetComponent<PlayerInput>();
+
+        sharedData = new PlayerBlackboard();
+
+        MoveState = new PlayerMoveState(this, sharedData);
+        SwingState = new PlayerSwingState(this, sharedData);
+        AttackState = new PlayerAttackState(this, sharedData);
+        JumpState = new PlayerJumpState(this, sharedData);
+
+        LevelEditorManager.OnEditorModeTriggered += (bool active) => input.enabled = !active;
     }
 
     protected override void Start()
@@ -51,12 +62,12 @@ public sealed class PlayerCharacter : CharacterBase
     #region Input Action
     private void OnMove(InputValue value) // [A/D], [LeftArrow/RightArrow] key down & up
     {
-        if (!CurrenState.CompareState(MoveState)) return;
+        if (!CurrenState.CompareState(MoveState) && !CurrenState.CompareState(JumpState)) return;
         
         var valueConverted = (int)value.Get<float>();
         var directionToMove = (EMovementDirection)valueConverted;
 
-        playerBlackboard.OnMove.Invoke(directionToMove);
+        sharedData.OnMove.Invoke(directionToMove);
     }
 
     private void OnJump() // [Space Bar] pressed
@@ -67,22 +78,32 @@ public sealed class PlayerCharacter : CharacterBase
         ChangeState(JumpState);
     }
 
-    private void OnClick() // [Mouse 0] pressed
+    private void OnClick(InputValue value) // [Mouse 0]
     {
-        playerBlackboard.OnClick.Invoke();
+        var mouseDown = (int)value.Get<float>() == 1;
 
-        if (CurrenState.CompareState(MoveState)) ChangeState(SwingState);
+        if(mouseDown)
+        {
+            sharedData.OnMouseDown?.Invoke();
+            
+            if (CurrenState.CompareState(MoveState)) ChangeState(AttackState);
+        }
+        else
+        {
+            sharedData.OnMouseUp.Invoke();
+        }
     }
+
 
     private void OnDrag(InputValue value) // [Cursor position] changed
     {
         var mousePosition = value.Get<Vector2>();
-        playerBlackboard.OnDrag.Invoke(mousePosition);
+        sharedData.OnDrag?.Invoke(mousePosition);
     }
-
+    
     private void OnInteract() // [E] pressed
     {
-        //if (interactableObject == null) return;
+        //if (interactableObject is null) return;
         //interactableObject.Interact(this);
     }
     #endregion

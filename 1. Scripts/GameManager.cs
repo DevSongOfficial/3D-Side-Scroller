@@ -5,6 +5,7 @@ using UnityEngine;
 
 public enum Layer
 {
+    Default = 0,
     Character = 8,
     Ground = 9,
     Wall = 10,
@@ -23,23 +24,8 @@ public class GameManager : MonoBehaviour
         instance = this;
     }
 
-    public int GetLayerMask(Layer layer)
-    {
-        return (int)layer;
-    }
-
-    public static bool LayerCheck(GameObject go, Layer layer)
-    {
-        return go.layer == (int)layer;
-    }
-
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.P))
-        {
-            if (LevelEditorManager.Mode == EditorMode.None) LevelEditorManager.SetEditorMode(EditorMode.Editing);
-            else if (LevelEditorManager.Mode == EditorMode.Editing) LevelEditorManager.SetEditorMode(EditorMode.None);
-        }
-
+        
     }
 }

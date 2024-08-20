@@ -10,25 +10,25 @@ public sealed class ZombieChaseState : ZombieStateBase
     public ZombieChaseState(ZombieCharacter zombieCharacter, ZombieBlackboard zomebieBlackboard, ZombieMovementBase movementType) : base(zombieCharacter, zomebieBlackboard)
     {
         movement = movementType;
-
-        zombie.AnimationController.ChangeState(movement.GetAnimationType());
     }
 
     public override void EnterState()
     {
         base.EnterState();
+
+        zombie.AnimationController.ChangeState(movement.GetAnimationType());
     }
 
     public override void UpdateState()
     {
         base.UpdateState();
-
-        Chase();
     }
 
     public override void FixedUpdateState()
     {
         base.FixedUpdateState();
+
+        Chase();
     }
 
     public override void ExitState()
@@ -38,18 +38,25 @@ public sealed class ZombieChaseState : ZombieStateBase
 
     private void Chase()
     {
-        RayInfo rayInfo = new RayInfo(zombie.MovementController.Direction, zombie.Info.DetectionDistance * 2);
-        if (zombie.Detector.CharacterDetected(rayInfo, out CharacterBase target))
-        {
-            var wishDirection = zombie.MovementController.GetDirectionFrom(sharedData.targetCharacter);
-            movement.Execute(zombie.MovementController, zombie.Info, wishDirection);
+        RayInfo rayInfo = new RayInfo().
+            SetDirection(zombie.MovementController.Direction.ConvertToVector3()).
+            SetDistance(zombie.Info.DetectionDistance * 2);
 
-            if(Vector3.Distance(zombie.transform.position, target.transform.position) < zombie.Info.AttackRange)
-                zombie.ChangeState(zombie.AttackState);
-        }
-        else
+        if (!zombie.Detector.CharacterDetected(rayInfo, out CharacterBase target))
         {
             zombie.ChangeState(zombie.PatrolState);
+            return;
+
         }
+        
+        if (zombie.IsTargetWithInDistance(sharedData.targetCharacter, zombie.Info.AttackRange))
+        {
+            zombie.ChangeState(zombie.AttackState);
+            return;
+        }
+
+        var wishDirection = zombie.MovementController.GetDirectionFrom(sharedData.targetCharacter);
+        movement.ApplyVelocityMultiplier(GetProperMultiplierOnMove(movement));
+        movement.Execute(zombie.MovementController, zombie.Info, wishDirection);
     }
 }

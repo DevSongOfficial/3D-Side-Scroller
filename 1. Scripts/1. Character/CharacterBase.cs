@@ -23,7 +23,7 @@ public abstract class CharacterBase : MonoBehaviour
     // todo: 나중에 독립적인 클래스로 분리?
     public StateBase CurrenState { get; private set; }
 
-    public void ChangeState(StateBase newState)
+    public virtual void ChangeState(StateBase newState)
     {
         CurrenState?.ExitState();
         CurrenState = newState;
@@ -39,7 +39,7 @@ public abstract class CharacterBase : MonoBehaviour
 
     protected virtual void Start()
     {
-        gameObject.layer = (int)Layer.Character;
+
     }
 
     protected virtual void Update()
@@ -67,6 +67,11 @@ public abstract class CharacterBase : MonoBehaviour
         transform.GetChild(0).gameObject.SetActive(true);
     }
 
+    public bool IsTargetWithInDistance(CharacterBase targetCharacter, float range)
+    {
+        var distance = Vector3.Distance(transform.position, targetCharacter.transform.position);
+        return distance <= range;
+    }
 
     // Downcast for CharacterBase-Derived objects that are being upcast
 

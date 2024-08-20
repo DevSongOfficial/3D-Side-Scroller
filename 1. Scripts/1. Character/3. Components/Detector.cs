@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,11 +6,11 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class Detector : MonoBehaviour
 {
+    private MovementController movementController;
     private new Collider collider;
 
     private List<IInteractable> interactables;
 
-    [Space(1)]
     [Header("Debug Detection Ray (ONLY FOR DEBUGGING)")]
     [SerializeField] private bool ground = false;
     [SerializeField] private bool wall = false;
@@ -19,12 +20,13 @@ public class Detector : MonoBehaviour
     private void LateUpdate()
     {
         if (ground) DebugGroundDetectionRay();
-        if (wall) { }
+        if (wall) { /* DebugWallDetectionRay(); */ }
     }
 
     private void Awake()
     {
-        collider = GetComponent<Collider>();
+        movementController = GetComponent<MovementController>();
+        collider = GetComponentInChildren<BoxCollider>();
         interactables = new List<IInteractable>();
     }
 
@@ -50,26 +52,38 @@ public class Detector : MonoBehaviour
 
     public bool CharacterDetected<T>(RayInfo rayInfo, out T character) where T : CharacterBase
     {
-        var startingPosition = rayInfo.startingPosition == null ? collider.bounds.center : rayInfo.startingPosition.Value;
-        var direction = rayInfo.direction;
+        character = null;
+
+        var startingPosition = rayInfo.startingPosition ?? collider.bounds.center;
+        var direction = rayInfo.direction ?? movementController.Direction.ConvertToVector3();
         var distance = rayInfo.distance;
 
-        Physics.Raycast(startingPosition, direction, out RaycastHit hit, distance);
+        if (!Physics.Raycast(startingPosition, direction, out RaycastHit hit, distance, Layer.Character.GetMask()))
+            return false;
 
-        if (this.character) Debug.DrawRay(startingPosition, rayInfo.direction * rayInfo.distance, Color.cyan);
+        if (this.character) Debug.DrawRay(startingPosition, direction * distance, Color.cyan);
 
         character = hit.collider?.GetComponent<T>();
 
         return character != null;
     }
 
+    public bool CharacterDetected(Vector3 center, float radius, out Collider[] characters)
+    {
+        characters = null;
+
+        if (!Physics.CheckSphere(center, radius, Layer.Character.GetMask())) return false;
+
+        characters = Physics.OverlapSphere(center, radius, Layer.Character.GetMask());
+        
+        return true;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        GameObject collider = other.gameObject;
-
-        if (GameManager.LayerCheck(collider, Layer.InteractableObject))
+        if (other.CompareLayer(Layer.InteractableObject))
         {
-            var interactableObject = collider.GetComponent<IInteractable>();
+            var interactableObject = other.GetComponent<IInteractable>();
         }
     }
 
@@ -98,10 +112,10 @@ public class Detector : MonoBehaviour
 public struct RayInfo
 {
     public Vector3? startingPosition;
-    public Vector3 direction;
+    public Vector3? direction;
     public float distance;
 
-    public RayInfo(Vector3 direction, float distance, Vector3? startingPosition = null)
+    public RayInfo(float distance, Vector3? direction = null, Vector3? startingPosition = null)
     {
         this.startingPosition = startingPosition;
         this.direction = direction;
@@ -112,15 +126,33 @@ public struct RayInfo
     {
         this.startingPosition = startingPosition;
         this.distance = distance;
-
-        switch (direction)
-        {
-            case EMovementDirection.Right:
-                this.direction = Vector3.right; break;
-            case EMovementDirection.Left:
-                this.direction = Vector3.left; break;
-            default:
-                this.direction = Vector3.zero; break;
-        }
+        this.direction = direction.ConvertToVector3();
     }
+
+    
+    // Builder functions for builder pattern.
+    #region Builder Functions
+
+    public RayInfo SetStartingPosition(Vector3 startingPosition)
+    {
+        this.startingPosition = startingPosition;
+
+        return this;
+    }
+
+    public RayInfo SetDirection(Vector3 direction)
+    {
+        this.direction = direction;
+
+        return this;
+    }
+
+    public RayInfo SetDistance(float distance) 
+    {
+        this.distance = distance;
+
+        return this;
+    }
+    #endregion 
+    
 }

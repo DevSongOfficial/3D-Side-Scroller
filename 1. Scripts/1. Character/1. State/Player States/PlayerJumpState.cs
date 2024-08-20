@@ -15,6 +15,8 @@ public class PlayerJumpState : PlayerStateBase
         base.EnterState();
 
         Jump();
+
+        player.AnimationController.ChangeState(AnimationController.Player.Movement.Jump, 0);
     }
     public override void UpdateState()
     {
@@ -22,7 +24,7 @@ public class PlayerJumpState : PlayerStateBase
 
         if(player.Detector.GroundDetected())
         {
-            if (time < 10 * Time.deltaTime) return;
+            if (time < 0.5f) return;
 
             player.ChangeState(player.MoveState);
             sharedData.OnLand.Invoke(directionBeforeJump);

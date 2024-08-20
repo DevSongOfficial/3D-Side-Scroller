@@ -9,22 +9,25 @@ public class AssetsManager : MonoBehaviour
     public enum PrefabType
     {
         Cube,
+
+
+
+        ZombieCharacter_1,
     }
 
     #region Singleton
     private static AssetsManager instance;
     public static AssetsManager GetAsset()
     {
-        if (instance == null) instance = GameObject.Find("GameManager").AddComponent<AssetsManager>();
+        if (instance is null) instance = GameObject.Find("GameManager").AddComponent<AssetsManager>();
         return instance;
     }
     #endregion
 
     public static GameObject GetPrefab(string name)
     {
-        GetAsset();
         var prefab = Resources.Load<GameObject>($"Prefabs/{name}");
-        if (prefab == null)
+        if (prefab is null)
         {
             Debug.LogWarning($"Invalid path: {name}");
             return null;
