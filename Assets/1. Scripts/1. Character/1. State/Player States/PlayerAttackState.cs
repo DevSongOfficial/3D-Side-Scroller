@@ -81,7 +81,7 @@ public sealed class PlayerAttackState : PlayerStateBase
         // todo: Use animation event instead of coroutine, to delay applying damage.
         yield return new WaitForSeconds(0.3f);
 
-        if (Detector.CharacterDetected(attackPosition, attackRadius, out Collider[] characters))
+        if (Detector.CharactersDetected(attackPosition, attackRadius, out Collider[] characters))
         {
             foreach(Collider collider in characters)
             {

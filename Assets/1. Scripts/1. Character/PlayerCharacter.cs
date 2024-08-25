@@ -3,7 +3,6 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
 public sealed class PlayerCharacter : CharacterBase
 {
     [Header("Player Information")]

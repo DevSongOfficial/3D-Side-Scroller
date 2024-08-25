@@ -68,7 +68,7 @@ public class Detector : MonoBehaviour
         return character != null;
     }
 
-    public static bool CharacterDetected(Vector3 center, float radius, out Collider[] characters)
+    public static bool CharactersDetected(Vector3 center, float radius, out Collider[] characters)
     {
         characters = null;
 
@@ -79,22 +79,23 @@ public class Detector : MonoBehaviour
         return true;
     }
 
-    public class PlayerOnly
+    public T[] ComponentsDetected<T>(Vector3 center, float radius, int layerMask)
     {
-        public static void ObjectDetected(Vector3 center, float radius, int layerMask)
+        var colliders = Physics.OverlapSphere(center, radius);
+        
+        T[] components = new T[colliders.Length];
+        int index = 0;
+
+        for (int i = 0; i < colliders.Length; i++)
         {
-            var colliders = Physics.OverlapSphere(center, radius, (int)layerMask);
-
-            for(int i = 0; i < colliders.Length; i++)
+            if (colliders[i].TryGetComponent(out T component))
             {
-                var collider = colliders[i];
-            
+                components[index] = component;
+                index++;
             }
-
-            //T[] objects = new T[colliders.Length];
-
-            //return true;
         }
+
+        return components;
     }
 
     private void OnTriggerEnter(Collider other)

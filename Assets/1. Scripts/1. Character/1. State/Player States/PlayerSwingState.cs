@@ -8,6 +8,11 @@ public class PlayerSwingState : PlayerStateBase
 {
     public PlayerSwingState(PlayerCharacter playerCharacter, PlayerBlackboard playerBlackboard) : base(playerCharacter, playerBlackboard) { }
 
+    // Temporary attack info.
+    // todo: fix this according to OOP.
+    private Vector3 swingPosition => player.transform.position + new Vector3(0.2f, 1.35f, -0.3f);
+    private const float swingRadius = 2.5f;
+
     // Steps to swing
     private enum SwingStep { None, BackSwing, DownSwing }
     private SwingStep swingStep;
@@ -95,7 +100,12 @@ public class PlayerSwingState : PlayerStateBase
             yield return null;
         }
 
-        Detector.PlayerOnly.ObjectDetected(Vector3.zero, 3, Utility.GetLayerMask(Layer.Character, Layer.InteractableObject));
+        var damageables = player.Detector.ComponentsDetected<IDamageable>(swingPosition, swingRadius, Utility.GetLayerMask(Layer.Character, Layer.PlaceableObject));
+
+        foreach (var damageable in damageables)
+        {
+            damageable?.TakeDamage(new DamageEvent() { damage = 15 });
+        }
 
         player.ChangeState(player.MoveState);
     }
