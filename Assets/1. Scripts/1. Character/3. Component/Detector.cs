@@ -1,6 +1,8 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
@@ -12,15 +14,15 @@ public class Detector : MonoBehaviour
     private List<IInteractable> interactables;
 
     [Header("Debug Detection Ray (ONLY FOR DEBUGGING)")]
-    [SerializeField] private bool ground = false;
-    [SerializeField] private bool wall = false;
-    [SerializeField] private bool character = false;
-
+    [SerializeField] private bool Detection_Ground = false;
+    //[SerializeField] private bool Detection_Wall = false;
+    [SerializeField] private bool Detection_Ray = false;
+    [SerializeField] private bool Detection_Sphere = false;
 
     private void LateUpdate()
     {
-        if (ground) DebugGroundDetectionRay();
-        if (wall) { /* DebugWallDetectionRay(); */ }
+        DebugGroundDetectionRay();
+        //if (Detection_Wall) { /* DebugWallDetectionRay(); */ }
     }
 
     private void Awake()
@@ -50,7 +52,7 @@ public class Detector : MonoBehaviour
         return rightSide || leftSide;
     }
 
-    public bool CharacterDetected<T>(RayInfo rayInfo, out T character) where T : CharacterBase
+    public bool CharacterDetected<T/* T: Type of component trying to get */>(RayInfo rayInfo, out T character) where T : CharacterBase
     {
         character = null;
 
@@ -61,18 +63,20 @@ public class Detector : MonoBehaviour
         if (!Physics.Raycast(startingPosition, direction, out RaycastHit hit, distance, Layer.Character.GetMask()))
             return false;
 
-        if (this.character) Debug.DrawRay(startingPosition, direction * distance, Color.cyan);
+        DrawRay(startingPosition, direction * distance, Color.cyan);
 
         character = hit.collider?.GetComponent<T>();
 
         return character != null;
     }
 
-    public static bool CharactersDetected(Vector3 center, float radius, out Collider[] characters)
+    public bool CharactersDetected(Vector3 center, float radius, out Collider[] characters)
     {
         characters = null;
 
         if (!Physics.CheckSphere(center, radius, Layer.Character.GetMask())) return false;
+
+        DrawSphere(center, radius);
 
         characters = Physics.OverlapSphere(center, radius, Layer.Character.GetMask());
         
@@ -81,13 +85,38 @@ public class Detector : MonoBehaviour
 
     public T[] ComponentsDetected<T>(Vector3 center, float radius, int layerMask)
     {
-        var colliders = Physics.OverlapSphere(center, radius);
-        
+        var colliders = Physics.OverlapSphere(center, radius, layerMask);
+
+        DrawSphere(center, radius);
+
         T[] components = new T[colliders.Length];
         int index = 0;
 
         for (int i = 0; i < colliders.Length; i++)
         {
+            if (colliders[i].TryGetComponent(out T component))
+            {
+                components[index] = component;
+                index++;
+            }
+        }
+
+        return components;
+    }
+
+    public T[] ComponentsDetected<T>(Vector3 center, float radius, int layerMask, Tag tagExcepted)
+    {
+        var colliders = Physics.OverlapSphere(center, radius, layerMask);
+
+        DrawSphere(center, radius);
+
+        T[] components = new T[colliders.Length];
+        int index = 0;
+
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (collider.CompareTag(tagExcepted)) continue;
+            UnityEngine.Debug.Log(colliders[i].name);
             if (colliders[i].TryGetComponent(out T component))
             {
                 components[index] = component;
@@ -106,9 +135,12 @@ public class Detector : MonoBehaviour
         }
     }
 
-    #region Debug Detection Ray
+    #region Functions for debugging
+    [Conditional("UNITY_EDITOR")]
     private void DebugGroundDetectionRay()
     {
+        if (!Detection_Ground) return;
+
         float extraLength = 0.1f;
         var rayDistance = collider.bounds.extents.y + extraLength;
 
@@ -116,14 +148,33 @@ public class Detector : MonoBehaviour
         {
             var startingPosition = new Vector3(collider.bounds.max.x, collider.bounds.center.y, collider.bounds.center.z);
             rightSide = Physics.Raycast(startingPosition, Vector3.down, rayDistance);
-            Debug.DrawRay(startingPosition, Vector3.down * rayDistance, Color.yellow);
+            UnityEngine.Debug.DrawRay(startingPosition, Vector3.down * rayDistance, Color.yellow);
         }
         bool leftSide;
         {
             var startingPosition = new Vector3(collider.bounds.min.x, collider.bounds.center.y, collider.bounds.center.z);
             leftSide = Physics.Raycast(startingPosition, Vector3.down, rayDistance);
-            Debug.DrawRay(startingPosition, Vector3.down * rayDistance, Color.green);
+            UnityEngine.Debug.DrawRay(startingPosition, Vector3.down * rayDistance, Color.green);
         }
+    }
+
+    [Conditional("UNITY_EDITOR")]
+    private void DrawRay(Vector3 start, Vector3 dir, Color color)
+    {
+        if (!Detection_Ray) return;
+
+        UnityEngine.Debug.DrawRay(start, dir, color);
+    }
+
+    [Conditional("UNITY_EDITOR")]
+    private void DrawSphere(Vector3 center, float radius, float duration = 0.1f)
+    {
+        if (!Detection_Sphere) return;
+
+        var sphere = Instantiate(AssetManager.GetPrefab(Prefab.Debugger.Sphere_1));
+        sphere.transform.position = center;
+        sphere.transform.localScale = Vector3.one * radius * 2;
+        Destroy(sphere, duration);
     }
     #endregion
 }

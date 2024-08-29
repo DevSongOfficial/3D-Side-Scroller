@@ -14,6 +14,11 @@ public enum Layer
     RaycastBlockerForLevelEditor = 31,
 }
 
+public enum Tag
+{
+    Untagged, Player, Enemy, Prob
+}
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance => instance;

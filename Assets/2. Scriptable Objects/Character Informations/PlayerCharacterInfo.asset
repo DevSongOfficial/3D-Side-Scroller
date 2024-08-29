@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 449f79a8ca186104790a8c9d86c437c4, type: 3}
   m_Name: PlayerCharacterInfo
   m_EditorClassIdentifier: 
-  health: 100
+  health: 0
   movementSpeed: 5
   acceleration: 10
   jumpPower: 4
+  localPosition_Attack: {x: 1, y: 1, z: 0}
+  attackRadius: 1.5
+  attackDamage: 15
+  localPosition_Swing: {x: 0.2, y: 1.35, z: -0.3}
+  swingRadius: 1.5
+  swingDamage: 25

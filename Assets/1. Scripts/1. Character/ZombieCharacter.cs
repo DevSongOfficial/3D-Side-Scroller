@@ -36,6 +36,7 @@ public sealed class ZombieCharacter : CharacterBase
         base.Awake();
 
         transform.GetChild(0).gameObject.SetLayer(Layer.Character);
+        transform.GetChild(0).gameObject.SetTag(Tag.Enemy);
 
         zombieBlackboard = new ZombieBlackboard();
 
@@ -64,6 +65,13 @@ public sealed class ZombieCharacter : CharacterBase
     public override void ChangeState(StateBase newState)
     {
         base.ChangeState(newState);
+    }
+
+    public override void TakeDamage(DamageEvent damageEvent)
+    {
+        base.TakeDamage(damageEvent);
+
+        Info.TakeDamage(damageEvent.damage);
     }
 
     public override ZombieCharacter AsZombie()

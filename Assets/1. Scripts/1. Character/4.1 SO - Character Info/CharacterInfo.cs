@@ -7,9 +7,9 @@ using UnityEngine;
 public class CharacterInfo : ScriptableObject
 {
     // Events
-    public event EventHandler<int> OnTakeDamage;
-    public event EventHandler<int> OnHealthChanged;
-    public event EventHandler OnCharacterDie;
+    public event Action<int> OnTakeDamage;
+    public event Action<int> OnHealthChanged;
+    public event Action OnCharacterDie;
 
     
     // Health
@@ -19,10 +19,11 @@ public class CharacterInfo : ScriptableObject
     public int Health { get { return health; } }
     public void SetHealth(int health)
     {
+        if (Health == 0) return;
         if (health == Health) return;
 
         this.health = health;
-        OnHealthChanged.Invoke(this, health);
+        OnHealthChanged?.Invoke(health);
 
         if(Health <= 0)
         {
@@ -32,14 +33,15 @@ public class CharacterInfo : ScriptableObject
     }
     public void TakeDamage(int damage)
     {
-        OnTakeDamage.Invoke(this, damage); // TODO: before or after changing health?
+        OnTakeDamage?.Invoke(damage); // todo: before or after changing health?
 
         var health = Health - damage;
         SetHealth(health);
     }
     private void Die()
     {
-        OnCharacterDie.Invoke(this, EventArgs.Empty);
+        OnCharacterDie?.Invoke();
+        Debug.Log("Dead");
     }
 
 

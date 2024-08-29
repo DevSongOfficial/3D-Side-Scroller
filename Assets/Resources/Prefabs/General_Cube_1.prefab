@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -3645241612587578030}
   - component: {fileID: 2829497098367175396}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: General_Cube_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -99,6 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 920034d429efde54f8230b19d33112e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  displayName: Blue Cube
 --- !u!64 &-3645241612587578030
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GolfBall : MonoBehaviour, IDamageable
+[RequireComponent(typeof(MeshCollider))]
+[RequireComponent(typeof(Rigidbody))]
+public sealed class GolfBall : PlaceableObject, IDamageable
 {
     public void TakeDamage(DamageEvent damageEvent)
     {

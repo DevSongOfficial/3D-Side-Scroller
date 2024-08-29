@@ -9,8 +9,12 @@ public enum EMovementDirection { Left = -1, None = 0, Right = 1 }
 [RequireComponent(typeof(Rigidbody))]
 public class MovementController : MonoBehaviour
 {
-    private static readonly int rotationSpeed = 1500;
     private Rigidbody rigidBody;
+
+    private static readonly int RotationSpeed = 1500;
+    
+    public static readonly int YAngle_Left = 270;
+    public static readonly int YAngle_Right = 90;
 
     private void Awake()
     {
@@ -21,6 +25,23 @@ public class MovementController : MonoBehaviour
     #region Direction
     public event Action<EMovementDirection> OnDirectionChange;
     public EMovementDirection Direction { get; private set; }
+    public EMovementDirection FacingDirection 
+    {
+        get
+        {
+            float tolerance = 10;
+
+            if(transform.eulerAngles.y <= YAngle_Left && transform.eulerAngles.y > YAngle_Left - tolerance)
+            {
+                return EMovementDirection.Left;
+            }
+            else if(transform.eulerAngles.y >= YAngle_Right && transform.eulerAngles.y < YAngle_Right + tolerance)
+            {
+                return EMovementDirection.Right;
+            }
+            return EMovementDirection.None;
+        }
+    }
 
     public void ChangeMovementDirection(EMovementDirection newDirection, bool smoothRotation = true)
     {
@@ -53,7 +74,7 @@ public class MovementController : MonoBehaviour
             {
                 if (transform.eulerAngles.y < wishDirection.GetYAngle())
                 {
-                    Rotate(rotationSpeed * Time.deltaTime);
+                    Rotate(RotationSpeed * Time.deltaTime);
                 }
                 else
                 {
@@ -65,7 +86,7 @@ public class MovementController : MonoBehaviour
             {
                 if (transform.eulerAngles.y > wishDirection.GetYAngle())
                 {
-                    Rotate(-rotationSpeed * Time.deltaTime);
+                    Rotate(-RotationSpeed * Time.deltaTime);
                 }
                 else
                 {

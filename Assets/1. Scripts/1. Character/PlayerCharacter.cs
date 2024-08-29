@@ -105,6 +105,13 @@ public sealed class PlayerCharacter : CharacterBase
     }
     #endregion
 
+    public override void TakeDamage(DamageEvent damageEvent)
+    {
+        base.TakeDamage(damageEvent);
+
+        Info.TakeDamage(damageEvent.damage);
+    }
+
     // This wrapping function is for letting states be able to start coroutine cuz they are not monobehaviour.
     public new Coroutine StartCoroutine(IEnumerator routine)
     {

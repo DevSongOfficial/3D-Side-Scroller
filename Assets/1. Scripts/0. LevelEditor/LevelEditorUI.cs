@@ -25,24 +25,22 @@ public class LevelEditorUI : MonoBehaviour
         mouseCursorDetector.Add(MouseSectionType.Up, mouseCursorDetectorImages[2]);
         mouseCursorDetector.Add(MouseSectionType.Down, mouseCursorDetectorImages[3]);
 
-        int count = Enum.GetValues(typeof(AssetsManager.PrefabType)).Length;
+        // Creates buttons as many as the number of general prefabs.
+        #region Set up buttons
+        int count = Enum.GetValues(typeof(Prefab.General)).Length;
         objectSelectionButtons = new ObjectSelectionButton[count];
 
-        if(count != objectSelectionButtonsPanel.transform.childCount) Debug.LogWarning("Enum Length and Button Counts don't match", transform);
-
-        // Buttons Setting
+        // Buttons Settings
         for (int i = 0; i < count; i++)
         {
-            var button = objectSelectionButtonsPanel.transform.GetChild(i).GetComponent<ObjectSelectionButton>();
+            var button = Instantiate(AssetManager.GetPrefab(Prefab.UI.SpawnButton_1), objectSelectionButtonsPanel.transform).
+                GetComponent<ObjectSelectionButton>();
+            var prefab = AssetManager.GetPrefab((Prefab.General)i).GetComponent<PlaceableObject>();
+
+            button.Initialize(prefab);
             objectSelectionButtons[i] = button;
-            var prefab = AssetsManager.GetPrefab((AssetsManager.PrefabType)i).GetComponent<PlaceableObject>();
-
-            // (1) Initialize the button
-            button.SetConnectedPlaceableObject(prefab);
-
-            // (2) connect it with the event
-            button.onClick.AddListener(delegate { prefab.OnSelectObjectWhenPlacing(); }); // todo: 나중에 ObjectButton클래스에서 간단히 추가하는 함수 만들어서 대체
         }
+        #endregion
     }
 
 

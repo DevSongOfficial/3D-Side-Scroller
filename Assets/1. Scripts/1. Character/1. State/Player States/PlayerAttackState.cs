@@ -5,11 +5,6 @@ public sealed class PlayerAttackState : PlayerStateBase
 {
     public PlayerAttackState(PlayerCharacter playerCharacter, PlayerBlackboard playerBlackboard) : base(playerCharacter, playerBlackboard) { }
 
-    // Temporary attack info.
-    // todo: fix this according to OOP.
-    private Vector3 attackPosition => player.transform.position + new Vector3(1, 1.35f, 0);
-    private const float attackRadius = 1.5f;
-
     public bool IsAttacking =>  attackCoroutine != null;
 
     // Delay before attacking
@@ -81,14 +76,17 @@ public sealed class PlayerAttackState : PlayerStateBase
         // todo: Use animation event instead of coroutine, to delay applying damage.
         yield return new WaitForSeconds(0.3f);
 
-        if (Detector.CharactersDetected(attackPosition, attackRadius, out Collider[] characters))
+        var attackPosition = player.transform.position;
+        attackPosition += player.Info.LocalPosition_Attack.ChangeVectorXWithDirection(player.MovementController.FacingDirection);
+
+        if (player.Detector.CharactersDetected(attackPosition, player.Info.AttackRadius, out Collider[] characters))
         {
             foreach(Collider collider in characters)
             {
                 var character = collider.GetComponentInParent<ZombieCharacter>();
                 if (character is null) continue;
 
-                character.TakeDamage(new DamageEvent() { damage = 10 });
+                character.TakeDamage(new DamageEvent(EventSenderType.Character, player.Info.AttackDamage));
             }
         }
 

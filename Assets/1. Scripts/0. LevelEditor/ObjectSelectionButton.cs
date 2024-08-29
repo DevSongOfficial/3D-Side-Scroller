@@ -1,14 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ObjectSelectionButton : Button
+[RequireComponent(typeof(Button))]
+public class ObjectSelectionButton : MonoBehaviour
 {
-    public PlaceableObject connectedPlaceableObject;
-    public void SetConnectedPlaceableObject(PlaceableObject newObjectPrefab)
+    public Button Button { get; private set; }
+    public PlaceableObject Prefab { get; private set; }
+
+    [SerializeField] private TMP_Text text;
+
+    private void Awake()
     {
-        connectedPlaceableObject = newObjectPrefab;
+        Button = GetComponent<Button>();
+    }
+
+    public void Initialize(PlaceableObject prefab)
+    {
+        Prefab = prefab;
+
+        text.text = Prefab.DisplayName;
+        Button.onClick.AddListener(Prefab.OnSelectObjectWhenPlacing);
     }
 }

@@ -27,14 +27,18 @@ public static class ExtensionMethods
         switch (direction)
         {
             case EMovementDirection.Left:
-                return 270;
+                return MovementController.YAngle_Left;
             case EMovementDirection.Right:
-                return 90;
+                return MovementController.YAngle_Right;
             default:
                 return 0;
         }
     }
-    
+
+    public static Vector3 ChangeVectorXWithDirection(this Vector3 vector, EMovementDirection direction)
+    {
+        return new Vector3(vector.x * (int)direction, vector.y, vector.z);
+    }
 
     public static int GetMask(this Layer layer)
     {
@@ -54,5 +58,15 @@ public static class ExtensionMethods
     public static bool CompareLayer(this Collider collider, Layer layerToCompare)
     {
         return collider.gameObject.layer == (int)layerToCompare;
+    }
+
+    public static void SetTag(this GameObject go, Tag tag)
+    {
+        go.tag = tag.ToString();
+    }
+
+    public static bool CompareTag(this Collider collider, Tag tag)
+    {
+        return collider.gameObject.CompareTag(tag.ToString());
     }
 }   

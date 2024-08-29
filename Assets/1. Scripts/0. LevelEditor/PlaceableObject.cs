@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,6 +10,10 @@ using UnityEngine.Events;
 [RequireComponent(typeof(Rigidbody))]
 public class PlaceableObject : MonoBehaviour
 {
+    [Tooltip("The name displayed in UI or editor for this object.")]
+    [SerializeField] private string displayName;
+    public string DisplayName => displayName;
+
     // [editorCollider] is only for checking if placeableObjects are overlapped with MeshCollider Component.
     // Actual collider when playing game is [gameColliders]. (In case one has more than two colliders, I used generic list.)
     protected MeshCollider editorCollider;
@@ -20,10 +25,10 @@ public class PlaceableObject : MonoBehaviour
     // Events
     public static event Action<PlaceableObject> OnObjectSelectedForPlacing;
 
-    public static PlaceableObject CurrentlySelected { get; private set; } // The object player's dealing with at the moment
+    public static PlaceableObject CurrentlySelected { get; private set; } // The object player's dealing with at the moment.
     public static void SelectCurrentObject(PlaceableObject newPlaceableObject) { CurrentlySelected = newPlaceableObject; }
 
-    // This function is called only when player click a button in the level editor in order to create new object
+    // This function is called only when player click a button in the level editor in order to create new object.
     public void OnSelectObjectWhenPlacing()
     {
         if (CurrentlySelected != null) return;
