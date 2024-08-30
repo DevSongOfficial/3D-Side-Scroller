@@ -8,8 +8,6 @@ namespace CustomCoroutine
     // todo: ...Check if this is more effective to run coroutines.
     public class CoroutineMachine : MonoBehaviour
     {
-        public static CoroutineMachine Instance => instance;
-        private static CoroutineMachine instance;
 
         public new CoroutineInfo StartCoroutine(IEnumerator routine)
         {

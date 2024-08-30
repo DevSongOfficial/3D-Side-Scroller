@@ -1,0 +1,8 @@
+﻿1. Put any prefab in the Resources folder that you wanna get at run time through AssetManager.cs.
+2. The structure must be Resources - Prefabs - [Folder Name] - [Prefab Name]
+3. Now it will be generating a proper [Prefab.cs] depending on the directories' structure.
+4. Those you put in General folder, are automatically gonna be added in the editor ui so you can drag&drop them in the scene. (Check LevelEditorUI.cs)
+
+Unity Addressable Asset System 보다 (비용적으로)비효율적일 수 있음을 알고있지만,
+1. Custom Asset Management System을 만들어보고 싶었으며,
+2. 이를 통해 Prefab 등록을 위한 절차를 최대한 간소화시켜 작업 효율 및 유지보수성을 높이고 싶었다. (OCP)
