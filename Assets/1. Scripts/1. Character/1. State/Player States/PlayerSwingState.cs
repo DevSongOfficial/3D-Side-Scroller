@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Unity.VisualScripting.Antlr3.Runtime.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,10 +14,15 @@ public class PlayerSwingState : PlayerStateBase
     private SwingStep swingStep;
 
     // Animation Frame
-    private const int maxFrame = 119;
-    private const int maxFrameOnBackSwing = 34;
-    private const int maxFrameOnDownSwing = 110;
+    private const int MaxFrame = 119;
+    private const int MaxFrameOnBackSwing = 34;
+    private const int MaxFrameOnDownSwing = 110;
+    private const int HitFrame = 48;
     private float currentFrame;
+    private float frameOnStartDownSwing;
+    private float powerCharged;
+
+    private bool hasHit;
 
     public override void EnterState()
     {
@@ -28,10 +34,12 @@ public class PlayerSwingState : PlayerStateBase
 
         swingStep = SwingStep.BackSwing;
         currentFrame = 0;
+        powerCharged = 0;
+        hasHit = false;
         player.MovementController.ChangeMovementDirection(EMovementDirection.Right, smoothRotation: false);
     }
 
-    public override void UpdateState()
+    public override void FixedUpdateState()
     {
         base.UpdateState();
 
@@ -58,8 +66,13 @@ public class PlayerSwingState : PlayerStateBase
     {
         if (swingStep != SwingStep.BackSwing) return;
 
-        if (currentFrame < maxFrameOnBackSwing) currentFrame += 60 * Time.deltaTime;
-        if (currentFrame > maxFrameOnBackSwing) currentFrame = maxFrameOnBackSwing;
+        if (currentFrame < MaxFrameOnBackSwing) 
+            currentFrame += 50 * Time.deltaTime;
+        else
+        {
+            currentFrame = MaxFrameOnBackSwing;
+            powerCharged += Time.deltaTime;
+        }
     }
 
     private void StartDownSwing()
@@ -79,46 +92,54 @@ public class PlayerSwingState : PlayerStateBase
         swingStep = SwingStep.DownSwing;
         Cursor.lockState = CursorLockMode.Locked;
 
-        var swingSpeed = GetProperSwingPowerDependingOnTheFrame(currentFrame);
+        frameOnStartDownSwing = currentFrame;
 
-        while (currentFrame < maxFrameOnDownSwing)
+        while (currentFrame < MaxFrameOnDownSwing)
         {
-            if (currentFrame < 20)
+            yield return null;
+
+            #region Hit
+            if (!hasHit && currentFrame >= HitFrame)
             {
-                currentFrame += swingSpeed * Time.deltaTime;
+                hasHit = true;
+
+                var swingPosition = player.transform.position + player.Info.LocalPosition_Swing;
+                var damageables = player.Detector.ComponentsDetected<IDamageable>(swingPosition, player.Info.SwingRadius, Utility.GetLayerMask(Layer.Character, Layer.PlaceableObject), Tag.Player);
+
+                foreach (var damageable in damageables)
+                {
+                    damageable?.TakeDamage(new DamageEvent(EventSenderType.Character, player.Info.SwingDamage));
+                }
+            }
+            #endregion
+
+            var multiplier = GetProperMultiplierDependingOnTheFrame(currentFrame);
+
+            if (frameOnStartDownSwing < MaxFrameOnBackSwing)
+            {
+                currentFrame +=  50 * multiplier * Time.deltaTime;
+                continue;
             }
             else
             {
-                currentFrame += swingSpeed * 2 * Time.deltaTime;
+                currentFrame += 120 * multiplier * Time.deltaTime;
+                continue;
             }
-
-            yield return null;
-        }
-
-
-        var swingPosition = player.transform.position + player.Info.LocalPosition_Swing;
-        var damageables = player.Detector.ComponentsDetected<IDamageable>(swingPosition, player.Info.SwingRadius, Utility.GetLayerMask(Layer.Character, Layer.PlaceableObject), Tag.Player);
-
-        foreach (var damageable in damageables)
-        {
-            damageable?.TakeDamage(new DamageEvent(EventSenderType.Character, player.Info.SwingDamage));
         }
 
         player.ChangeState(player.MoveState);
     }
 
-    private float GetProperSwingPowerDependingOnTheFrame(float frame)
+    private float GetProperMultiplierDependingOnTheFrame(float frame)
     {
-        var swingPower = frame * 7;
-        if (swingPower > 200) swingPower = 200;    // Max value: 200
-        if (swingPower < 200) swingPower *= 0.75f; // Default Multiplier: 0.75
-        if (swingPower < 50) swingPower = 50;      // Min value: 200
-        return swingPower;
+        if (frame > 80) return 4;
+        else if (frame > 60) return 2;
+        return 1;
     }
 
     private void HandleSwingAnimation(float frame)
     {
         player.AnimationController.SetSpeed(AnimationController.Speed.Pause);
-        player.AnimationController.Play(frame / maxFrame);
+        player.AnimationController.Play(frame / MaxFrame);
     }
 }

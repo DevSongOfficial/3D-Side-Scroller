@@ -14,6 +14,9 @@ public class PlaceableObject : MonoBehaviour
     [SerializeField] private string displayName;
     public string DisplayName => displayName;
 
+    [Tooltip("This stops forces or collisions from affecting the rigidbody")]
+    [SerializeField] private bool isKinematic;
+
     // [editorCollider] is only for checking if placeableObjects are overlapped with other GameObjects.
     // Actual collider when playing game is [gameColliders]. (In case one has more than two colliders, I used generic list.)
     protected Collider editorCollider;
@@ -102,7 +105,7 @@ public class PlaceableObject : MonoBehaviour
     {
         SetBodyCollision(!active);
         SetEditorCollision(active);
-        rigidBody.isKinematic = active;
+        rigidBody.isKinematic = isKinematic ? true: active;
     }
 
     public void SetActive(bool active)

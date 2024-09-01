@@ -112,12 +112,6 @@ public sealed class PlayerCharacter : CharacterBase
         Info.TakeDamage(damageEvent.damage);
     }
 
-    // This wrapping function is for letting states be able to start coroutine cuz they are not monobehaviour.
-    public new Coroutine StartCoroutine(IEnumerator routine)
-    {
-        return base.StartCoroutine(routine);
-    }
-
     public override PlayerCharacter AsPlayer()
     {
         return this;

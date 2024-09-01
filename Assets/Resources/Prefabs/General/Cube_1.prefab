@@ -100,6 +100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayName: Blue Cube
+  isKinematic: 1
 --- !u!64 &-3645241612587578030
 MeshCollider:
   m_ObjectHideFlags: 0

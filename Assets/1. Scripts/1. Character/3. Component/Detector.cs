@@ -1,8 +1,4 @@
-using JetBrains.Annotations;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
@@ -107,7 +103,7 @@ public class Detector : MonoBehaviour
     public T[] ComponentsDetected<T>(Vector3 center, float radius, int layerMask, Tag tagExcepted)
     {
         var colliders = Physics.OverlapSphere(center, radius, layerMask);
-
+        
         DrawSphere(center, radius);
 
         T[] components = new T[colliders.Length];
@@ -115,12 +111,21 @@ public class Detector : MonoBehaviour
 
         for (int i = 0; i < colliders.Length; i++)
         {
+            var collider = colliders[i];
+
             if (collider.CompareTag(tagExcepted)) continue;
-            UnityEngine.Debug.Log(colliders[i].name);
-            if (colliders[i].TryGetComponent(out T component))
+
+            if (collider.TryGetComponent(out T component))
             {
-                components[index] = component;
-                index++;
+                components[index++] = component;
+            }
+            else
+            {
+                var componentInParent = collider.transform.GetComponentInParent<T>();
+                if (componentInParent != null)
+                {
+                    components[index++] = componentInParent;
+                }
             }
         }
 
@@ -136,7 +141,7 @@ public class Detector : MonoBehaviour
     }
 
     #region Functions for debugging
-    [Conditional("UNITY_EDITOR")]
+    [System.Diagnostics.Conditional("UNITY_EDITOR")]
     private void DebugGroundDetectionRay()
     {
         if (!Detection_Ground) return;
@@ -158,7 +163,7 @@ public class Detector : MonoBehaviour
         }
     }
 
-    [Conditional("UNITY_EDITOR")]
+    [System.Diagnostics.Conditional("UNITY_EDITOR")]
     private void DrawRay(Vector3 start, Vector3 dir, Color color)
     {
         if (!Detection_Ray) return;
@@ -166,7 +171,7 @@ public class Detector : MonoBehaviour
         UnityEngine.Debug.DrawRay(start, dir, color);
     }
 
-    [Conditional("UNITY_EDITOR")]
+    [System.Diagnostics.Conditional("UNITY_EDITOR")]
     private void DrawSphere(Vector3 center, float radius, float duration = 0.1f)
     {
         if (!Detection_Sphere) return;

@@ -1623,10 +1623,10 @@ GameObject:
   - component: {fileID: 3227162543428167434}
   - component: {fileID: 2852826052181719204}
   - component: {fileID: 2515465148627592982}
+  - component: {fileID: 1422607468576884980}
   - component: {fileID: 617441926345866376}
   - component: {fileID: 512684638694398382}
   - component: {fileID: 2544301347700385143}
-  - component: {fileID: 1422607468576884980}
   - component: {fileID: 4530510466929922455}
   m_Layer: 20
   m_Name: ZombieCharacter_1
@@ -1679,9 +1679,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c461cbeab93726f4aaa79479998e2960, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ground: 0
-  wall: 0
-  character: 0
+  Detection_Ground: 0
+  Detection_Ray: 0
+  Detection_Sphere: 0
+--- !u!114 &1422607468576884980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7118990355573265311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8682ee8add9081340b9f1fa0074d393e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: Weak Zombie
+  isKinematic: 0
 --- !u!54 &617441926345866376
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1733,19 +1747,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1a5f301e1eab4b42b1d1cc349f19e2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1422607468576884980
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7118990355573265311}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8682ee8add9081340b9f1fa0074d393e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  displayName: Weak Zombie
 --- !u!64 &4530510466929922455
 MeshCollider:
   m_ObjectHideFlags: 0

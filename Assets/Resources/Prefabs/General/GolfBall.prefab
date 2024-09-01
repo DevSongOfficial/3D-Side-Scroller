@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3367137737880485954}
+  - component: {fileID: 4571410632018184881}
   - component: {fileID: 3035165389407017891}
   - component: {fileID: 5413926543974717303}
-  - component: {fileID: 4571410632018184881}
   - component: {fileID: 734389825628956306}
   - component: {fileID: 5719349947402338682}
   m_Layer: 20
@@ -37,6 +37,20 @@ Transform:
   - {fileID: 6996921524306351945}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4571410632018184881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2614554038444221890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68d05f23f68a35343b0cf2e2e18263d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: Golf Ball
+  isKinematic: 0
 --- !u!33 &3035165389407017891
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -87,19 +101,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &4571410632018184881
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2614554038444221890}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68d05f23f68a35343b0cf2e2e18263d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  displayName: Golf Ball
 --- !u!54 &734389825628956306
 Rigidbody:
   m_ObjectHideFlags: 0

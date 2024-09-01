@@ -77,6 +77,7 @@ public class LevelEditorManager : MonoBehaviour
 
         // Switch Camera
         Camera.main.depth = IsEditorActive ? -1 : 0;
+        GetReferenceTo.EditorCamera.gameObject.SetActive(IsEditorActive);
 
         switch (Mode)
         {
