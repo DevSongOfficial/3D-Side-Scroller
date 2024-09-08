@@ -86,14 +86,14 @@ public class PlaceableObject : MonoBehaviour
 
     private void OnEnable()
     {
-        OnLevelEditorTriggered(true);
+        OnLevelEditorToggled(true);
 
-        LevelEditorManager.OnEditorModeTriggered += OnLevelEditorTriggered;
+        LevelEditorManager.OnEditorModeToggled += OnLevelEditorToggled;
     }
 
     private void OnDisable()
     {
-        LevelEditorManager.OnEditorModeTriggered -= OnLevelEditorTriggered;
+        LevelEditorManager.OnEditorModeToggled -= OnLevelEditorToggled;
     }
 
     public virtual void InverseRotation()
@@ -101,7 +101,7 @@ public class PlaceableObject : MonoBehaviour
         transform.Rotate(0, 180, 0);
     }
 
-    protected virtual void OnLevelEditorTriggered(bool active)
+    protected virtual void OnLevelEditorToggled(bool active)
     {
         SetBodyCollision(!active);
         SetEditorCollision(active);
@@ -134,6 +134,7 @@ public class PlaceableObject : MonoBehaviour
     private PlaceableObject CreatePlaceableObject()
     {
         var newObject = Instantiate(gameObject).GetComponent<PlaceableObject>();
+
         return newObject;
     }
 

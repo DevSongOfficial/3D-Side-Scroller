@@ -22,9 +22,9 @@ public sealed class PlaceableCharacter : PlaceableObject
         character.MovementController.ChangeMovementDirection(EMovementDirection.Right);
     }
 
-    protected override void OnLevelEditorTriggered(bool active)
+    protected override void OnLevelEditorToggled(bool active)
     {
-        base.OnLevelEditorTriggered(active);
+        base.OnLevelEditorToggled(active);
 
         character.enabled = !active;
         detector.enabled = !active;

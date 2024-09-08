@@ -23,6 +23,10 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
     public StateBase CurrenState { get; private set; }
     public StateBase PreviousState { get; private set; }
 
+    // Interaction
+    protected InteractionInfo interactionInfo;
+    protected IInteractable currentInteractableObject;
+
     public virtual void ChangeState(StateBase newState)
     {
         CurrenState?.ExitState();
@@ -36,11 +40,12 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
         Detector = GetComponent<Detector>();
         MovementController = GetComponent<MovementController>();
         AnimationController = GetComponent<AnimationController>();
+
+        interactionInfo = new InteractionInfo(this);
     }
 
     protected virtual void Start()
     {
-
     }
 
     protected virtual void Update()
@@ -55,17 +60,24 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
 
     public virtual void TakeDamage(DamageEvent damageEvent)
     {
-        Debug.Log($"피격 데미지: {damageEvent.damage}");
+        Debug.Log($"Character's got damaged: {damageEvent.damage}");
     }
 
-    public virtual void FadeOut()
+    protected bool InteractWithInDistance(float distance = 1.5f)
     {
-        transform.GetChild(0).gameObject.SetActive(false);
-    }
+        var components = Detector.ComponentsDetected<IInteractable>(Detector.ColliderCenter, distance, Layer.InteractableObject.GetMask());
 
-    public virtual void FadeIn()
-    {
-        transform.GetChild(0).gameObject.SetActive(true);
+        foreach(var component in components) 
+        {
+            if(component != null)
+            {
+                currentInteractableObject = component;
+                currentInteractableObject.Interact(interactionInfo);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public bool IsTargetWithInDistance(CharacterBase targetCharacter, float range)

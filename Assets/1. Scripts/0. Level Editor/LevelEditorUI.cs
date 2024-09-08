@@ -18,7 +18,8 @@ public class LevelEditorUI : MonoBehaviour
 
     private void Awake()
     {
-        LevelEditorManager.OnEditorModeTriggered += (bool active) => gameObject.SetActive(active);
+        LevelEditorManager.OnEditorModeToggled += (bool IsEditorActive) => gameObject.SetActive(IsEditorActive);
+        Debug.Log(11);
 
         mouseCursorDetector.Add(MouseSectionType.Left, mouseCursorDetectorImages[0]);
         mouseCursorDetector.Add(MouseSectionType.Right, mouseCursorDetectorImages[1]);

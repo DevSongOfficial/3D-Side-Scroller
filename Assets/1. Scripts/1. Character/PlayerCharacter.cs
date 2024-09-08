@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public sealed class PlayerCharacter : CharacterBase
+public sealed class PlayerCharacter : CharacterBase, IGolfer
 {
     [Header("Player Information")]
     [SerializeField] private PlayerInfo info;
@@ -22,11 +22,15 @@ public sealed class PlayerCharacter : CharacterBase
     // Input Action
     private PlayerInput input;
 
+    // Golf Stuff
+    public GolfClub CurrentClub { get; private set; }
+    public event Action OnClubSwitched;
+
     protected override void Awake()
     {
         base.Awake();
 
-        LevelEditorManager.OnEditorModeTriggered += (bool active) => input.enabled = !active;
+        LevelEditorManager.OnEditorModeToggled += (bool active) => input.enabled = !active;
 
         gameObject.SetLayer(Layer.Character);
 
@@ -38,6 +42,8 @@ public sealed class PlayerCharacter : CharacterBase
         SwingState = new PlayerSwingState(this, sharedData);
         AttackState = new PlayerAttackState(this, sharedData);
         JumpState = new PlayerJumpState(this, sharedData);
+
+        interactionInfo.WithGolfer(this);
     }
 
     protected override void Start()
@@ -91,7 +97,6 @@ public sealed class PlayerCharacter : CharacterBase
         }
     }
 
-
     private void OnDrag(InputValue value) // [Cursor position] changed
     {
         var mousePosition = value.Get<Vector2>();
@@ -100,8 +105,12 @@ public sealed class PlayerCharacter : CharacterBase
     
     private void OnInteract() // [E] pressed
     {
-        //if (interactableObject is null) return;
-        //interactableObject.Interact(this);
+        InteractWithInDistance(GolfBag.InteractionRange);
+    }
+
+    private void OnSwitchClub() // [Q] pressed
+    {
+        OnClubSwitched?.Invoke();
     }
     #endregion
 
@@ -110,6 +119,20 @@ public sealed class PlayerCharacter : CharacterBase
         base.TakeDamage(damageEvent);
 
         Info.TakeDamage(damageEvent.damage);
+    }
+
+    public void EquipClub(GolfClub club)
+    {
+        if (CurrentClub != null) UnequipClub();
+
+        CurrentClub = club;
+        club.gameObject.SetActive(true);
+    }
+
+    public void UnequipClub()
+    {
+        CurrentClub.gameObject.SetActive(false);
+        CurrentClub = null;
     }
 
     public override PlayerCharacter AsPlayer()

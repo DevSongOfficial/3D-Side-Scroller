@@ -38,7 +38,7 @@ public class LevelEditorManager : MonoBehaviour
     public static EditorMode Mode { get; private set; }
     public static bool IsEditorActive => Mode == EditorMode.None ? false : true; 
 
-    public static event Action<bool> OnEditorModeTriggered;
+    public static event Action<bool> OnEditorModeToggled;
 
 
     private void Awake()
@@ -73,7 +73,7 @@ public class LevelEditorManager : MonoBehaviour
     public static void SetEditorMode(EditorMode editorMode)
     {
         Mode = editorMode;
-        OnEditorModeTriggered.Invoke(IsEditorActive);
+        OnEditorModeToggled.Invoke(IsEditorActive);
 
         // Switch Camera
         Camera.main.depth = IsEditorActive ? -1 : 0;
@@ -172,8 +172,13 @@ public class LevelEditorManager : MonoBehaviour
     private Vector3 movementOffset;
     private void HandleObjectMovement()
     {
-        if (PlaceableObject.CurrentlySelected is null) return;
-        PlaceableObject.CurrentlySelected.transform.position = GetReferenceTo.EditorUI.GetWorldPositionFromMousePosition() + movementOffset;
+        var obj = PlaceableObject.CurrentlySelected;
+
+        if (obj is null) return;
+        obj.transform.position = GetReferenceTo.EditorUI.GetWorldPositionFromMousePosition() + movementOffset;
+
+        if (obj is GolfBall)
+            obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, GolfBall.FixedZPosition);
     }
 
     private void HandleObjectRotation()

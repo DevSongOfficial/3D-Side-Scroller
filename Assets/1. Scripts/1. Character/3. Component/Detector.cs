@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Collider))]
 public class Detector : MonoBehaviour
 {
     private MovementController movementController;
     private new Collider collider;
 
-    private List<IInteractable> interactables;
+    public Vector3 ColliderCenter => collider.bounds.center;
 
     [Header("Debug Detection Ray (ONLY FOR DEBUGGING)")]
     [SerializeField] private bool Detection_Ground = false;
@@ -25,7 +24,6 @@ public class Detector : MonoBehaviour
     {
         movementController = GetComponent<MovementController>();
         collider = GetComponentInChildren<BoxCollider>();
-        interactables = new List<IInteractable>();
     }
 
     public bool GroundDetected()
@@ -61,7 +59,7 @@ public class Detector : MonoBehaviour
 
         DrawRay(startingPosition, direction * distance, Color.cyan);
 
-        character = hit.collider?.GetComponent<T>();
+        character = hit.collider?.GetComponentInParent<T>();
 
         return character != null;
     }
@@ -79,35 +77,40 @@ public class Detector : MonoBehaviour
         return true;
     }
 
-    public T[] ComponentsDetected<T>(Vector3 center, float radius, int layerMask)
+    public List<T> ComponentsDetected<T>(Vector3 center, float radius, int layerMask)
     {
         var colliders = Physics.OverlapSphere(center, radius, layerMask);
 
         DrawSphere(center, radius);
 
-        T[] components = new T[colliders.Length];
-        int index = 0;
+        var components = new List<T>();
 
         for (int i = 0; i < colliders.Length; i++)
         {
             if (colliders[i].TryGetComponent(out T component))
             {
-                components[index] = component;
-                index++;
+                components.Add(component);
+            }
+            else
+            {
+                var componentInParent = colliders[i].transform.GetComponentInParent<T>();
+                if (componentInParent != null)
+                {
+                    components.Add(componentInParent);
+                }
             }
         }
 
         return components;
     }
 
-    public T[] ComponentsDetected<T>(Vector3 center, float radius, int layerMask, Tag tagExcepted)
+    public List<T> ComponentsDetected<T>(Vector3 center, float radius, int layerMask, Tag tagExcepted)
     {
         var colliders = Physics.OverlapSphere(center, radius, layerMask);
         
         DrawSphere(center, radius);
 
-        T[] components = new T[colliders.Length];
-        int index = 0;
+        var components = new List<T>();
 
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -117,27 +120,19 @@ public class Detector : MonoBehaviour
 
             if (collider.TryGetComponent(out T component))
             {
-                components[index++] = component;
+                components.Add(component);
             }
             else
             {
-                var componentInParent = collider.transform.GetComponentInParent<T>();
+                var componentInParent = collider.GetComponentInParent<T>();
                 if (componentInParent != null)
                 {
-                    components[index++] = componentInParent;
+                    components.Add(componentInParent);
                 }
             }
         }
 
         return components;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareLayer(Layer.InteractableObject))
-        {
-            var interactableObject = other.GetComponent<IInteractable>();
-        }
     }
 
     #region Functions for debugging

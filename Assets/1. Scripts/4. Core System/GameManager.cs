@@ -1,0 +1,24 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using UnityEngine;
+
+public enum Layer
+{
+    Default = 0,
+    Character = 8,
+    Ground = 9,
+    Wall = 10,
+    PlaceableObject = 20,
+    InteractableObject = 25,
+    RaycastBlockerForLevelEditor = 31,
+}
+
+public enum Tag
+{
+    Untagged, Player, Enemy, Prob
+}
+
+public class GameManager : MonoBehaviour
+{
+}
