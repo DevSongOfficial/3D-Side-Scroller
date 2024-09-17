@@ -10,9 +10,9 @@ public sealed class GolfBall : PlaceableObject, IDamageable
 
     public void TakeDamage(DamageEvent damageEvent)
     {
-        if(damageEvent.CompareSenderTypeWith(EventSenderType.Character))
+        if(damageEvent.CompareSenderTypeWith(EventSenderType.Club))
         {
-            rigidBody.AddForce(new Vector3(100 , 350, 0));
+            rigidBody.AddForce(damageEvent.knockBackVector);
         }
     }
 }

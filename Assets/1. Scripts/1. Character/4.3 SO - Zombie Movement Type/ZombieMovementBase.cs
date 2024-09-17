@@ -15,7 +15,7 @@ public abstract class ZombieMovementBase : ScriptableObject
     }
 
     public abstract void Execute
-        (MovementController movementController, CharacterInfo characterInfo, EMovementDirection wishDirection);
+        (MovementController movementController, ObjectInfo characterInfo, EMovementDirection wishDirection);
 
     // Speed effect handled by states
     protected float velocityMultiplier = 1;

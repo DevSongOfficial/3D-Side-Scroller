@@ -8,7 +8,7 @@ public sealed class PlayerAttackState : PlayerStateBase
     public bool IsAttacking =>  attackCoroutine != null;
 
     // Delay before attacking
-    private const float attackDelay = 0.15f;
+    private const float attackDelay = 0.2f;
     private float attackDelayLeft;
 
     public override void EnterState()
@@ -86,7 +86,7 @@ public sealed class PlayerAttackState : PlayerStateBase
                 var character = collider.GetComponentInParent<ZombieCharacter>();
                 if (character is null) continue;
 
-                character.TakeDamage(new DamageEvent(EventSenderType.Character, player.Info.AttackDamage));
+                character.TakeDamage(player.Interactor.AsGolfer.CurrentClub.DamageEvent);
             }
         }
 

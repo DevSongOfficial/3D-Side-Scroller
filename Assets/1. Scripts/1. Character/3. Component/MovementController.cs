@@ -11,7 +11,9 @@ public class MovementController : MonoBehaviour
 {
     private Rigidbody rigidBody;
 
-    private static readonly int RotationSpeed = 1500;
+    [SerializeField] private Transform body;
+
+    private readonly int RotationSpeed = 1500;
     
     public static readonly int YAngle_Left = 270;
     public static readonly int YAngle_Right = 90;
@@ -21,6 +23,11 @@ public class MovementController : MonoBehaviour
         rigidBody = GetComponent<Rigidbody>();
     }
 
+    public void SetPosition(Vector3 position)
+    {
+        transform.position = position;
+    }
+    
     // Direction
     #region Direction
     public event Action<EMovementDirection> OnDirectionChange;
@@ -31,11 +38,11 @@ public class MovementController : MonoBehaviour
         {
             float tolerance = 10;
 
-            if(transform.eulerAngles.y <= YAngle_Left && transform.eulerAngles.y > YAngle_Left - tolerance)
+            if (transform.eulerAngles.y <= YAngle_Left + tolerance && transform.eulerAngles.y > YAngle_Left - tolerance)
             {
                 return EMovementDirection.Left;
             }
-            else if(transform.eulerAngles.y >= YAngle_Right && transform.eulerAngles.y < YAngle_Right + tolerance)
+            else if(transform.eulerAngles.y >= YAngle_Right - tolerance && transform.eulerAngles.y < YAngle_Right + tolerance)
             {
                 return EMovementDirection.Right;
             }
@@ -117,8 +124,7 @@ public class MovementController : MonoBehaviour
     }
     #endregion
 
-    // Movement
-    // [velocity] basically refers to [velocity of X] in this project.
+    // Movement; [velocity] basically refers to [velocity of X] in this project.
     #region Physical Movement
     public float GetVelocity()
     {
@@ -132,8 +138,12 @@ public class MovementController : MonoBehaviour
 
     public void AddVelocity(float velocity)
     {
-        Debug.Log(GetVelocity() + velocity);
         SetVelocity(GetVelocity() + velocity);
+    }
+
+    public void AddForce(Vector3 force)
+    {
+        rigidBody.AddForce(force);
     }
 
     public void Jump(float velocityOnJump)
@@ -147,6 +157,40 @@ public class MovementController : MonoBehaviour
         SetVelocity(0);
 
         OnDirectionChange?.Invoke(Direction);
+    }
+
+    public void EnableKinematic()
+    {
+        rigidBody.isKinematic = true;
+    }
+
+    public void DisableKinematic() 
+    {
+        rigidBody.isKinematic = false;
+    }
+
+    public void FreezePosition()
+    {
+        rigidBody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ;
+    }
+
+    public void UnfreezePosition()
+    {
+        rigidBody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionZ;
+    }
+
+    #endregion
+
+    // Body(Child's Transform)
+    #region Child's Transform
+    public void SetBodyLocalPosition(Vector3 position)
+    {
+        body.localPosition = position;
+    }
+
+    public void SetBodyLocalEulerAngles(Vector3 rotation)
+    {
+        body.localEulerAngles = rotation;
     }
     #endregion
 }

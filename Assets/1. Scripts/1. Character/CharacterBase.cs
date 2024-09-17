@@ -1,8 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Networking;
+using static GameSystem;
 
 [RequireComponent(typeof(Detector))]
 [RequireComponent(typeof(MovementController))]
@@ -19,13 +18,20 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
     // This component also handles [Collider] of the character.
     public Detector Detector { get; private set; }
 
+    // Interactor (Non-Monobehaviour)
+    public Interactor Interactor { get; protected set; }
+
+    // Health System
+    protected HealthSystem healthSystem;
+
     // State (Each character runs as a single state machine)
     public StateBase CurrenState { get; private set; }
     public StateBase PreviousState { get; private set; }
 
-    // Interaction
-    protected InteractionInfo interactionInfo;
-    protected IInteractable currentInteractableObject;
+    // Character Information
+    [Header("Character Information")]
+    [SerializeField] protected ObjectInfo info;
+    public virtual ObjectInfo Info => info;
 
     public virtual void ChangeState(StateBase newState)
     {
@@ -41,12 +47,11 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
         MovementController = GetComponent<MovementController>();
         AnimationController = GetComponent<AnimationController>();
 
-        interactionInfo = new InteractionInfo(this);
+        healthSystem = new HealthSystem(info.MaxHealth);
+        Interactor = new Interactor(this);
     }
 
-    protected virtual void Start()
-    {
-    }
+    protected virtual void Start() { }
 
     protected virtual void Update()
     {
@@ -60,24 +65,14 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
 
     public virtual void TakeDamage(DamageEvent damageEvent)
     {
-        Debug.Log($"Character's got damaged: {damageEvent.damage}");
-    }
+        // Take damage
+        healthSystem.TakeDamage(damageEvent.damage);
+        MovementController.AddForce(damageEvent.knockBackVector);
 
-    protected bool InteractWithInDistance(float distance = 1.5f)
-    {
-        var components = Detector.ComponentsDetected<IInteractable>(Detector.ColliderCenter, distance, Layer.InteractableObject.GetMask());
-
-        foreach(var component in components) 
-        {
-            if(component != null)
-            {
-                currentInteractableObject = component;
-                currentInteractableObject.Interact(interactionInfo);
-                return true;
-            }
-        }
-
-        return false;
+        // Generate damage effect
+        var damageText = Instantiate(AssetManager.GetPrefab(Prefab.UI.DamageText).GetComponent<TMP_Text>(), UIManager.Canvas.transform);
+        UIManager.PopupUI(damageText, Camera.main.WorldToScreenPoint(Detector.ColliderCenter), PopupType.MoveAndFadeOut);
+        damageText.text = damageEvent.damage.ToString();
     }
 
     public bool IsTargetWithInDistance(CharacterBase targetCharacter, float range)
@@ -85,8 +80,6 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
         var distance = Vector3.Distance(transform.position, targetCharacter.transform.position);
         return distance <= range;
     }
-
-
 
     // Downcast for CharacterBase-Derived objects that are being upcast
 

@@ -1,9 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using static GameSystem;
 
-public sealed class GolfBag : MonoBehaviour, IInteractable
+public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
 {
     // Golf clubs
     private GolfClub currentClub => clubs[clubIndex];
@@ -16,14 +14,21 @@ public sealed class GolfBag : MonoBehaviour, IInteractable
 
 
     // The character who currently has access to or is interacting with the bag.
-    private InteractionInfo interactorInfo;
-    public bool IsOpen => interactorInfo != null;
+    private Interactor interactor;
+    public bool IsOpen => interactor != null;
 
-    public static readonly float InteractionRange = 1.5f;
+    // Physics
+    [SerializeField] private Collider bodyCollider;
+    private Rigidbody rigidBody;
 
-    public void Interact(InteractionInfo info)
+    private void Awake()
     {
-        if (info.Golfer == null) return;
+        rigidBody = GetComponent<Rigidbody>();
+    }
+
+    public void Interact(Interactor newInteractor)
+    {
+        if (newInteractor.AsGolfer == null) return;
 
         if (IsOpen)
         {
@@ -31,7 +36,7 @@ public sealed class GolfBag : MonoBehaviour, IInteractable
             return;
         }
 
-        interactorInfo = info;
+        interactor = newInteractor;
         OpenTheBag();
     }
 
@@ -43,7 +48,7 @@ public sealed class GolfBag : MonoBehaviour, IInteractable
 
     private void OpenTheBag()
     {
-        interactorInfo.AddListener_OnClubSwitched(SwitchToNextClub);
+        interactor.AsGolfer.OnClubSwitched += SwitchToNextClub;
 
         // Start timer
         timeLeft = 0;
@@ -53,8 +58,8 @@ public sealed class GolfBag : MonoBehaviour, IInteractable
 
     private void CloseTheBag() 
     {
-        interactorInfo.RemoveListener_OnClubSwitched(SwitchToNextClub);
-        interactorInfo = null;
+        interactor.AsGolfer.OnClubSwitched -= SwitchToNextClub;
+        interactor = null;
 
         UIManager.CloseUI(UIManager.GetUI.Panel_ClubSelection);
     }
@@ -79,17 +84,40 @@ public sealed class GolfBag : MonoBehaviour, IInteractable
 
         clubIndex++;
         clubIndex %= clubs.Length;
-        interactorInfo.Golfer.EquipClub(currentClub);
+        interactor.AsGolfer.EquipClub(currentClub);
     }
 
     private void CheckDistance()
     {
         if (!IsOpen) return;
 
-        var distance = Vector3.Distance(transform.position, interactorInfo.GetPosition());
-        if(distance > InteractionRange)
+        var distance = Vector3.Distance(transform.position, interactor.GetPosition());
+        if(distance > interactor.GetInteractionRange())
         {
             CloseTheBag();
         }
+    }
+
+    // todo: needs to be refactored. (class extraction?)
+    public void OnPickedUp(Transform itemHolder)
+    {
+        transform.SetParent(itemHolder);
+
+        var offset = itemHolder.position - bodyCollider.bounds.center;
+        transform.position += offset;
+
+        rigidBody.isKinematic = true;
+        bodyCollider.enabled = false;
+    }
+
+    public void OnDropedOff()
+    {
+        transform.SetParent(null);
+
+        transform.eulerAngles = Vector3.zero;
+        transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+
+        rigidBody.isKinematic = false;
+        bodyCollider.enabled = true;
     }
 }

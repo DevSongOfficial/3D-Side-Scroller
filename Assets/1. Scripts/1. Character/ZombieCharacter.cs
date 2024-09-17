@@ -2,14 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
-using UnityEngine.Scripting;
 
 public sealed class ZombieCharacter : CharacterBase
 {
-    [Header("Zombie Information")]
-    [SerializeField] private ZombieInfo info;
-    public ZombieInfo Info => info;
-
+    // Zombie Info
+    public new ZombieInfo Info => info.AsZombieInfo();
 
     [Space(10)]
     [Header("Zomebie Movement Type")]
@@ -34,7 +31,7 @@ public sealed class ZombieCharacter : CharacterBase
     protected override void Awake()
     {
         base.Awake();
-
+        
         transform.GetChild(0).gameObject.SetLayer(Layer.Character);
         transform.GetChild(0).gameObject.SetTag(Tag.Enemy);
 
@@ -43,6 +40,8 @@ public sealed class ZombieCharacter : CharacterBase
         PatrolState = new ZombiePatrolState(this, zombieBlackboard, movementOnPatrol);
         ChaseState = new ZombieChaseState(this, zombieBlackboard, movementOnChase);
         AttackState = new ZombieAttackState(this, zombieBlackboard, attackDefault);
+
+        healthSystem.OnCharacterDie += OnDie;
     }
 
     protected override void Start()
@@ -70,8 +69,11 @@ public sealed class ZombieCharacter : CharacterBase
     public override void TakeDamage(DamageEvent damageEvent)
     {
         base.TakeDamage(damageEvent);
+    }
 
-        Info.TakeDamage(damageEvent.damage);
+    private void OnDie()
+    {
+        Destroy(gameObject, 0.5f);
     }
 
     public override ZombieCharacter AsZombie()

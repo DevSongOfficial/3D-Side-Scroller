@@ -1,5 +1,7 @@
 using System.Collections;
 using UnityEngine;
+using static GameSystem;
+
 
 public class PlayerSwingState : PlayerStateBase
 {
@@ -14,9 +16,14 @@ public class PlayerSwingState : PlayerStateBase
     private const int MaxFrameOnBackSwing = 34;
     private const int MaxFrameOnDownSwing = 110;
     private const int HitFrame = 48;
+
     private float currentFrame;
     private float frameOnStartDownSwing;
+
+    // Power of swing that affects frame increasement speed & damage & knockback.
     private float powerCharged;
+    private const float powerDefault = 0;
+    private const float powerMaximum = 2;
 
     private bool hasHit;
 
@@ -27,22 +34,13 @@ public class PlayerSwingState : PlayerStateBase
         sharedData.Input_MouseUp += StartDownSwing;
 
         player.AnimationController.ChangeState(AnimationController.Player.Attack.Swing, 0.01f);
-
-        swingStep = SwingStep.BackSwing;
-        currentFrame = 0;
-        powerCharged = 0;
-        hasHit = false;
         player.MovementController.ChangeMovementDirection(EMovementDirection.Right, smoothRotation: false);
-    }
 
-    public override void FixedUpdateState()
-    {
-        base.UpdateState();
+        currentFrame = 0;
+        powerCharged = powerDefault;
+        hasHit = false;
 
-        if (time < 0.1f) return;
-
-        BackSwing();
-        HandleSwingAnimation(currentFrame);
+        backSwingCoroutine = player.StartCoroutine(BackSwing());
     }
 
     public override void ExitState()
@@ -51,23 +49,47 @@ public class PlayerSwingState : PlayerStateBase
 
         sharedData.Input_MouseUp -= StartDownSwing;
 
-        player.AnimationController.SetSpeed(AnimationController.Speed.Normal);
-        downSwingCoroutine = null;
         Cursor.lockState = CursorLockMode.None;
-
+        player.AnimationController.SetSpeed(AnimationController.Speed.Normal);
         player.MovementController.StopMovement();
+
+        if(downSwingCoroutine != null)
+        {
+            player.StopCoroutine(downSwingCoroutine);
+            downSwingCoroutine = null;
+        }
+
+        if(backSwingCoroutine != null)
+        {
+            player.StopCoroutine(backSwingCoroutine);
+            backSwingCoroutine = null;
+        }
     }
 
-    private void BackSwing()
+    Coroutine backSwingCoroutine;
+    private IEnumerator BackSwing()
     {
-        if (swingStep != SwingStep.BackSwing) return;
+        swingStep = SwingStep.BackSwing;
 
-        if (currentFrame < MaxFrameOnBackSwing) 
-            currentFrame += 50 * Time.deltaTime;
-        else
+        yield return new WaitForSeconds(0.1f);
+
+        while(powerCharged < powerMaximum)
         {
-            currentFrame = MaxFrameOnBackSwing;
-            powerCharged += Time.deltaTime;
+            if (currentFrame < MaxFrameOnBackSwing) 
+                currentFrame += player.Interactor.AsGolfer.CurrentClub.ChargeSpeed * 50 * Time.fixedDeltaTime;
+            else
+            {
+                currentFrame = MaxFrameOnBackSwing;
+                powerCharged += player.Interactor.AsGolfer.CurrentClub.ChargeSpeed * Time.fixedDeltaTime;
+                powerCharged = Mathf.Clamp(powerCharged, powerDefault, powerMaximum);
+
+                UIManager.PopupUI(UIManager.GetUI.Image_SwingChargeIndicator);
+                UIManager.FillImage(UIManager.GetUI.Image_SwingChargeIndicator, powerCharged / powerMaximum);
+            }
+
+            PlaySwingAnimation(currentFrame);
+
+            yield return new WaitForFixedUpdate();
         }
     }
 
@@ -75,11 +97,13 @@ public class PlayerSwingState : PlayerStateBase
     {
         if (!player.CurrenState.CompareState(player.SwingState)) return;
         if (swingStep != SwingStep.BackSwing) return;
+        if (downSwingCoroutine != null) return;
 
-        if (downSwingCoroutine == null)
-        {
-            downSwingCoroutine = player.StartCoroutine(DownSwingRoutine());
-        }
+        powerCharged++;
+
+        UIManager.CloseUI(UIManager.GetUI.Image_SwingChargeIndicator);
+        player.StopCoroutine(backSwingCoroutine);
+        downSwingCoroutine = player.StartCoroutine(DownSwingRoutine());
     }
 
     private Coroutine downSwingCoroutine;
@@ -92,38 +116,49 @@ public class PlayerSwingState : PlayerStateBase
 
         while (currentFrame < MaxFrameOnDownSwing)
         {
-            yield return null;
+            TryHit();
+            CalculateAnimationFrame();
+            PlaySwingAnimation(currentFrame);
 
-            #region Hit
-            if (!hasHit && currentFrame >= HitFrame)
-            {
-                hasHit = true;
-
-                var swingPosition = player.transform.position + player.Info.LocalPosition_Swing;
-                var damageables = player.Detector.ComponentsDetected<IDamageable>(swingPosition, player.Info.SwingRadius, Utility.GetLayerMask(Layer.Character, Layer.PlaceableObject), Tag.Player);
-
-                foreach (var damageable in damageables)
-                {
-                    damageable?.TakeDamage(new DamageEvent(EventSenderType.Character, player.Info.SwingDamage));
-                }
-            }
-            #endregion
-
-            var multiplier = GetProperMultiplierDependingOnTheFrame(currentFrame);
-
-            if (frameOnStartDownSwing < MaxFrameOnBackSwing)
-            {
-                currentFrame +=  50 * multiplier * Time.deltaTime;
-                continue;
-            }
-            else
-            {
-                currentFrame += 120 * multiplier * Time.deltaTime;
-                continue;
-            }
+            yield return new WaitForFixedUpdate();
         }
 
         player.ChangeState(player.MoveState);
+    }
+
+    private void TryHit()
+    {
+        if (!hasHit && currentFrame >= HitFrame)
+        {
+            hasHit = true;
+
+            var swingPosition = player.transform.position + player.Info.LocalPosition_Swing;
+            var damageables = player.Detector.ComponentsDetected<IDamageable>(swingPosition, player.Interactor.AsGolfer.CurrentClub.SwingRadius, Utility.GetLayerMask(Layer.Character, Layer.PlaceableObject), Tag.Player);
+
+            var damageEvent = player.Interactor.AsGolfer.CurrentClub.DamageEvent;
+            damageEvent.knockBackVector *= powerCharged;
+            damageEvent.damage *= powerCharged > 2 ? 3 : 2;
+
+            foreach (var damageable in damageables)
+            {
+                damageable.TakeDamage(damageEvent);
+            }
+        }
+    }
+
+    private void CalculateAnimationFrame()
+    {
+        var multiplier = GetProperMultiplierDependingOnTheFrame(currentFrame);
+        multiplier *= 50 * powerCharged;
+
+        if (frameOnStartDownSwing < MaxFrameOnBackSwing)
+        {
+            currentFrame += multiplier * Time.fixedDeltaTime;
+        }
+        else
+        {
+            currentFrame +=  2.5f * multiplier * Time.fixedDeltaTime;
+        }
     }
 
     private float GetProperMultiplierDependingOnTheFrame(float frame)
@@ -133,7 +168,7 @@ public class PlayerSwingState : PlayerStateBase
         return 1;
     }
 
-    private void HandleSwingAnimation(float frame)
+    private void PlaySwingAnimation(float frame)
     {
         player.AnimationController.SetSpeed(AnimationController.Speed.Pause);
         player.AnimationController.Play(frame / MaxFrame);

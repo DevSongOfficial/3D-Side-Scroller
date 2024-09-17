@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static GameSystem;
 
 public class LevelEditorUI : MonoBehaviour
 {
@@ -15,11 +14,11 @@ public class LevelEditorUI : MonoBehaviour
     // Object Selection Button
     public Image objectSelectionButtonsPanel;
     private ObjectSelectionButton[] objectSelectionButtons; // Buttons in LevelEditorUI
+    [SerializeField] private GameObject objectSelectionGroup;
 
     private void Awake()
     {
-        LevelEditorManager.OnEditorModeToggled += (bool IsEditorActive) => gameObject.SetActive(IsEditorActive);
-        Debug.Log(11);
+        LevelEditorManager.OnEditorModeToggled += (bool IsEditorActive) => objectSelectionGroup.SetActive(IsEditorActive);
 
         mouseCursorDetector.Add(MouseSectionType.Left, mouseCursorDetectorImages[0]);
         mouseCursorDetector.Add(MouseSectionType.Right, mouseCursorDetectorImages[1]);
@@ -30,7 +29,6 @@ public class LevelEditorUI : MonoBehaviour
         #region Set up buttons
         int count = Enum.GetValues(typeof(Prefab.General)).Length;
         objectSelectionButtons = new ObjectSelectionButton[count];
-
         // Buttons Settings
         for (int i = 0; i < count; i++)
         {
@@ -52,16 +50,16 @@ public class LevelEditorUI : MonoBehaviour
         switch (GetScreenMovementDirectionFromMousePosition())
         {
             case MouseSectionType.Left:
-                LevelEditorManager.GetReferenceTo.EditorCamera.transform.position += new Vector3(-speed * Time.deltaTime, 0, 0);
+                LevelEditorManager.Camera.transform.position += new Vector3(-speed * Time.deltaTime, 0, 0);
                 break;
             case MouseSectionType.Right:
-                LevelEditorManager.GetReferenceTo.EditorCamera.transform.position += new Vector3(speed * Time.deltaTime, 0, 0);
+                LevelEditorManager.Camera.transform.position += new Vector3(speed * Time.deltaTime, 0, 0);
                 break;
             case MouseSectionType.Up:
-                LevelEditorManager.GetReferenceTo.EditorCamera.transform.position += new Vector3(0, speed * Time.deltaTime, 0);
+                LevelEditorManager.Camera.transform.position += new Vector3(0, speed * Time.deltaTime, 0);
                 break;
             case MouseSectionType.Down:
-                LevelEditorManager.GetReferenceTo.EditorCamera.transform.position += new Vector3(0, -speed * Time.deltaTime, 0);
+                LevelEditorManager.Camera.transform.position += new Vector3(0, -speed * Time.deltaTime, 0);
                 break;
         }
     }
@@ -93,7 +91,7 @@ public class LevelEditorUI : MonoBehaviour
     {
         component = null;
 
-        var camera = cameraForRay ?? LevelEditorManager.GetReferenceTo.EditorCamera;
+        var camera = cameraForRay ?? LevelEditorManager.Camera;
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask.GetMask()))
         {
@@ -110,7 +108,7 @@ public class LevelEditorUI : MonoBehaviour
     {
         component = null;
 
-        var camera = cameraForRay ?? LevelEditorManager.GetReferenceTo.EditorCamera;
+        var camera = cameraForRay ?? LevelEditorManager.Camera;
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue))
         {
@@ -126,7 +124,7 @@ public class LevelEditorUI : MonoBehaviour
     public Vector3 GetWorldPositionFromMousePosition(bool ignorePlaceableObjectLayer = true)
     {
         var position = Vector3.zero;
-        Ray ray = LevelEditorManager.GetReferenceTo.EditorCamera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = LevelEditorManager.Camera.ScreenPointToRay(Input.mousePosition);
 
         if (!ignorePlaceableObjectLayer)
         {

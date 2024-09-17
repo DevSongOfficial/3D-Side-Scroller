@@ -16,7 +16,7 @@ public class Detector : MonoBehaviour
 
     private void LateUpdate()
     {
-        DebugGroundDetectionRay();
+        Debug_GroundDetectionRay();
         //if (Detection_Wall) { /* DebugWallDetectionRay(); */ }
     }
 
@@ -57,7 +57,7 @@ public class Detector : MonoBehaviour
         if (!Physics.Raycast(startingPosition, direction, out RaycastHit hit, distance, Layer.Character.GetMask()))
             return false;
 
-        DrawRay(startingPosition, direction * distance, Color.cyan);
+        Debug_DrawRay(startingPosition, direction * distance, Color.cyan);
 
         character = hit.collider?.GetComponentInParent<T>();
 
@@ -68,9 +68,9 @@ public class Detector : MonoBehaviour
     {
         characters = null;
 
-        if (!Physics.CheckSphere(center, radius, Layer.Character.GetMask())) return false;
+        Debug_DrawSphere(center, radius);
 
-        DrawSphere(center, radius);
+        if (!Physics.CheckSphere(center, radius, Layer.Character.GetMask())) return false;
 
         characters = Physics.OverlapSphere(center, radius, Layer.Character.GetMask());
         
@@ -81,7 +81,7 @@ public class Detector : MonoBehaviour
     {
         var colliders = Physics.OverlapSphere(center, radius, layerMask);
 
-        DrawSphere(center, radius);
+        Debug_DrawSphere(center, radius);
 
         var components = new List<T>();
 
@@ -108,7 +108,7 @@ public class Detector : MonoBehaviour
     {
         var colliders = Physics.OverlapSphere(center, radius, layerMask);
         
-        DrawSphere(center, radius);
+        Debug_DrawSphere(center, radius);
 
         var components = new List<T>();
 
@@ -137,7 +137,7 @@ public class Detector : MonoBehaviour
 
     #region Functions for debugging
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
-    private void DebugGroundDetectionRay()
+    private void Debug_GroundDetectionRay()
     {
         if (!Detection_Ground) return;
 
@@ -159,7 +159,7 @@ public class Detector : MonoBehaviour
     }
 
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
-    private void DrawRay(Vector3 start, Vector3 dir, Color color)
+    private void Debug_DrawRay(Vector3 start, Vector3 dir, Color color)
     {
         if (!Detection_Ray) return;
 
@@ -167,7 +167,7 @@ public class Detector : MonoBehaviour
     }
 
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
-    private void DrawSphere(Vector3 center, float radius, float duration = 0.1f)
+    private void Debug_DrawSphere(Vector3 center, float radius, float duration = 0.1f)
     {
         if (!Detection_Sphere) return;
 
@@ -177,6 +177,17 @@ public class Detector : MonoBehaviour
         Destroy(sphere, duration);
     }
     #endregion
+
+
+    public void EnableCollider()
+    {
+        collider.enabled = true;
+    }
+
+    public void DisableCollider()
+    {
+        collider.enabled = false;
+    }
 }
 
 public struct RayInfo

@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Events;
+using static GameSystem;
 
 [RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(Rigidbody))]
@@ -84,6 +81,12 @@ public class PlaceableObject : MonoBehaviour
 
     protected virtual void Start() { }
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void Initialization()
+    {
+        PlaceableObjectsInTheScene = new List<PlaceableObject>();
+    }
+
     private void OnEnable()
     {
         OnLevelEditorToggled(true);
@@ -124,11 +127,6 @@ public class PlaceableObject : MonoBehaviour
         {
             gameColliders[i].enabled = enabled;
         }
-    }
-
-    public static void Initialization()
-    {
-        PlaceableObjectsInTheScene = new List<PlaceableObject>();
     }
 
     private PlaceableObject CreatePlaceableObject()

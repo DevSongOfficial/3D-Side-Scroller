@@ -34,7 +34,7 @@ public struct DamageEvent
 
 public enum EventSenderType
 {
-    None, Character, Obstacle, Item
+    None, Default, Club, Obstacle, Item
 }
 
 interface IDamageable

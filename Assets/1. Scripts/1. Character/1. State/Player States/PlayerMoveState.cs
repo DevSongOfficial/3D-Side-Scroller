@@ -46,12 +46,16 @@ public class PlayerMoveState : PlayerStateBase
         base.UpdateState();
 
         HandleAnimation();
-        HandleMovement();
     }
 
     public override void FixedUpdateState()
     {
         base.FixedUpdateState();
+
+        if (player.IsCarryingObject) 
+            HandleSlowMovement();
+        else                         
+            HandleMovement();
     }
 
     public override void ExitState()
@@ -75,6 +79,25 @@ public class PlayerMoveState : PlayerStateBase
         else
         {
             player.MovementController.SetVelocity(player.Info.MovementSpeed);
+        }
+    }
+
+    private void HandleSlowMovement()
+    {
+        if (wishDirection == EMovementDirection.None)
+        {
+            wishVelocity = 0;
+            return;
+        }
+
+        if (Math.Abs(wishVelocity) < player.Info.MovementSpeed * 0.5f)
+        {
+            wishVelocity += player.Info.Acceleration * Time.deltaTime;
+            player.MovementController.SetVelocity(wishVelocity * 0.5f);
+        }
+        else
+        {
+            player.MovementController.SetVelocity(player.Info.MovementSpeed * 0.5f);
         }
     }
 

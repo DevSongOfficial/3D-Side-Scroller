@@ -43,7 +43,7 @@ public sealed class ZombiePatrolState : ZombieStateBase
     private void Patrol()
     {
         RayInfo rayInfo = new RayInfo(zombie.MovementController.Direction, zombie.Info.DetectionDistance);
-        
+
         if (zombie.Detector.CharacterDetected(rayInfo, out PlayerCharacter target))
         {
             sharedData.targetCharacter = target;
@@ -51,6 +51,7 @@ public sealed class ZombiePatrolState : ZombieStateBase
             return;
         }
 
+        if (!zombie.Detector.GroundDetected()) return;
         movement.ApplyVelocityMultiplier(GetProperMultiplierOnMove(movement));
         movement.Execute(zombie.MovementController, zombie.Info, movementDirection);
     }

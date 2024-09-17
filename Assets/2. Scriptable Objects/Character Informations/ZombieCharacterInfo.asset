@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef3d826c261c9424dac7e326ac791e07, type: 3}
   m_Name: ZombieCharacterInfo
   m_EditorClassIdentifier: 
-  health: 50
+  maxHealth: 100
   movementSpeed: 40
   acceleration: 10
   detectionDistance: 2

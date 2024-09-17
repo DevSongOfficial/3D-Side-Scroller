@@ -33,7 +33,7 @@ public class AnimationController : MonoBehaviour
 
     public void Play(float value)
     {
-        animator.Play(CurrentState, 0, value);
+        animator.Play(CurrentState, (int)Layer.BaseLayer, value);
     }
 
     public void SetFloat(string name, float value, float dampTime = 0.1f)
@@ -50,8 +50,8 @@ public class AnimationController : MonoBehaviour
     {
         try
         {
-            AnimatorClipInfo[] animationClip = animator.GetCurrentAnimatorClipInfo(0);
-            int currentFrame = (int)(animator.GetCurrentAnimatorStateInfo(0).normalizedTime * animationClip [0].clip.length * animationClip[0].clip.frameRate);
+            AnimatorClipInfo[] animationClip = animator.GetCurrentAnimatorClipInfo((int)Layer.BaseLayer);
+            int currentFrame = (int)(animator.GetCurrentAnimatorStateInfo(0).normalizedTime * animationClip [0].clip.length * animationClip[(int)Layer.BaseLayer].clip.frameRate);
             currentFrame %= maxFrame;
         
             return currentFrame;
@@ -62,6 +62,11 @@ public class AnimationController : MonoBehaviour
         }
     }
 
+    public void SetLayerWeight(Layer layer, WeightType weight)
+    {
+        animator.SetLayerWeight((int)layer, (int)weight);
+    }
+
     // Must be the same as the animation nodes in the controllers.
     // I used enum for creating dropdown menu in scriptable objects.
     public static class Player
@@ -70,6 +75,7 @@ public class AnimationController : MonoBehaviour
         {
             BT_1, // Movement behaviour tree depending on [MoveSpeed]
             Jump,
+            Drive,
         }
 
         public enum Attack
@@ -87,6 +93,8 @@ public class AnimationController : MonoBehaviour
             ZombieMove1, // Walk
             ZombieMove2, // Walk, twice as fast
             ZombieMove3, // Run
+
+            Drive,
         }
 
         public enum Attack
@@ -106,5 +114,16 @@ public class AnimationController : MonoBehaviour
     {
         public const int Pause = 0;
         public const int Normal = 1;
+    }
+
+    public enum Layer
+    {
+        BaseLayer = 0,
+        UpperLayer = 1
+    }
+
+    public enum WeightType
+    {
+        Off = 0, On = 1
     }
 }

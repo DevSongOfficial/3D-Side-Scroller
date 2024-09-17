@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "ZombieInfo", menuName = "Scriptable Object/Character Info/Zombie Info")]
-public class ZombieInfo : CharacterInfo
+public class ZombieInfo : ObjectInfo
 {
     [Space(10)]
     [Header("Zombie")]
@@ -11,7 +11,11 @@ public class ZombieInfo : CharacterInfo
     [SerializeField] private float detectionDistance = 2;
     [SerializeField] private float attackRange = 1;
 
-
     public float DetectionDistance => detectionDistance;
     public float AttackRange => attackRange;
+
+    public override ZombieInfo AsZombieInfo()
+    {
+        return this;
+    }
 }
