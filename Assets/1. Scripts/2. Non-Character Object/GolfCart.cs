@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using static AnimationController;
 using static GameSystem;
 
 public class GolfCart : MonoBehaviour, IInteractable
@@ -20,13 +19,20 @@ public class GolfCart : MonoBehaviour, IInteractable
     private Vector3 offset_CollisionPosition => new Vector3((int)movementController.FacingDirection * 1.5f, -0.3f, 0f);
     private readonly float collisionRadius = 1;
 
+    // Cargo Tray
+    private Transform ObjectOnTheTray;
+    [SerializeField] private Transform cargoTray;
 
     private void Awake()
     {
         movementController = GetComponent<MovementController>();
         detector = GetComponent<Detector>();
+    }
 
-        movementController.FreezePosition();
+    private void Start()
+    {
+        movementController.FreezePosition(MovementController.FreezeRotationYandZ);
+        movementController.ChangeMovementDirection(EMovementDirection.Right, smoothRotation: false);
     }
 
     private void FixedUpdate()
@@ -39,7 +45,7 @@ public class GolfCart : MonoBehaviour, IInteractable
     {
         if (!IsTaken) return;
 
-        driver.AsDriver.InvokeEvent_OnDrive(this, transform.position);
+        driver.AsDriver.InvokeEvent_OnDrive(this, transform.position, transform.eulerAngles.x);
     }
 
     private void GetInTheCart(Interactor driver)
@@ -55,7 +61,7 @@ public class GolfCart : MonoBehaviour, IInteractable
         driver.AsDriver.InvokeEvent_OnEnterVehicle(this);
         driver.AsDriver.InvokeEvent_OnChangeDirection(this, movementController.FacingDirection);
 
-        movementController.UnfreezePosition();
+        movementController.UnfreezePosition(MovementController.FreezeRotationYandZ);
     }
 
     private void GetOutOfTheCart()
@@ -69,7 +75,7 @@ public class GolfCart : MonoBehaviour, IInteractable
 
         driver = null;
 
-        movementController.FreezePosition();
+        movementController.FreezePosition(MovementController.FreezeRotationYandZ);
     }
 
     public void Interact(Interactor newInteractor)
@@ -109,11 +115,25 @@ public class GolfCart : MonoBehaviour, IInteractable
         if (Math.Abs(wishVelocity) < info.MovementSpeed)
         {
             wishVelocity += info.Acceleration * Time.deltaTime;
-            movementController.SetVelocity(wishVelocity);
         }
         else
         {
-            movementController.SetVelocity(info.MovementSpeed);
+            wishVelocity = info.MovementSpeed;
+        }
+
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 1.2f, Layer.Default.GetMask()))
+        {
+            // If surface is flat or downhill, apply only x velocity.
+            if(hit.normal.y > 0.99f || (int)movementController.FacingDirection * hit.normal.x > 0)
+            {
+                movementController.SetVelocity(wishVelocity);
+            }
+            else // If not, apply both x and y with the normal vector.
+            {
+                Vector3 moveDirection = new Vector3(wishVelocity, 0, 0);
+                Vector3 projectedMoveDirection = Vector3.ProjectOnPlane(moveDirection, hit.normal);
+                movementController.SetVelocity(projectedMoveDirection.x, projectedMoveDirection.y);
+            }
         }
     }
 
@@ -131,9 +151,27 @@ public class GolfCart : MonoBehaviour, IInteractable
                 var character = collider.GetComponentInParent<ZombieCharacter>();
                 if (character is null) continue;
 
-                var knockBackVector = damageEvent.knockBackVector * movementController.GetVelocity() * 0.5f;
-                character.TakeDamage(new DamageEvent(damageEvent.senderType, damageEvent.damage, knockBackVector));
+                var newDamageEvent = damageEvent.
+                    MultiplyKnockback(movementController.GetVelocity() * 0.5f).
+                    ApplyDirection(movementController.FacingDirection);
+                character.TakeDamage(newDamageEvent);
             }
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.transform.parent?.GetComponent<IPickupable>() == null) return;
+
+        ObjectOnTheTray = other.transform.parent;
+        ObjectOnTheTray.SetParent(cargoTray);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (ObjectOnTheTray != other.transform.parent) return;
+
+        ObjectOnTheTray.SetParent(null);
+        ObjectOnTheTray = null;
     }
 }

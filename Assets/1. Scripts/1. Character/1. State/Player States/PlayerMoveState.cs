@@ -30,7 +30,7 @@ public class PlayerMoveState : PlayerStateBase
     public override void EnterState()
     {
         base.EnterState();
-
+        
         // Set up animation.
         player.AnimationController.SetSpeed(AnimationController.Speed.Normal);
         player.AnimationController.ChangeState(AnimationController.Player.Movement.BT_1, animationTransitionTime);

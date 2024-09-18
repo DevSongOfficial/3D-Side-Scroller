@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public enum EMovementDirection { Left = -1, None = 0, Right = 1 }
 
@@ -11,6 +12,7 @@ public class MovementController : MonoBehaviour
 {
     private Rigidbody rigidBody;
 
+    public Transform Body => body;
     [SerializeField] private Transform body;
 
     private readonly int RotationSpeed = 1500;
@@ -50,7 +52,7 @@ public class MovementController : MonoBehaviour
         }
     }
 
-    public void ChangeMovementDirection(EMovementDirection newDirection, bool smoothRotation = true)
+    public void ChangeMovementDirection(EMovementDirection newDirection, bool localSpace = false, bool smoothRotation = true)
     {
         if (newDirection == EMovementDirection.None) return;
         if (newDirection == Direction) return;
@@ -64,16 +66,16 @@ public class MovementController : MonoBehaviour
         }
 
         if (smoothRotation)
-            directionChangeCoroutine = StartCoroutine(UpdateDirectionRoutine(newDirection));
+            directionChangeCoroutine = StartCoroutine(UpdateDirectionRoutine(newDirection, localSpace));
         else
-            SetRotation(Direction.GetYAngle());
+            SetRotation(Direction.GetYAngle(), localSpace);
         
 
         OnDirectionChange?.Invoke(newDirection);
     }
 
     private Coroutine directionChangeCoroutine;
-    private IEnumerator UpdateDirectionRoutine(EMovementDirection wishDirection)
+    private IEnumerator UpdateDirectionRoutine(EMovementDirection wishDirection, bool localSpace = false)
     {
         while (wishDirection != EMovementDirection.None)
         {
@@ -81,11 +83,11 @@ public class MovementController : MonoBehaviour
             {
                 if (transform.eulerAngles.y < wishDirection.GetYAngle())
                 {
-                    Rotate(RotationSpeed * Time.deltaTime);
+                    Rotate(RotationSpeed * Time.deltaTime, localSpace);
                 }
                 else
                 {
-                    SetRotation(wishDirection.GetYAngle());
+                    SetRotation(wishDirection.GetYAngle(), localSpace);
                     wishDirection = EMovementDirection.None;
                 }
             }
@@ -93,11 +95,11 @@ public class MovementController : MonoBehaviour
             {
                 if (transform.eulerAngles.y > wishDirection.GetYAngle())
                 {
-                    Rotate(-RotationSpeed * Time.deltaTime);
+                    Rotate(-RotationSpeed * Time.deltaTime, localSpace);
                 }
                 else
                 {
-                    SetRotation(wishDirection.GetYAngle());
+                    SetRotation(wishDirection.GetYAngle(), localSpace);
                     wishDirection = EMovementDirection.None;
                 }
             }
@@ -108,14 +110,25 @@ public class MovementController : MonoBehaviour
         directionChangeCoroutine = null;
     }
 
-    private void Rotate(float y)
+    // todo: fix this
+    private void Rotate(float y, bool localSpace = false)
     {
-        SetRotation(transform.eulerAngles.y + y);
+        SetRotation(transform.eulerAngles.y + y, localSpace);
     }
 
-    public void SetRotation(float y)
+    // todo: fix this
+    public void SetRotation(float y, bool localSpace = false)
     {
-        transform.eulerAngles = new Vector3(transform.rotation.x, y, transform.rotation.z);
+        if (localSpace)
+        {
+            //Vector3 currentRotation = transform.localEulerAngles;
+            //currentRotation.y += y;
+            //transform.localEulerAngles = currentRotation;
+            transform.localEulerAngles = new Vector3(transform.rotation.x, y, 0);
+            return;
+        }
+
+        transform.eulerAngles = new Vector3(transform.rotation.x, y, 0);
     }
 
     public EMovementDirection GetDirectionFrom<T>(T target) where T : CharacterBase
@@ -136,9 +149,9 @@ public class MovementController : MonoBehaviour
         rigidBody.velocity = new Vector3((int)Direction * velocity, rigidBody.velocity.y, 0);
     }
 
-    public void AddVelocity(float velocity)
+    public void SetVelocity(float velocityX, float velocityY)
     {
-        SetVelocity(GetVelocity() + velocity);
+        rigidBody.velocity = new Vector3((int)Direction * velocityX, velocityY, 0);
     }
 
     public void AddForce(Vector3 force)
@@ -169,14 +182,16 @@ public class MovementController : MonoBehaviour
         rigidBody.isKinematic = false;
     }
 
-    public void FreezePosition()
+    public static RigidbodyConstraints FreezeRotation = RigidbodyConstraints.FreezeRotation;
+    public static RigidbodyConstraints FreezeRotationYandZ = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+    public void FreezePosition(RigidbodyConstraints rotationConstraint)
     {
-        rigidBody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ;
+        rigidBody.constraints = rotationConstraint | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
     }
 
-    public void UnfreezePosition()
+    public void UnfreezePosition(RigidbodyConstraints rotationConstraint)
     {
-        rigidBody.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionZ;
+        rigidBody.constraints = rotationConstraint | RigidbodyConstraints.FreezePositionZ;
     }
 
     #endregion

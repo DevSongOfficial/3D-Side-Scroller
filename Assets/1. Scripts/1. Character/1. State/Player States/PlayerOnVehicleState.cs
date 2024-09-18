@@ -9,7 +9,7 @@ public class PlayerOnVehicleState : PlayerStateBase
     private readonly Vector3 offset_Position = new Vector3(0, -1.269f + 0.483f, 0.2f);
     private readonly Vector3 offset_Rotation = new Vector3(0, 17, 0);
 
-
+    
     public override void EnterState()
     {
         base.EnterState();
@@ -20,28 +20,30 @@ public class PlayerOnVehicleState : PlayerStateBase
         player.Interactor.AsDriver.OnDrive += Drive;
         player.Interactor.AsDriver.OnChangeDirection += ChangeDirection;
 
-        player.AnimationController.ChangeState(AnimationController.Player.Movement.Drive, transitionDuration: 0);
-
         player.Detector.DisableCollider();
         player.MovementController.EnableKinematic();
+
+        player.AnimationController.ChangeState(AnimationController.Player.Movement.Drive, transitionDuration: 0);
     }
 
     public override void ExitState()
     {
         base.ExitState();
-
+        
         player.MovementController.SetBodyLocalEulerAngles(originalLocalEulerAngles);
         player.MovementController.SetBodyLocalPosition(originalLocalPosition);
 
         player.Interactor.AsDriver.OnDrive -= Drive;
+        player.Interactor.AsDriver.OnChangeDirection -= ChangeDirection;
 
         player.Detector.EnableCollider();
         player.MovementController.DisableKinematic();
     }
 
-    private void Drive(Vector3 newPosition)
+    private void Drive(Vector3 newPosition, float rotationX)
     {
         player.MovementController.SetPosition(newPosition);
+        player.transform.eulerAngles = new Vector3(rotationX, player.transform.eulerAngles.y, 0);
     }
 
     private void ChangeDirection(EMovementDirection direction)

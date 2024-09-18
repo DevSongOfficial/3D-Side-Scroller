@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using static GameSystem;
 
 
@@ -135,9 +136,10 @@ public class PlayerSwingState : PlayerStateBase
             var swingPosition = player.transform.position + player.Info.LocalPosition_Swing;
             var damageables = player.Detector.ComponentsDetected<IDamageable>(swingPosition, player.Interactor.AsGolfer.CurrentClub.SwingRadius, Utility.GetLayerMask(Layer.Character, Layer.PlaceableObject), Tag.Player);
 
-            var damageEvent = player.Interactor.AsGolfer.CurrentClub.DamageEvent;
-            damageEvent.knockBackVector *= powerCharged;
-            damageEvent.damage *= powerCharged > 2 ? 3 : 2;
+            var damageEvent = player.Interactor.AsGolfer.CurrentClub.DamageEvent.
+                ApplyDirection(player.MovementController.FacingDirection).
+                MultiplyKnockback(powerCharged).
+                MultiplyDamage(powerCharged > 2 ? 3 : 2);
 
             foreach (var damageable in damageables)
             {

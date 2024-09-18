@@ -86,7 +86,8 @@ public sealed class PlayerAttackState : PlayerStateBase
                 var character = collider.GetComponentInParent<ZombieCharacter>();
                 if (character is null) continue;
 
-                character.TakeDamage(player.Interactor.AsGolfer.CurrentClub.DamageEvent);
+                var damageEvent = player.Interactor.AsGolfer.CurrentClub.DamageEvent;
+                character.TakeDamage(damageEvent.ApplyDirection(player.MovementController.FacingDirection));
             }
         }
 

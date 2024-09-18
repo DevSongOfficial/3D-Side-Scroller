@@ -112,7 +112,7 @@ public class Driver
 
     // Events
     public event Action OnEnterVehicle;
-    public event Action<Vector3> OnDrive;
+    public event Action<Vector3, float> OnDrive;
     public event Action<EMovementDirection> OnChangeDirection;
     public event Action OnExitVehicle;
     public void InvokeEvent_OnEnterVehicle(IInteractable sender)
@@ -120,9 +120,9 @@ public class Driver
         //if(sender != vehicle) return;
         OnEnterVehicle?.Invoke();
     }
-    public void InvokeEvent_OnDrive(IInteractable sender, Vector3 poisition)
+    public void InvokeEvent_OnDrive(IInteractable sender, Vector3 poisition, float rotationX)
     {
-        OnDrive?.Invoke(poisition);
+        OnDrive?.Invoke(poisition, rotationX);
     }
     public void InvokeEvent_OnChangeDirection(IInteractable sender, EMovementDirection direction)
     {

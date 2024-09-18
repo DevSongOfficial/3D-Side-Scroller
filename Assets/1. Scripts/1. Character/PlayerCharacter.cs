@@ -33,26 +33,26 @@ public sealed class PlayerCharacter : CharacterBase
         base.Awake();
 
         // Initialize Inputs
-        GameManager.Input_OnMove += OnMove;
-        GameManager.Input_OnJump += OnJump;
-        GameManager.Input_OnClick += OnClick;
-        GameManager.Input_OnDrag += OnDrag;
-        GameManager.Input_OnInteract += OnInteract;
-        GameManager.Input_OnSwitchClub += OnSwitchClub;
+        GameManager.Input_OnMove         += OnMove;
+        GameManager.Input_OnJump         += OnJump;
+        GameManager.Input_OnClick        += OnClick;
+        GameManager.Input_OnDrag         += OnDrag;
+        GameManager.Input_OnInteract     += OnInteract;
+        GameManager.Input_OnSwitchClub   += OnSwitchClub;
         GameManager.Input_OnTogglePickup += OnTogglePickup;
 
         // Initialize behaviour states
-        sharedData = new PlayerBlackboard();
-        MoveState = new PlayerMoveState(this, sharedData);
-        SwingState = new PlayerSwingState(this, sharedData);
-        AttackState = new PlayerAttackState(this, sharedData);
-        JumpState = new PlayerJumpState(this, sharedData);
+        sharedData =    new PlayerBlackboard();
+        MoveState =     new PlayerMoveState(this, sharedData);
+        SwingState =    new PlayerSwingState(this, sharedData);
+        AttackState =   new PlayerAttackState(this, sharedData);
+        JumpState =     new PlayerJumpState(this, sharedData);
         OnVehiclState = new PlayerOnVehicleState(this, sharedData);
 
         // Initialize Interactor
         Interactor.AddGolfer(itemHolder_1).AddDriver();
         Interactor.AsDriver.OnEnterVehicle += () => ChangeState(OnVehiclState);
-        Interactor.AsDriver.OnExitVehicle += () => ChangeState(MoveState);
+        Interactor.AsDriver.OnExitVehicle += () =>  ChangeState(MoveState);
     }
 
     protected override void Start()
