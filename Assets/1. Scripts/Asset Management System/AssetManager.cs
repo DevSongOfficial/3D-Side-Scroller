@@ -32,6 +32,7 @@ public class AssetManager : MonoBehaviour
     }
 }
 
+#if UNITY_EDITOR
 [CustomEditor(typeof(AssetManager))]
 public class PrefabScriptEditor : Editor
 {
@@ -117,3 +118,4 @@ public class PrefabScriptEditor : Editor
         }
     }
 }
+#endif

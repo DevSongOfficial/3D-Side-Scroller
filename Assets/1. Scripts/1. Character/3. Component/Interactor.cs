@@ -10,7 +10,7 @@ public interface IInteractable
 
 public interface IPickupable 
 {
-    void OnPickedUp(Transform parent);
+    void OnPickedUp(Transform parent, bool shouldAlignToCenter);
     void OnDropedOff();
 }
 
@@ -112,21 +112,16 @@ public class Driver
 
     // Events
     public event Action OnEnterVehicle;
-    public event Action<Vector3, float> OnDrive;
-    public event Action<EMovementDirection> OnChangeDirection;
+    public event Action<Vector3, Vector3> OnDrive;
     public event Action OnExitVehicle;
     public void InvokeEvent_OnEnterVehicle(IInteractable sender)
     {
         //if(sender != vehicle) return;
         OnEnterVehicle?.Invoke();
     }
-    public void InvokeEvent_OnDrive(IInteractable sender, Vector3 poisition, float rotationX)
+    public void InvokeEvent_OnDrive(IInteractable sender, Vector3 poisition, Vector3 eulerAngles)
     {
-        OnDrive?.Invoke(poisition, rotationX);
-    }
-    public void InvokeEvent_OnChangeDirection(IInteractable sender, EMovementDirection direction)
-    {
-        OnChangeDirection?.Invoke(direction);
+        OnDrive?.Invoke(poisition, eulerAngles);
     }
     public void InvokeEvent_OnExitVehicle(IInteractable sender)
     {

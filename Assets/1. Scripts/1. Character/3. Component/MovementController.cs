@@ -52,7 +52,7 @@ public class MovementController : MonoBehaviour
         }
     }
 
-    public void ChangeMovementDirection(EMovementDirection newDirection, bool localSpace = false, bool smoothRotation = true)
+    public void ChangeMovementDirection(EMovementDirection newDirection, Space space = Space.World, bool smoothRotation = true)
     {
         if (newDirection == EMovementDirection.None) return;
         if (newDirection == Direction) return;
@@ -66,16 +66,16 @@ public class MovementController : MonoBehaviour
         }
 
         if (smoothRotation)
-            directionChangeCoroutine = StartCoroutine(UpdateDirectionRoutine(newDirection, localSpace));
+            directionChangeCoroutine = StartCoroutine(UpdateDirectionRoutine(newDirection, space));
         else
-            SetRotation(Direction.GetYAngle(), localSpace);
+            SetEulerAngleY(Direction.GetYAngle(), space);
         
 
         OnDirectionChange?.Invoke(newDirection);
     }
 
     private Coroutine directionChangeCoroutine;
-    private IEnumerator UpdateDirectionRoutine(EMovementDirection wishDirection, bool localSpace = false)
+    private IEnumerator UpdateDirectionRoutine(EMovementDirection wishDirection, Space space = Space.World)
     {
         while (wishDirection != EMovementDirection.None)
         {
@@ -83,11 +83,11 @@ public class MovementController : MonoBehaviour
             {
                 if (transform.eulerAngles.y < wishDirection.GetYAngle())
                 {
-                    Rotate(RotationSpeed * Time.deltaTime, localSpace);
+                    Rotate(RotationSpeed * Time.deltaTime, space);
                 }
                 else
                 {
-                    SetRotation(wishDirection.GetYAngle(), localSpace);
+                    SetEulerAngleY(wishDirection.GetYAngle(), space);
                     wishDirection = EMovementDirection.None;
                 }
             }
@@ -95,11 +95,11 @@ public class MovementController : MonoBehaviour
             {
                 if (transform.eulerAngles.y > wishDirection.GetYAngle())
                 {
-                    Rotate(-RotationSpeed * Time.deltaTime, localSpace);
+                    Rotate(-RotationSpeed * Time.deltaTime, space);
                 }
                 else
                 {
-                    SetRotation(wishDirection.GetYAngle(), localSpace);
+                    SetEulerAngleY(wishDirection.GetYAngle(), space);
                     wishDirection = EMovementDirection.None;
                 }
             }
@@ -111,24 +111,16 @@ public class MovementController : MonoBehaviour
     }
 
     // todo: fix this
-    private void Rotate(float y, bool localSpace = false)
+    private void Rotate(float y, Space space = Space.World)
     {
-        SetRotation(transform.eulerAngles.y + y, localSpace);
+        SetEulerAngleY(transform.eulerAngles.y + y, space);
     }
 
     // todo: fix this
-    public void SetRotation(float y, bool localSpace = false)
+    public void SetEulerAngleY(float y, Space space = Space.World)
     {
-        if (localSpace)
-        {
-            //Vector3 currentRotation = transform.localEulerAngles;
-            //currentRotation.y += y;
-            //transform.localEulerAngles = currentRotation;
-            transform.localEulerAngles = new Vector3(transform.rotation.x, y, 0);
-            return;
-        }
-
-        transform.eulerAngles = new Vector3(transform.rotation.x, y, 0);
+        transform.Rotate(0, y - transform.eulerAngles.y, 0, space);
+        return;
     }
 
     public EMovementDirection GetDirectionFrom<T>(T target) where T : CharacterBase

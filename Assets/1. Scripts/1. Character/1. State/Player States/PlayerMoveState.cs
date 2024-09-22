@@ -30,7 +30,7 @@ public class PlayerMoveState : PlayerStateBase
     public override void EnterState()
     {
         base.EnterState();
-        
+
         // Set up animation.
         player.AnimationController.SetSpeed(AnimationController.Speed.Normal);
         player.AnimationController.ChangeState(AnimationController.Player.Movement.BT_1, animationTransitionTime);
@@ -40,7 +40,7 @@ public class PlayerMoveState : PlayerStateBase
         if (!player.PreviousState.CompareState(player.JumpState)) 
             wishVelocity = 0;
     }
-
+    
     public override void UpdateState()
     {
         base.UpdateState();
@@ -74,12 +74,13 @@ public class PlayerMoveState : PlayerStateBase
         if (Math.Abs(wishVelocity) < player.Info.MovementSpeed)
         {
             wishVelocity += player.Info.Acceleration * Time.deltaTime;
-            player.MovementController.SetVelocity(wishVelocity);
         }
         else
         {
-            player.MovementController.SetVelocity(player.Info.MovementSpeed);
+            wishVelocity = player.Info.MovementSpeed;
         }
+
+        player.MovementController.SetVelocity(wishVelocity);
     }
 
     private void HandleSlowMovement()

@@ -16,11 +16,11 @@ public class GolfCart : MonoBehaviour, IInteractable
 
     // Collision
     private Detector detector;
-    private Vector3 offset_CollisionPosition => new Vector3((int)movementController.FacingDirection * 1.5f, -0.3f, 0f);
+    private Vector3 offset_CollisionPosition => new Vector3((int)movementController.FacingDirection, -0.3f, 0f);
     private readonly float collisionRadius = 1;
 
     // Cargo Tray
-    private Transform ObjectOnTheTray;
+    private IPickupable ObjectOnTheTray;
     [SerializeField] private Transform cargoTray;
 
     private void Awake()
@@ -31,7 +31,7 @@ public class GolfCart : MonoBehaviour, IInteractable
 
     private void Start()
     {
-        movementController.FreezePosition(MovementController.FreezeRotationYandZ);
+        movementController.FreezePosition(MovementController.FreezeRotation);
         movementController.ChangeMovementDirection(EMovementDirection.Right, smoothRotation: false);
     }
 
@@ -45,7 +45,7 @@ public class GolfCart : MonoBehaviour, IInteractable
     {
         if (!IsTaken) return;
 
-        driver.AsDriver.InvokeEvent_OnDrive(this, transform.position, transform.eulerAngles.x);
+        driver.AsDriver.InvokeEvent_OnDrive(this, transform.position, transform.eulerAngles);
     }
 
     private void GetInTheCart(Interactor driver)
@@ -55,13 +55,13 @@ public class GolfCart : MonoBehaviour, IInteractable
         GameManager.SetCameraUpdateMethod(Cinemachine.CinemachineBrain.UpdateMethod.FixedUpdate);
 
         GameManager.Input_OnMove += SetWishDirection;
-        movementController.OnDirectionChange += ChangeDirection;
         movementController.StopMovement();
 
         driver.AsDriver.InvokeEvent_OnEnterVehicle(this);
-        driver.AsDriver.InvokeEvent_OnChangeDirection(this, movementController.FacingDirection);
 
         movementController.UnfreezePosition(MovementController.FreezeRotationYandZ);
+        
+        ObjectOnTheTray?.OnPickedUp(cargoTray, shouldAlignToCenter: false);
     }
 
     private void GetOutOfTheCart()
@@ -69,13 +69,15 @@ public class GolfCart : MonoBehaviour, IInteractable
         GameManager.SetCameraUpdateMethod(Cinemachine.CinemachineBrain.UpdateMethod.SmartUpdate);
 
         GameManager.Input_OnMove -= SetWishDirection;
-        movementController.OnDirectionChange -= ChangeDirection;
 
         driver.AsDriver.InvokeEvent_OnExitVehicle(this);
 
         driver = null;
 
-        movementController.FreezePosition(MovementController.FreezeRotationYandZ);
+        movementController.FreezePosition(MovementController.FreezeRotation);
+
+        ObjectOnTheTray?.OnDropedOff();
+
     }
 
     public void Interact(Interactor newInteractor)
@@ -99,7 +101,7 @@ public class GolfCart : MonoBehaviour, IInteractable
         if (newDirection != movementController.Direction)
             wishVelocity = 0;
 
-        movementController.ChangeMovementDirection(wishDirection);
+        movementController.ChangeMovementDirection(wishDirection, Space.Self);
     }
 
     private void HandleMovement()
@@ -137,8 +139,6 @@ public class GolfCart : MonoBehaviour, IInteractable
         }
     }
 
-    private void ChangeDirection(EMovementDirection direction) => driver.AsDriver.InvokeEvent_OnChangeDirection(this, direction);
-
     void AttackOnCollide()
     {
         if (!IsTaken) return;
@@ -161,17 +161,17 @@ public class GolfCart : MonoBehaviour, IInteractable
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform.parent?.GetComponent<IPickupable>() == null) return;
+        var pickupable = other.transform.parent?.GetComponent<IPickupable>();
+        if (pickupable == null) return;
 
-        ObjectOnTheTray = other.transform.parent;
-        ObjectOnTheTray.SetParent(cargoTray);
+        ObjectOnTheTray = pickupable;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (ObjectOnTheTray != other.transform.parent) return;
+        var pickupable = other.transform.parent?.GetComponent<IPickupable>();
+        if (pickupable != ObjectOnTheTray) return;
 
-        ObjectOnTheTray.SetParent(null);
         ObjectOnTheTray = null;
     }
 }

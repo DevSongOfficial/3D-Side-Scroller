@@ -62,7 +62,7 @@ public class AnimationController : MonoBehaviour
         }
     }
 
-    public void SetLayerWeight(Layer layer, WeightType weight)
+    public void SetLayerWeight(Layer layer, UpperLayer weight)
     {
         animator.SetLayerWeight((int)layer, (int)weight);
     }
@@ -122,7 +122,7 @@ public class AnimationController : MonoBehaviour
         UpperLayer = 1
     }
 
-    public enum WeightType
+    public enum UpperLayer
     {
         Off = 0, On = 1
     }

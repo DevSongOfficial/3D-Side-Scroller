@@ -6,7 +6,21 @@ public class Detector : MonoBehaviour
     private MovementController movementController;
     private new Collider collider;
 
-    public Vector3 ColliderCenter => collider.bounds.center;
+    public Vector3 ColliderCenter
+    {
+        get
+        {
+            Vector3 vector;
+            if (collider.enabled == false)
+            {
+                collider.enabled = true;
+                vector = collider.bounds.center;
+                collider.enabled = false;
+                return vector;
+            }
+            return collider.bounds.center;
+        }
+    }
 
     [Header("Debug Detection Ray (ONLY FOR DEBUGGING)")]
     [SerializeField] private bool Detection_Ground = false;

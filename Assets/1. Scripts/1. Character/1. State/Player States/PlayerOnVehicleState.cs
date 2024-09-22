@@ -6,22 +6,24 @@ public class PlayerOnVehicleState : PlayerStateBase
 
     private readonly Vector3 originalLocalPosition = new Vector3(0, 0.483f, 0);
     private readonly Vector3 originalLocalEulerAngles = Vector3.zero;
-    private readonly Vector3 offset_Position = new Vector3(0, -1.269f + 0.483f, 0.2f);
-    private readonly Vector3 offset_Rotation = new Vector3(0, 17, 0);
+    private readonly Vector3 carLocalPosition = new Vector3(0, -1.269f + 0.483f, 0.2f);
+    private readonly Vector3 carLocalEulerAngles = Vector3.up * 17;
+    private readonly Vector3 originalEulerAngles = Vector3.up * 90;
 
     
     public override void EnterState()
     {
         base.EnterState();
 
-        player.MovementController.SetBodyLocalEulerAngles(offset_Rotation);
-        player.MovementController.SetBodyLocalPosition(offset_Position);
-
         player.Interactor.AsDriver.OnDrive += Drive;
-        player.Interactor.AsDriver.OnChangeDirection += ChangeDirection;
 
         player.Detector.DisableCollider();
         player.MovementController.EnableKinematic();
+
+        player.MovementController.SetBodyLocalEulerAngles(carLocalEulerAngles);
+        player.MovementController.SetBodyLocalPosition(carLocalPosition);
+
+
 
         player.AnimationController.ChangeState(AnimationController.Player.Movement.Drive, transitionDuration: 0);
     }
@@ -29,25 +31,20 @@ public class PlayerOnVehicleState : PlayerStateBase
     public override void ExitState()
     {
         base.ExitState();
-        
-        player.MovementController.SetBodyLocalEulerAngles(originalLocalEulerAngles);
-        player.MovementController.SetBodyLocalPosition(originalLocalPosition);
 
         player.Interactor.AsDriver.OnDrive -= Drive;
-        player.Interactor.AsDriver.OnChangeDirection -= ChangeDirection;
-
+        
         player.Detector.EnableCollider();
         player.MovementController.DisableKinematic();
+
+        player.MovementController.SetBodyLocalEulerAngles(originalLocalEulerAngles);
+        player.MovementController.SetBodyLocalPosition(originalLocalPosition);
+        player.transform.eulerAngles = originalEulerAngles;
     }
 
-    private void Drive(Vector3 newPosition, float rotationX)
+    private void Drive(Vector3 newPosition, Vector3 eulerAngles)
     {
         player.MovementController.SetPosition(newPosition);
-        player.transform.eulerAngles = new Vector3(rotationX, player.transform.eulerAngles.y, 0);
-    }
-
-    private void ChangeDirection(EMovementDirection direction)
-    {
-        player.MovementController.ChangeMovementDirection(direction);
+        player.transform.eulerAngles = eulerAngles;
     }
 }

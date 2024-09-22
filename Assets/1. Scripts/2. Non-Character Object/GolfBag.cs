@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using static GameSystem;
 
@@ -98,24 +99,33 @@ public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
         }
     }
 
+    private bool centeredPosition;
     // todo: needs to be refactored. (class extraction?)
-    public void OnPickedUp(Transform itemHolder)
+    public void OnPickedUp(Transform itemHolder, bool centeredPosition)
     {
+        this.centeredPosition = centeredPosition;
+
         transform.SetParent(itemHolder);
 
-        var offset = itemHolder.position - bodyCollider.bounds.center;
-        transform.position += offset;
+        if (centeredPosition)
+        {
+            var offset = itemHolder.position - bodyCollider.bounds.center;
+            transform.position += offset;
+        }
 
-        rigidBody.isKinematic = true;
         bodyCollider.enabled = false;
+        rigidBody.isKinematic = true;
     }
 
     public void OnDropedOff()
     {
         transform.SetParent(null);
 
-        transform.eulerAngles = Vector3.zero;
-        transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+        if (centeredPosition)
+        {
+            transform.eulerAngles = Vector3.zero;
+            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+        }
 
         rigidBody.isKinematic = false;
         bodyCollider.enabled = true;

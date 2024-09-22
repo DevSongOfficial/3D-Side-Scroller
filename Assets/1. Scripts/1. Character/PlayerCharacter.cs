@@ -2,6 +2,7 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static AnimationController;
 using static GameSystem;
 
 public sealed class PlayerCharacter : CharacterBase
@@ -22,8 +23,8 @@ public sealed class PlayerCharacter : CharacterBase
 
     // Item Equipment
     [Header("Item Equipment")]
-    [SerializeField] private ItemHolder itemHolder_1;
-    [SerializeField] private Transform itemHolder_2;
+    [SerializeField] private ItemHolder itemHolder_1; // Clubs, weapons, ...
+    [SerializeField] private Transform itemHolder_2;  // Golf Bag, ...
     [SerializeField] private GolfClub equippedClubOnStart;
     private IPickupable currentlyCarriedObject;
     public bool IsCarryingObject => currentlyCarriedObject != null;
@@ -52,7 +53,7 @@ public sealed class PlayerCharacter : CharacterBase
         // Initialize Interactor
         Interactor.AddGolfer(itemHolder_1).AddDriver();
         Interactor.AsDriver.OnEnterVehicle += () => ChangeState(OnVehiclState);
-        Interactor.AsDriver.OnExitVehicle += () =>  ChangeState(MoveState);
+        Interactor.AsDriver.OnExitVehicle += () => ChangeState(MoveState);
     }
 
     protected override void Start()
@@ -61,7 +62,7 @@ public sealed class PlayerCharacter : CharacterBase
 
         Interactor.AsGolfer.EquipClub(equippedClubOnStart);
 
-        AnimationController.SetLayerWeight(AnimationController.Layer.UpperLayer, AnimationController.WeightType.Off);
+        AnimationController.SetLayerWeight(AnimationController.Layer.UpperLayer, AnimationController.UpperLayer.Off);
 
         ChangeState(MoveState);
     }
@@ -127,7 +128,7 @@ public sealed class PlayerCharacter : CharacterBase
         {
             currentlyCarriedObject.OnDropedOff();
             currentlyCarriedObject = null;
-            AnimationController.SetLayerWeight(AnimationController.Layer.UpperLayer, AnimationController.WeightType.Off);
+            AnimationController.SetLayerWeight(AnimationController.Layer.UpperLayer, AnimationController.UpperLayer.Off);
             return;   
         }
 
@@ -135,8 +136,8 @@ public sealed class PlayerCharacter : CharacterBase
         foreach (var pickupable in pickupables)
         {
             currentlyCarriedObject = pickupable;
-            currentlyCarriedObject.OnPickedUp(itemHolder_2);
-            AnimationController.SetLayerWeight(AnimationController.Layer.UpperLayer, AnimationController.WeightType.On);
+            currentlyCarriedObject.OnPickedUp(itemHolder_2, shouldAlignToCenter: true);
+            AnimationController.SetLayerWeight(AnimationController.Layer.UpperLayer, AnimationController.UpperLayer.On);
             return;
         }
     }
