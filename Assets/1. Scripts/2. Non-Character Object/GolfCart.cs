@@ -51,14 +51,12 @@ public class GolfCart : MonoBehaviour, IInteractable
     private void GetInTheCart(Interactor driver)
     {
         this.driver = driver;
+        driver.AsDriver.InvokeEvent_OnEnterVehicle(this); // MoveState -> OnVehicleState
 
         GameManager.SetCameraUpdateMethod(Cinemachine.CinemachineBrain.UpdateMethod.FixedUpdate);
-
         GameManager.Input_OnMove += SetWishDirection;
+
         movementController.StopMovement();
-
-        driver.AsDriver.InvokeEvent_OnEnterVehicle(this);
-
         movementController.UnfreezePosition(MovementController.FreezeRotationYandZ);
         
         ObjectOnTheTray?.OnPickedUp(cargoTray, shouldAlignToCenter: false);
@@ -67,17 +65,14 @@ public class GolfCart : MonoBehaviour, IInteractable
     private void GetOutOfTheCart()
     {
         GameManager.SetCameraUpdateMethod(Cinemachine.CinemachineBrain.UpdateMethod.SmartUpdate);
-
         GameManager.Input_OnMove -= SetWishDirection;
 
-        driver.AsDriver.InvokeEvent_OnExitVehicle(this);
-
+        driver.AsDriver.InvokeEvent_OnExitVehicle(this); // OnVehicleState -> MoveState
         driver = null;
 
         movementController.FreezePosition(MovementController.FreezeRotation);
 
         ObjectOnTheTray?.OnDropedOff();
-
     }
 
     public void Interact(Interactor newInteractor)
@@ -165,6 +160,8 @@ public class GolfCart : MonoBehaviour, IInteractable
         if (pickupable == null) return;
 
         ObjectOnTheTray = pickupable;
+
+        Debug.Log("Enter");
     }
 
     private void OnTriggerExit(Collider other)
@@ -173,5 +170,7 @@ public class GolfCart : MonoBehaviour, IInteractable
         if (pickupable != ObjectOnTheTray) return;
 
         ObjectOnTheTray = null;
+
+        Debug.Log("Exit");
     }
 }

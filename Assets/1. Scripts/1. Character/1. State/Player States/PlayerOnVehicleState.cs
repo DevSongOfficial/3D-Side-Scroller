@@ -23,8 +23,6 @@ public class PlayerOnVehicleState : PlayerStateBase
         player.MovementController.SetBodyLocalEulerAngles(carLocalEulerAngles);
         player.MovementController.SetBodyLocalPosition(carLocalPosition);
 
-
-
         player.AnimationController.ChangeState(AnimationController.Player.Movement.Drive, transitionDuration: 0);
     }
 
@@ -40,6 +38,7 @@ public class PlayerOnVehicleState : PlayerStateBase
         player.MovementController.SetBodyLocalEulerAngles(originalLocalEulerAngles);
         player.MovementController.SetBodyLocalPosition(originalLocalPosition);
         player.transform.eulerAngles = originalEulerAngles;
+
     }
 
     private void Drive(Vector3 newPosition, Vector3 eulerAngles)

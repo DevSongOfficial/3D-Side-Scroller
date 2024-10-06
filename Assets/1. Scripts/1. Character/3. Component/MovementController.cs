@@ -110,13 +110,11 @@ public class MovementController : MonoBehaviour
         directionChangeCoroutine = null;
     }
 
-    // todo: fix this
     private void Rotate(float y, Space space = Space.World)
     {
         SetEulerAngleY(transform.eulerAngles.y + y, space);
     }
 
-    // todo: fix this
     public void SetEulerAngleY(float y, Space space = Space.World)
     {
         transform.Rotate(0, y - transform.eulerAngles.y, 0, space);
@@ -138,12 +136,12 @@ public class MovementController : MonoBehaviour
 
     public void SetVelocity(float velocity)
     {
-        rigidBody.velocity = new Vector3((int)Direction * velocity, rigidBody.velocity.y, 0);
+        rigidBody.velocity = new Vector3((int)FacingDirection * velocity, rigidBody.velocity.y, 0);
     }
 
     public void SetVelocity(float velocityX, float velocityY)
     {
-        rigidBody.velocity = new Vector3((int)Direction * velocityX, velocityY, 0);
+        rigidBody.velocity = new Vector3((int)FacingDirection * velocityX, velocityY, 0);
     }
 
     public void AddForce(Vector3 force)

@@ -17,12 +17,13 @@ public class PlayerMoveState : PlayerStateBase
     private void SetWishDirection(EMovementDirection newDirection)
     {
         wishDirection = newDirection;
+        Debug.Log(wishDirection);
 
         if (newDirection != player.MovementController.Direction)
             wishVelocity = 0;
 
         if (player.CurrenState.CompareState(player.MoveState))
-            player.MovementController.ChangeMovementDirection(wishDirection);
+            player.MovementController.ChangeMovementDirection(wishDirection, Space.Self);
     }
 
     private const float animationTransitionTime = 0.1f;
@@ -35,7 +36,7 @@ public class PlayerMoveState : PlayerStateBase
         player.AnimationController.SetSpeed(AnimationController.Speed.Normal);
         player.AnimationController.ChangeState(AnimationController.Player.Movement.BT_1, animationTransitionTime);
 
-        player.MovementController.ChangeMovementDirection(wishDirection);
+        //player.MovementController.ChangeMovementDirection(wishDirection);
 
         if (!player.PreviousState.CompareState(player.JumpState)) 
             wishVelocity = 0;
@@ -52,10 +53,13 @@ public class PlayerMoveState : PlayerStateBase
     {
         base.FixedUpdateState();
 
+
         if (player.IsCarryingObject) 
             HandleSlowMovement();
         else                         
             HandleMovement();
+        
+        HandleXRotation();
     }
 
     public override void ExitState()
@@ -99,6 +103,15 @@ public class PlayerMoveState : PlayerStateBase
         else
         {
             player.MovementController.SetVelocity(player.Info.MovementSpeed * 0.5f);
+        }
+    }
+
+    private void HandleXRotation()
+    {
+        if (Physics.Raycast(player.transform.position + Vector3.up * 0.7f, Vector3.down, out RaycastHit hit, 1.2f, Layer.Default.GetMask()))
+        {
+            Quaternion targetRotation = Quaternion.FromToRotation(player.transform.up, hit.normal) * player.transform.rotation;
+            player.transform.rotation = Quaternion.Slerp(player.transform.rotation, targetRotation, Time.deltaTime * 10f);
         }
     }
 

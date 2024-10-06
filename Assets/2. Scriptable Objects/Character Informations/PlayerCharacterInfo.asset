@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: PlayerCharacterInfo
   m_EditorClassIdentifier: 
   maxHealth: 100
+  interactionRange: 2
   movementSpeed: 5
   acceleration: 10
-  jumpPower: 4
+  jumpPower: 5
   localPosition_Attack: {x: 1, y: 1, z: 0}
   attackRadius: 1.5
   attackDamage: 15
