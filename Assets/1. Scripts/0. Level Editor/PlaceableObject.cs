@@ -4,7 +4,7 @@ using UnityEngine;
 using static GameSystem;
 
 [RequireComponent(typeof(Collider))]
-[RequireComponent(typeof(Rigidbody))]
+//[RequireComponent(typeof(Rigidbody))]
 public class PlaceableObject : MonoBehaviour
 {
     [Tooltip("The name displayed in UI or editor for this object.")]
@@ -20,7 +20,7 @@ public class PlaceableObject : MonoBehaviour
     private List<Collider> gameColliders = new List<Collider>();
     protected Rigidbody rigidBody;
 
-    public bool CanBePlaced { get { return overlappedObjectsCount == 0; } }
+    public bool CanBePlaced { get { return overlappedObjectsCount <= 0; } }
     private int overlappedObjectsCount;
 
     // Events
@@ -66,7 +66,7 @@ public class PlaceableObject : MonoBehaviour
 
         // Initialize Rigidbody
         rigidBody = GetComponent<Rigidbody>();
-        rigidBody.isKinematic = true;
+        if (rigidBody != null) rigidBody.isKinematic = true;
 
         // Initialize actual collider(s) of the body.
         for (int i = 0; i < transform.childCount; i++)
@@ -108,7 +108,8 @@ public class PlaceableObject : MonoBehaviour
     {
         SetBodyCollision(!active);
         SetEditorCollision(active);
-        rigidBody.isKinematic = isKinematic ? true: active;
+        
+        if(rigidBody != null) rigidBody.isKinematic = isKinematic ? true: active;
     }
 
     public void SetActive(bool active)
@@ -139,7 +140,8 @@ public class PlaceableObject : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareLayer(Layer.PlaceableObject)) return;
-        
+        if (other.gameObject == gameObject) return;
+
         overlappedObjectsCount++;
     }
 

@@ -92,7 +92,6 @@ public class System_LevelEditorManager : MonoBehaviour
     {
         if (PlaceableObject.CurrentlySelected is null) return;
         if (!PlaceableObject.CurrentlySelected.CanBePlaced) return;
-
         SetEditorMode(EditorMode.Editing);
     }
 
@@ -110,9 +109,8 @@ public class System_LevelEditorManager : MonoBehaviour
     {
         if (Mode != EditorMode.Placing) return;
         if (UI.IsMouseCursorOnTheArea(UI.objectSelectionButtonsPanel.rectTransform)) return;
-
         if (Input.GetKeyDown(placeObject))
-        {
+        { 
             PlaceSelectedObject();
             movementOffset = Vector3.zero;
             return;

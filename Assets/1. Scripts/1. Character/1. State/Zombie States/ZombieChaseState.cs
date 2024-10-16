@@ -55,9 +55,7 @@ public sealed class ZombieChaseState : ZombieStateBase
             return;
         }
 
-        if (!zombie.Detector.GroundDetected()) return;
         var wishDirection = zombie.MovementController.GetDirectionFrom(sharedData.targetCharacter);
-        movement.ApplyVelocityMultiplier(GetProperMultiplierOnMove(movement));
-        movement.Execute(zombie.MovementController, zombie.Info, wishDirection);
+        movement.Execute(zombie.MovementController, zombie.AnimationController, zombie.Info, wishDirection);
     }
 }

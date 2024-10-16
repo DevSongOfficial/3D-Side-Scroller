@@ -6,6 +6,12 @@ public class Detector : MonoBehaviour
     private MovementController movementController;
     private new Collider collider;
 
+    // Ground Detection
+    [SerializeField] private Transform groundDetectorLeft;
+    [SerializeField] private Transform groundDetectorRight;
+    public Transform GroundDetector_Left => groundDetectorLeft;
+    public Transform GroundDetector_Right => groundDetectorRight;
+
     public Vector3 ColliderCenter
     {
         get

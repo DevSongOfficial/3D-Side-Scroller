@@ -6,7 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PlayerInfo", menuName = "Scriptable Object/Character Info/Player Info")]
 public class PlayerInfo : ObjectInfo
 {
-    [SerializeField] private int jumpPower = 4;
+    [SerializeField] [Range(0, 99)] private int jumpPower = 4;
 
     [Header("Attack")]
     [SerializeField] private Vector3 localPosition_Attack;

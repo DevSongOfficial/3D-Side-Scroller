@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using static AnimationController;
 
 public abstract class ZombieMovementBase : ScriptableObject
 {  
@@ -15,12 +14,5 @@ public abstract class ZombieMovementBase : ScriptableObject
     }
 
     public abstract void Execute
-        (MovementController movementController, ObjectInfo characterInfo, EMovementDirection wishDirection);
-
-    // Speed effect handled by states
-    protected float velocityMultiplier = 1;
-    public void ApplyVelocityMultiplier(float multiplier)
-    {
-        velocityMultiplier = multiplier;
-    }
+        (MovementController movementController, AnimationController animationController, ObjectInfo characterInfo, EMovementDirection wishDirection);
 }

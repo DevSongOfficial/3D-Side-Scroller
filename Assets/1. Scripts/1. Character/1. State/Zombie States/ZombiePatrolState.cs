@@ -50,9 +50,7 @@ public sealed class ZombiePatrolState : ZombieStateBase
             zombie.ChangeState(zombie.ChaseState);
             return;
         }
-
-        if (!zombie.Detector.GroundDetected()) return;
-        movement.ApplyVelocityMultiplier(GetProperMultiplierOnMove(movement));
-        movement.Execute(zombie.MovementController, zombie.Info, movementDirection);
+        
+        movement.Execute(zombie.MovementController, zombie.AnimationController, zombie.Info, movementDirection);
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static AnimationController;
 using static GameSystem;
 
 public class GolfCart : MonoBehaviour, IInteractable
@@ -31,7 +32,6 @@ public class GolfCart : MonoBehaviour, IInteractable
 
     private void Start()
     {
-        movementController.FreezePosition(MovementController.FreezeRotation);
         movementController.ChangeMovementDirection(EMovementDirection.Right, smoothRotation: false);
     }
 
@@ -56,9 +56,6 @@ public class GolfCart : MonoBehaviour, IInteractable
         GameManager.SetCameraUpdateMethod(Cinemachine.CinemachineBrain.UpdateMethod.FixedUpdate);
         GameManager.Input_OnMove += SetWishDirection;
 
-        movementController.StopMovement();
-        movementController.UnfreezePosition(MovementController.FreezeRotationYandZ);
-        
         ObjectOnTheTray?.OnPickedUp(cargoTray, shouldAlignToCenter: false);
     }
 
@@ -69,8 +66,6 @@ public class GolfCart : MonoBehaviour, IInteractable
 
         driver.AsDriver.InvokeEvent_OnExitVehicle(this); // OnVehicleState -> MoveState
         driver = null;
-
-        movementController.FreezePosition(MovementController.FreezeRotation);
 
         ObjectOnTheTray?.OnDropedOff();
     }
@@ -101,43 +96,17 @@ public class GolfCart : MonoBehaviour, IInteractable
 
     private void HandleMovement()
     {
-        if (!IsTaken) return;
+        var velocity = movementController.CalculateVelocity(info.MovementSpeed, info.Acceleration, info.Mass);
 
-        if (wishDirection == EMovementDirection.None)
-        {
-            wishVelocity = 0;
-            return;
-        }
+        if (!IsTaken || wishDirection == EMovementDirection.None)
+            velocity.x = 0;
 
-        if (Math.Abs(wishVelocity) < info.MovementSpeed)
-        {
-            wishVelocity += info.Acceleration * Time.deltaTime;
-        }
-        else
-        {
-            wishVelocity = info.MovementSpeed;
-        }
-
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 1.2f, Layer.Default.GetMask()))
-        {
-            // If surface is flat or downhill, apply only x velocity.
-            if(hit.normal.y > 0.99f || (int)movementController.FacingDirection * hit.normal.x > 0)
-            {
-                movementController.SetVelocity(wishVelocity);
-            }
-            else // If not, apply both x and y with the normal vector.
-            {
-                Vector3 moveDirection = new Vector3(wishVelocity, 0, 0);
-                Vector3 projectedMoveDirection = Vector3.ProjectOnPlane(moveDirection, hit.normal);
-                movementController.SetVelocity(projectedMoveDirection.x, projectedMoveDirection.y);
-            }
-        }
+        movementController.Move(velocity * Time.fixedDeltaTime);
     }
-
     void AttackOnCollide()
     {
         if (!IsTaken) return;
-        if (movementController.GetVelocity() < 3.5f) return;
+        if (movementController.Velocity.x < 3.5f) return;
 
         if (detector.CharactersDetected(transform.position + offset_CollisionPosition, collisionRadius, out Collider[] colliders))
         {
@@ -147,7 +116,7 @@ public class GolfCart : MonoBehaviour, IInteractable
                 if (character is null) continue;
 
                 var newDamageEvent = damageEvent.
-                    MultiplyKnockback(movementController.GetVelocity() * 0.5f).
+                    MultiplyKnockback(movementController.Velocity.x * 0.5f).
                     ApplyDirection(movementController.FacingDirection);
                 character.TakeDamage(newDamageEvent);
             }

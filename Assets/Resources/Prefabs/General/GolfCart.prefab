@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 6784284401806269674}
   - component: {fileID: 3217105407945688884}
   - component: {fileID: 3403937020384855136}
-  - component: {fileID: 3936840763640077135}
-  - component: {fileID: 2691806573225234710}
+  - component: {fileID: 4165892371032561723}
+  - component: {fileID: 6889814112478986434}
   m_Layer: 20
   m_Name: GolfCart
   m_TagString: Prob
@@ -87,7 +87,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 394c899b6fae63a4294a0febbc3f2073, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  body: {fileID: 690612181401883227}
 --- !u!114 &3403937020384855136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,38 +99,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c461cbeab93726f4aaa79479998e2960, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  groundDetectorLeft: {fileID: 0}
+  groundDetectorRight: {fileID: 0}
   Detection_Ground: 0
   Detection_Ray: 0
   Detection_Sphere: 0
---- !u!54 &3936840763640077135
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 111089421821542706}
-  serializedVersion: 4
-  m_Mass: 10
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 104
-  m_CollisionDetection: 0
---- !u!65 &2691806573225234710
-BoxCollider:
+--- !u!143 &4165892371032561723
+CharacterController:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -149,8 +123,40 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0272338, y: 1.6247205, z: 2.0985312}
-  m_Center: {x: -0.02187396, y: 0.016156832, z: 0.16650239}
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &6889814112478986434
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 111089421821542706}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &158224908624320252
 GameObject:
   m_ObjectHideFlags: 0

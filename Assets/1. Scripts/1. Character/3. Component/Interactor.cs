@@ -40,6 +40,7 @@ public class Interactor
 
         return false;
     }
+
     public Vector3 GetPosition()
     {
         return interactorCharacter.Detector.ColliderCenter;

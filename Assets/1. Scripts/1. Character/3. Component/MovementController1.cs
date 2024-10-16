@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations;
 
-public enum MovementDirection { Left = -1, None = 0, Right = 1 }
+public enum EMovementDirection { Left = -1, None = 0, Right = 1 }
 
 // This class manages Velocity and Direction(Rotation).
 [RequireComponent(typeof(CharacterController))]
-public class MovementController : MonoBehaviour
+public class MovementController1 : MonoBehaviour
 {
+    private readonly int RotationSpeed = 1500;
+    
+    public static readonly int YAngle_Left = 270;
+    public static readonly int YAngle_Right = 90;
+
     private CharacterController controller;
-
-    public Vector3 Velocity { get; private set; }
-
-    public bool IsGrounded => controller.isGrounded;
 
     private void Awake()
     {
@@ -23,13 +26,9 @@ public class MovementController : MonoBehaviour
     {
         transform.position = position;
     }
-
+    
+    // Direction
     #region Direction
-    private readonly int RotationSpeed = 1500;
-    public static readonly int YAngle_Left = 270;
-    public static readonly int YAngle_Right = 90;
-
-
     public event Action<EMovementDirection> OnDirectionChange;
     public EMovementDirection Direction { get; private set; }
     public EMovementDirection FacingDirection 
@@ -81,7 +80,7 @@ public class MovementController : MonoBehaviour
             {
                 if (transform.eulerAngles.y < wishDirection.GetYAngle())
                 {
-                    Rotate(RotationSpeed * Time.fixedDeltaTime, space);
+                    Rotate(RotationSpeed * Time.deltaTime, space);
                 }
                 else
                 {
@@ -93,7 +92,7 @@ public class MovementController : MonoBehaviour
             {
                 if (transform.eulerAngles.y > wishDirection.GetYAngle())
                 {
-                    Rotate(-RotationSpeed * Time.fixedDeltaTime, space);
+                    Rotate(-RotationSpeed * Time.deltaTime, space);
                 }
                 else
                 {
@@ -123,95 +122,37 @@ public class MovementController : MonoBehaviour
     {
         return target.transform.position.x > transform.position.x ? EMovementDirection.Right : EMovementDirection.Left;
     }
-
-    private float wishVelocity;
-    public void ChangeDirectionSmooth(EMovementDirection newDirection)
-    {
-        if (newDirection != Direction)
-            wishVelocity = 0;
-
-        ChangeMovementDirection(newDirection, Space.Self);
-    }
     #endregion
 
-    #region Movement
+    // Movement; [velocity] basically refers to [velocity of X] in this project.
+    #region Physical Movement
+    public float GetVelocity()
+    {
+        //return (int)Direction * rigidBody.velocity.x;
+        return controller.velocity.x;
+    }
+
     public void SetVelocity(float velocity)
     {
         //rigidBody.velocity = new Vector3((int)FacingDirection * velocity, rigidBody.velocity.y, 0);
-        //Velocity = FacingDirection.ConvertToVector3() * velocity * 0.02f;
-        //controller.Move(Velocity);
+        controller.Move(FacingDirection.ConvertToVector3() * velocity * 0.1f);
     }
 
-    public void Move(Vector3 velocity)
+    public void SetVelocity(float velocityX, float velocityY)
     {
-        controller.Move(velocity);
+        //rigidBody.velocity = new Vector3((int)FacingDirection * velocityX, velocityY, 0);
+        
     }
-
-    public void Jump(float jumpPower)
-    {
-        if (!controller.isGrounded) return;
-
-        ySpeed = -0.8f;
-        ySpeed = jumpPower;
-    }
-
-    public Vector3 CalculateVelocity(float speed, float mass)
-    {
-        var velocity = Vector3.zero;
-        velocity += GetHorizontalVelocity(speed, speed);
-        velocity += GetVerticalVelocity(mass);
-
-        return velocity;
-    }
-
-    public Vector3 CalculateVelocity(float speed, float acceleration, float mass)
-    {
-        var velocity = Vector3.zero;
-        velocity += GetHorizontalVelocity(speed, acceleration);
-        velocity += GetVerticalVelocity(mass);
-
-        return velocity;
-    }
-
-    private Vector3 GetHorizontalVelocity(float speed, float acceleration)
-    {
-        if (Math.Abs(wishVelocity) < speed)
-        {
-            wishVelocity += acceleration;
-        }
-        else
-        {
-            wishVelocity = speed;
-        }
-
-        return Vector3.right * (int)FacingDirection * wishVelocity;
-    }
-
-    private float ySpeed;
-    private readonly float MaxYSpeed = -30;
-    private Vector3 GetVerticalVelocity(float mass)
-    {
-        if ((!controller.isGrounded))
-        {
-            ySpeed -= mass * 0.01f;
-        }
-        ySpeed = ySpeed < MaxYSpeed ? MaxYSpeed : ySpeed;
-        return Vector3.up * ySpeed;
-    }
-    #endregion
-
-
-
-
-
-
-
-
 
     public void AddForce(Vector3 force)
     {
+        //rigidBody.AddForce(force);
     }
 
+    public void Jump(float velocityOnJump)
+    {
+        //rigidBody.velocity = new Vector3(rigidBody.velocity.x, velocityOnJump, 0);
+    }
 
     public void StopMovement()
     {
@@ -230,6 +171,20 @@ public class MovementController : MonoBehaviour
     {
         //rigidBody.isKinematic = false;
     }
+
+    public static RigidbodyConstraints FreezeRotation = RigidbodyConstraints.FreezeRotation;
+    public static RigidbodyConstraints FreezeRotationYandZ = RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+    public void FreezePosition(RigidbodyConstraints rotationConstraint)
+    {
+        //rigidBody.constraints = rotationConstraint | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
+    }
+
+    public void UnfreezePosition(RigidbodyConstraints rotationConstraint)
+    {
+        //rigidBody.constraints = rotationConstraint | RigidbodyConstraints.FreezePositionZ;
+    }
+
+    #endregion
 
     // Body(Child's Transform)
     #region Child's Transform

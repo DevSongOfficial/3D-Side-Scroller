@@ -2,11 +2,15 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XR;
+using UnityEngine.UIElements;
 using static AnimationController;
 using static GameSystem;
 
 public sealed class PlayerCharacter : CharacterBase
 {
+    public CharacterController Controller { get; private set; }
+
     // Player Info
     public new PlayerInfo Info => info.AsPlayerInfo();
 
@@ -15,11 +19,10 @@ public sealed class PlayerCharacter : CharacterBase
     public StateBase MoveState { get; private set; } // Player Walk & Jump & Idle.
     public StateBase SwingState { get; private set; } // Player golf swing which can be a normal swing or a powerful attack.
     public StateBase AttackState { get; private set; } // Player basic attack.
-    public StateBase JumpState { get; private set; }
     public StateBase OnVehiclState { get; private set; } // Player driving vehicle including being controlled by other gameobject(like zombie).
 
     // Black Board
-    private PlayerBlackboard sharedData;
+    private PlayerBlackboard blackboard;
 
     // Item Equipment
     [Header("Item Equipment")]
@@ -29,9 +32,20 @@ public sealed class PlayerCharacter : CharacterBase
     private IPickupable currentlyCarriedObject;
     public bool IsCarryingObject => currentlyCarriedObject != null;
 
+    // Effect
+    [Header("Effect")]
+    [SerializeField] private Renderer auraEffect;
+    public void SetAuraAlpha(float alphaMultiplier)
+    {
+        auraEffect.sharedMaterial.SetFloat("_AlphaMultiplier", alphaMultiplier);
+    }
+
+
     protected override void Awake()
     {
         base.Awake();
+
+        Controller = GetComponent<CharacterController>();
 
         // Initialize Inputs
         GameManager.Input_OnMove         += OnMove;
@@ -43,17 +57,16 @@ public sealed class PlayerCharacter : CharacterBase
         GameManager.Input_OnTogglePickup += OnTogglePickup;
 
         // Initialize behaviour states
-        sharedData =    new PlayerBlackboard();
-        MoveState =     new PlayerMoveState(this, sharedData);
-        SwingState =    new PlayerSwingState(this, sharedData);
-        AttackState =   new PlayerAttackState(this, sharedData);
-        JumpState =     new PlayerJumpState(this, sharedData);
-        OnVehiclState = new PlayerOnVehicleState(this, sharedData);
+        blackboard =    new PlayerBlackboard();
+        MoveState =     new PlayerMoveState(this, blackboard);
+        SwingState =    new PlayerSwingState(this, blackboard);
+        AttackState =   new PlayerAttackState(this, blackboard);
+        OnVehiclState = new PlayerOnVehicleState(this, blackboard);
 
         // Initialize Interactor
         Interactor.AddGolfer(itemHolder_1).AddDriver();
         Interactor.AsDriver.OnEnterVehicle += () => ChangeState(OnVehiclState);
-        Interactor.AsDriver.OnExitVehicle += () => ChangeState(MoveState);
+        Interactor.AsDriver.OnExitVehicle  += () => ChangeState(MoveState);
     }
 
     protected override void Start()
@@ -80,34 +93,31 @@ public sealed class PlayerCharacter : CharacterBase
     #region Input Actions
     private void OnMove(EMovementDirection directionToMove)
     {
-        sharedData.Input_ChangeDirection.Invoke(directionToMove);
+        blackboard.Input_ChangeDirection.Invoke(directionToMove);
     }
 
     private void OnJump()
     {
-        if (!CurrenState.CompareState(MoveState)) return;
-        if (!Detector.GroundDetected()) return;
-        
-        ChangeState(JumpState);
+        blackboard.Input_OnJump.Invoke();
     }
 
     private void OnClick(bool mouseDown)
     {
         if(mouseDown)
         {
-            sharedData.Input_MouseDown?.Invoke();
+            blackboard.Input_MouseDown?.Invoke();
             
             if (CurrenState.CompareState(MoveState)) ChangeState(AttackState);
         }
         else // if (mouseUp)
         {
-            sharedData.Input_MouseUp?.Invoke();
+            blackboard.Input_MouseUp?.Invoke();
         }
     }
 
     private void OnDrag(Vector2 mousePosition)
     {
-        sharedData.Input_Drag?.Invoke(mousePosition);
+        blackboard.Input_Drag?.Invoke(mousePosition);
     }
     
     private void OnInteract() 

@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: ZombieCharacterInfo
   m_EditorClassIdentifier: 
   maxHealth: 100
-  movementSpeed: 40
-  acceleration: 10
+  interactionRange: 2
+  movementSpeed: 1
+  acceleration: 1
+  mass: 7
   detectionDistance: 2
   attackRange: 1.5

@@ -54,7 +54,9 @@ public class PlayerSwingState : PlayerStateBase
         player.AnimationController.SetSpeed(AnimationController.Speed.Normal);
         player.MovementController.StopMovement();
 
-        if(downSwingCoroutine != null)
+        player.SetAuraAlpha(0);
+
+        if (downSwingCoroutine != null)
         {
             player.StopCoroutine(downSwingCoroutine);
             downSwingCoroutine = null;
@@ -82,14 +84,22 @@ public class PlayerSwingState : PlayerStateBase
             {
                 currentFrame = MaxFrameOnBackSwing;
                 powerCharged += player.Interactor.AsGolfer.CurrentClub.ChargeSpeed * Time.fixedDeltaTime;
-                powerCharged = Mathf.Clamp(powerCharged, powerDefault, powerMaximum);
-
                 UIManager.PopupUI(UIManager.GetUI.Image_SwingChargeIndicator);
                 UIManager.FillImage(UIManager.GetUI.Image_SwingChargeIndicator, powerCharged / powerMaximum);
             }
 
             PlaySwingAnimation(currentFrame);
 
+            yield return new WaitForFixedUpdate();
+        }
+
+        powerCharged = powerMaximum;
+
+        float alpha = 0;
+        while (alpha < 2)
+        {
+            alpha += Time.fixedDeltaTime;
+            player.SetAuraAlpha(alpha);
             yield return new WaitForFixedUpdate();
         }
     }
