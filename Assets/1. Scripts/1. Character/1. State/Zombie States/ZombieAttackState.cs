@@ -28,7 +28,7 @@ public sealed class ZombieAttackState : ZombieStateBase
 
         HandleAttack();
 
-        if (zombie.IsTargetWithInDistance(sharedData.targetCharacter, zombie.Info.AttackRange)) return;
+        if (zombie.IsTargetWithInDistance(blackBoard.targetCharacter, zombie.Info.AttackRange)) return;
 
         zombie.ChangeState(zombie.PatrolState);
     }
@@ -42,7 +42,7 @@ public sealed class ZombieAttackState : ZombieStateBase
     {
         base.ExitState();
 
-        sharedData.targetCharacter = null;
+        blackBoard.targetCharacter = null;
 
         if(delayedAttackRoutine != null)
         {
@@ -73,8 +73,8 @@ public sealed class ZombieAttackState : ZombieStateBase
     {
         yield return new WaitForSeconds(0.85f);
 
-        if(zombie.IsTargetWithInDistance(sharedData.targetCharacter, zombie.Info.AttackRange))
-            attackBase.Execute(sharedData.targetCharacter);
+        if(zombie.IsTargetWithInDistance(blackBoard.targetCharacter, zombie.Info.AttackRange))
+            attackBase.Execute(blackBoard.targetCharacter);
 
         yield return new WaitForSeconds(0.75f);
 

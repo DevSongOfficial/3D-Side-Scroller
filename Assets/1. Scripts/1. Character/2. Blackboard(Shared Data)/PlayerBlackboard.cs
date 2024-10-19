@@ -5,8 +5,11 @@ using UnityEngine;
 
 public sealed class PlayerBlackboard : BlackboardBase
 {
+    // Properties
+    public MovementDirection InputDirection;
+
     // Events
-    public Action<EMovementDirection> Input_ChangeDirection;
+    public Action<MovementDirection> Input_ChangeDirection;
     public Action Input_OnJump;
     public Action<Vector2> Input_Drag;
     public Action Input_MouseDown;

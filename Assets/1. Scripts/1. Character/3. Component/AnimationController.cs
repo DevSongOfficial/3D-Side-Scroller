@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.InputSystem.XR.Haptics;
 
-public class AnimationController : MonoBehaviour
+public class AnimationController
 {
     private Animator animator;
     public string CurrentState { get; private set; }
 
-    private void Awake()
+    public AnimationController(Animator animator)
     {
-        animator = GetComponentInChildren<Animator>();
+        this.animator = animator;
     }
 
     public bool ChangeState(string state, float transitionDuration = 0.1f)
@@ -31,7 +31,7 @@ public class AnimationController : MonoBehaviour
         return ChangeState(newState.ToString(), transitionDuration);
     }
 
-    public void Play(float value)
+    public void SetFrame(float value)
     {
         animator.Play(CurrentState, (int)Layer.BaseLayer, value);
     }

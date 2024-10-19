@@ -33,7 +33,7 @@ public struct DamageEvent
         return new DamageEvent(senderType, damage, knockBackVector * multiplier);
     }
 
-    public DamageEvent ApplyDirection(EMovementDirection direction)
+    public DamageEvent ApplyDirection(MovementDirection direction)
     {
         return new DamageEvent(senderType, damage, new Vector3((int)direction * knockBackVector.x, knockBackVector.y, knockBackVector.z));
     }

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   interactionRange: 2
-  movementSpeed: 5
-  acceleration: 0.06
+  movementSpeed: 4
+  acceleration: 0.19
   mass: 7
   jumpPower: 8
   localPosition_Attack: {x: 1, y: 1, z: 0}

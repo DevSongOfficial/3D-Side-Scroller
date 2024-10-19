@@ -1,4 +1,4 @@
-using System;
+using System.Xml.Schema;
 using UnityEngine;
 using static AnimationController;
 using static GameSystem;
@@ -9,7 +9,7 @@ public class GolfCart : MonoBehaviour, IInteractable
     private Interactor driver;
     public bool IsTaken => driver != null;
 
-    private MovementController movementController;
+    private CartMovementController movementController;
 
     [Header("Golf Cart Information")]
     [SerializeField] private ObjectInfo info;
@@ -26,13 +26,13 @@ public class GolfCart : MonoBehaviour, IInteractable
 
     private void Awake()
     {
-        movementController = GetComponent<MovementController>();
+        movementController = GetComponent<CartMovementController>();
         detector = GetComponent<Detector>();
     }
 
     private void Start()
     {
-        movementController.ChangeMovementDirection(EMovementDirection.Right, smoothRotation: false);
+        movementController.ChangeMovementDirection(MovementDirection.Right, smoothRotation: false);
     }
 
     private void FixedUpdate()
@@ -43,6 +43,8 @@ public class GolfCart : MonoBehaviour, IInteractable
 
     private void LateUpdate()
     {
+        HandleXRotation();
+
         if (!IsTaken) return;
 
         driver.AsDriver.InvokeEvent_OnDrive(this, transform.position, transform.eulerAngles);
@@ -54,7 +56,9 @@ public class GolfCart : MonoBehaviour, IInteractable
         driver.AsDriver.InvokeEvent_OnEnterVehicle(this); // MoveState -> OnVehicleState
 
         GameManager.SetCameraUpdateMethod(Cinemachine.CinemachineBrain.UpdateMethod.FixedUpdate);
-        GameManager.Input_OnMove += SetWishDirection;
+        GameManager.Input_OnChangeDirection += OnChangeDirection;
+
+        movementController.ToggleHorizontalMovement(true);
 
         ObjectOnTheTray?.OnPickedUp(cargoTray, shouldAlignToCenter: false);
     }
@@ -62,10 +66,13 @@ public class GolfCart : MonoBehaviour, IInteractable
     private void GetOutOfTheCart()
     {
         GameManager.SetCameraUpdateMethod(Cinemachine.CinemachineBrain.UpdateMethod.SmartUpdate);
-        GameManager.Input_OnMove -= SetWishDirection;
+        GameManager.Input_OnChangeDirection -= OnChangeDirection;
 
         driver.AsDriver.InvokeEvent_OnExitVehicle(this); // OnVehicleState -> MoveState
         driver = null;
+
+        movementController.ToggleHorizontalMovement(false);
+        velocityMultiplier = 0;
 
         ObjectOnTheTray?.OnDropedOff();
     }
@@ -82,27 +89,31 @@ public class GolfCart : MonoBehaviour, IInteractable
         }
     }
 
-    private float wishVelocity;
-    private EMovementDirection wishDirection; // Direction where player's about to move.
-    private void SetWishDirection(EMovementDirection newDirection)
+    private int velocityMultiplier;
+    private void OnChangeDirection(MovementDirection newDirection)
     {
-        wishDirection = newDirection;
-
-        if (newDirection != movementController.Direction)
-            wishVelocity = 0;
-
-        movementController.ChangeMovementDirection(wishDirection, Space.Self);
+        velocityMultiplier = newDirection == MovementDirection.None ? 0 : 1;
+        movementController.ChangeDirectionSmooth(newDirection);
     }
 
     private void HandleMovement()
     {
-        var velocity = movementController.CalculateVelocity(info.MovementSpeed, info.Acceleration, info.Mass);
-
-        if (!IsTaken || wishDirection == EMovementDirection.None)
-            velocity.x = 0;
-
-        movementController.Move(velocity * Time.fixedDeltaTime);
+        movementController.ApplyHorizontalVelocity(info.MovementSpeed * velocityMultiplier, info.Acceleration);
     }
+
+    private void HandleXRotation()
+    {
+        Physics.Raycast(movementController.RaycastPosition_ForwardWheel, Vector3.down, out RaycastHit hitForward, 1.2f, Layer.Default.GetMask());
+        Physics.Raycast(movementController.RaycastPosition_RealWheel, Vector3.down, out RaycastHit hitRear, 1.2f, Layer.Default.GetMask());
+
+        Vector3 normalVector = Vector3.zero;
+        normalVector.x = (hitRear.normal.x + hitForward.normal.x) * 0.5f;
+        normalVector.y = (hitRear.normal.y + hitForward.normal.y) * 0.5f;
+
+        Quaternion targetRotation = Quaternion.FromToRotation(transform.up, normalVector) * transform.rotation;
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+    }
+
     void AttackOnCollide()
     {
         if (!IsTaken) return;

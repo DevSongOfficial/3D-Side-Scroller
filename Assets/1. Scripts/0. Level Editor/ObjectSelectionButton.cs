@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ObjectSelectionButton : MonoBehaviour
 {
     public Button Button { get; private set; }
-    public PlaceableObject Prefab { get; private set; }
+    public PlaceableObjectBase Prefab { get; private set; }
 
     [SerializeField] private TMP_Text text;
 
@@ -15,7 +15,7 @@ public class ObjectSelectionButton : MonoBehaviour
         Button = GetComponent<Button>();
     }
 
-    public void Initialize(PlaceableObject prefab)
+    public void Initialize(PlaceableObjectBase prefab)
     {
         Prefab = prefab;
 

@@ -7,6 +7,7 @@ using UnityEngine;
 public class PlayerInfo : ObjectInfo
 {
     [SerializeField] [Range(0, 99)] private int jumpPower = 4;
+    [SerializeField][Range(1, 99)] private int mass = 7;
 
     [Header("Attack")]
     [SerializeField] private Vector3 localPosition_Attack;
@@ -16,7 +17,10 @@ public class PlayerInfo : ObjectInfo
     [Header("Swing")]
     [SerializeField] private Vector3 localPosition_Swing;
 
+
     public int JumpPower => jumpPower;
+    public int Mass => mass;
+
     public Vector3 LocalPosition_Attack => localPosition_Attack;
     public float AttackRadius => attackRadius;
     public Vector3 LocalPosition_Swing => localPosition_Swing;

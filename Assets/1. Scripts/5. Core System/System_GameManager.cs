@@ -41,7 +41,7 @@ public class System_GameManager : MonoBehaviour
     private PlayerInput input;
     public void ToggleInput(bool enable) => input.enabled = enable;
 
-    public event Action<EMovementDirection> Input_OnMove;
+    public event Action<MovementDirection> Input_OnChangeDirection;
     public event Action Input_OnJump;
     public event Action<bool> Input_OnClick;
     public event Action<Vector2> Input_OnDrag;
@@ -53,8 +53,8 @@ public class System_GameManager : MonoBehaviour
     private void OnMove(InputValue value) // [A/D], [LeftArrow/RightArrow] key down & up
     {
         var valueConverted = (int)value.Get<float>();
-        var directionToMove = (EMovementDirection)valueConverted;
-        Input_OnMove.Invoke(directionToMove);
+        var directionToMove = (MovementDirection)valueConverted;
+        Input_OnChangeDirection.Invoke(directionToMove);
     }
 
     private void OnJump() // [Space Bar] pressed

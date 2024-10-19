@@ -9,33 +9,33 @@ public static class ExtensionMethods
         return ReferenceEquals(state, another);
     }
 
-    public static Vector3 ConvertToVector3(this EMovementDirection direction)
+    public static Vector3 ConvertToVector3(this MovementDirection direction)
     {
         switch (direction)
         {
-            case EMovementDirection.Right:
+            case MovementDirection.Right:
                 return Vector3.right;
-            case EMovementDirection.Left:
+            case MovementDirection.Left:
                 return Vector3.left;
             default:
                 return Vector3.zero;
         }
     }
 
-    public static int GetYAngle(this EMovementDirection direction)
+    public static int GetYAngle(this MovementDirection direction)
     {
         switch (direction)
         {
-            case EMovementDirection.Left:
-                return MovementController.YAngle_Left;
-            case EMovementDirection.Right:
-                return MovementController.YAngle_Right;
+            case MovementDirection.Left:
+                return CharacterMovementController.YAngle_Left;
+            case MovementDirection.Right:
+                return CharacterMovementController.YAngle_Right;
             default:
                 return 0;
         }
     }
 
-    public static Vector3 ChangeVectorXWithDirection(this Vector3 vector, EMovementDirection direction)
+    public static Vector3 ChangeVectorXWithDirection(this Vector3 vector, MovementDirection direction)
     {
         return new Vector3(vector.x * (int)direction, vector.y, vector.z);
     }

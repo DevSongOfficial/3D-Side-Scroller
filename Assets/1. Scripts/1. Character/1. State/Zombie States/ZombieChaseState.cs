@@ -49,13 +49,13 @@ public sealed class ZombieChaseState : ZombieStateBase
 
         }
         
-        if (zombie.IsTargetWithInDistance(sharedData.targetCharacter, zombie.Info.AttackRange))
+        if (zombie.IsTargetWithInDistance(blackBoard.targetCharacter, zombie.Info.AttackRange))
         {
             zombie.ChangeState(zombie.AttackState);
             return;
         }
 
-        var wishDirection = zombie.MovementController.GetDirectionFrom(sharedData.targetCharacter);
+        var wishDirection = zombie.MovementController.GetDirectionFrom(blackBoard.targetCharacter);
         movement.Execute(zombie.MovementController, zombie.AnimationController, zombie.Info, wishDirection);
     }
 }

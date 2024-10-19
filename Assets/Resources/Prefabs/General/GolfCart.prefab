@@ -10,11 +10,11 @@ GameObject:
   m_Component:
   - component: {fileID: 520467057112060824}
   - component: {fileID: 4391747310091299797}
-  - component: {fileID: 6784284401806269674}
-  - component: {fileID: 3217105407945688884}
   - component: {fileID: 3403937020384855136}
-  - component: {fileID: 4165892371032561723}
+  - component: {fileID: 8984493472542904104}
   - component: {fileID: 6889814112478986434}
+  - component: {fileID: 3128437303249456849}
+  - component: {fileID: 7782150895961835375}
   m_Layer: 20
   m_Name: GolfCart
   m_TagString: Prob
@@ -30,7 +30,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 111089421821542706}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 1.87, y: 1.514, z: 0}
   m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 1
@@ -42,7 +42,7 @@ Transform:
   - {fileID: 4544765899409192919}
   - {fileID: 7697634649260634086}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &4391747310091299797
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,32 +61,6 @@ MonoBehaviour:
     damage: 2
     knockBackVector: {x: 50, y: 50, z: 0}
   cargoTray: {fileID: 4544765899409192919}
---- !u!114 &6784284401806269674
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 111089421821542706}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 920034d429efde54f8230b19d33112e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  displayName: Golf Cart
-  isKinematic: 0
---- !u!114 &3217105407945688884
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 111089421821542706}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 394c899b6fae63a4294a0febbc3f2073, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3403937020384855136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99,37 +73,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c461cbeab93726f4aaa79479998e2960, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundDetectorLeft: {fileID: 0}
-  groundDetectorRight: {fileID: 0}
+  Hitbox: {fileID: 0}
   Detection_Ground: 0
   Detection_Ray: 0
   Detection_Sphere: 0
---- !u!143 &4165892371032561723
-CharacterController:
+--- !u!114 &8984493472542904104
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 111089421821542706}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Height: 2
-  m_Radius: 0.5
-  m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5125ce0bd1dc2c548a8063673446c511, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: Golf Cart
+  isKinematic: 0
 --- !u!54 &6889814112478986434
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -138,8 +99,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 111089421821542706}
   serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
+  m_Mass: 8
+  m_Drag: 0.16
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -155,8 +116,43 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 120
   m_CollisionDetection: 0
+--- !u!65 &3128437303249456849
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 111089421821542706}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.6752074, z: 2.1585011}
+  m_Center: {x: 0, y: -0.010692775, z: 0.17418027}
+--- !u!114 &7782150895961835375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 111089421821542706}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36bcd7593b070b746bec2e465a16a7da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wheelRear: {fileID: 1050691792093329109}
+  wheelForward: {fileID: 450299435948563614}
 --- !u!1 &158224908624320252
 GameObject:
   m_ObjectHideFlags: 0

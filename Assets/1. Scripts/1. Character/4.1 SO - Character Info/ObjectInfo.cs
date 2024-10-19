@@ -13,13 +13,11 @@ public class ObjectInfo : ScriptableObject
     [Header("Movement")]
     [SerializeField] private int movementSpeed = 5;
     [SerializeField] private float acceleration = 0.1f;
-    [SerializeField][Range(1, 99)] private int mass = 1;
 
 
     public int MaxHealth => maxHealth;
     public int MovementSpeed => movementSpeed;
     public float Acceleration => acceleration;
-    public int Mass => mass;
 
     public float InteractionRange => interactionRange;
 

@@ -1,25 +1,18 @@
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
-using UnityEngine.UIElements;
-using static AnimationController;
 using static GameSystem;
 
 public sealed class PlayerCharacter : CharacterBase
 {
-    public CharacterController Controller { get; private set; }
-
     // Player Info
     public new PlayerInfo Info => info.AsPlayerInfo();
 
     // States
     // Must excute the contructor in Awake() after declaring new state here.
-    public StateBase MoveState { get; private set; } // Player Walk & Jump & Idle.
-    public StateBase SwingState { get; private set; } // Player golf swing which can be a normal swing or a powerful attack.
-    public StateBase AttackState { get; private set; } // Player basic attack.
-    public StateBase OnVehiclState { get; private set; } // Player driving vehicle including being controlled by other gameobject(like zombie).
+    public StateBase MoveState      { get; private set; } // Player Walk & Jump & Idle.
+    public StateBase JumpState      { get; private set; }
+    public StateBase SwingState     { get; private set; } // Player golf swing which can be a normal swing or a powerful attack.
+    public StateBase AttackState    { get; private set; } // Player basic attack.
+    public StateBase OnVehiclState  { get; private set; } // Player driving vehicle including being controlled by other gameobject(like zombie).
 
     // Black Board
     private PlayerBlackboard blackboard;
@@ -27,10 +20,10 @@ public sealed class PlayerCharacter : CharacterBase
     // Item Equipment
     [Header("Item Equipment")]
     [SerializeField] private ItemHolder itemHolder_1; // Clubs, weapons, ...
-    [SerializeField] private Transform itemHolder_2;  // Golf Bag, ...
-    [SerializeField] private GolfClub equippedClubOnStart;
-    private IPickupable currentlyCarriedObject;
+    [SerializeField] private Transform  itemHolder_2;  // Golf Bag, ...
+    [SerializeField] private GolfClub   clubOnStart;
     public bool IsCarryingObject => currentlyCarriedObject != null;
+    private IPickupable currentlyCarriedObject;
 
     // Effect
     [Header("Effect")]
@@ -45,23 +38,22 @@ public sealed class PlayerCharacter : CharacterBase
     {
         base.Awake();
 
-        Controller = GetComponent<CharacterController>();
-
         // Initialize Inputs
-        GameManager.Input_OnMove         += OnMove;
-        GameManager.Input_OnJump         += OnJump;
-        GameManager.Input_OnClick        += OnClick;
-        GameManager.Input_OnDrag         += OnDrag;
-        GameManager.Input_OnInteract     += OnInteract;
-        GameManager.Input_OnSwitchClub   += OnSwitchClub;
-        GameManager.Input_OnTogglePickup += OnTogglePickup;
+        GameManager.Input_OnChangeDirection += OnChangeDirection;
+        GameManager.Input_OnJump            += OnJump;
+        GameManager.Input_OnClick           += OnClick;
+        GameManager.Input_OnDrag            += OnDrag;
+        GameManager.Input_OnInteract        += OnInteract;
+        GameManager.Input_OnSwitchClub      += OnSwitchClub;
+        GameManager.Input_OnTogglePickup    += OnTogglePickup;
 
         // Initialize behaviour states
-        blackboard =    new PlayerBlackboard();
-        MoveState =     new PlayerMoveState(this, blackboard);
-        SwingState =    new PlayerSwingState(this, blackboard);
-        AttackState =   new PlayerAttackState(this, blackboard);
-        OnVehiclState = new PlayerOnVehicleState(this, blackboard);
+        blackboard      = new PlayerBlackboard();
+        MoveState       = new PlayerMoveState(this, blackboard);
+        JumpState       = new PlayerJumpState(this, blackboard);
+        SwingState      = new PlayerSwingState(this, blackboard);
+        AttackState     = new PlayerAttackState(this, blackboard);
+        OnVehiclState   = new PlayerOnVehicleState(this, blackboard);
 
         // Initialize Interactor
         Interactor.AddGolfer(itemHolder_1).AddDriver();
@@ -73,7 +65,7 @@ public sealed class PlayerCharacter : CharacterBase
     {
         base.Start();
 
-        Interactor.AsGolfer.EquipClub(equippedClubOnStart);
+        Interactor.AsGolfer.EquipClub(clubOnStart);
 
         AnimationController.SetLayerWeight(AnimationController.Layer.UpperLayer, AnimationController.UpperLayer.Off);
 
@@ -91,14 +83,15 @@ public sealed class PlayerCharacter : CharacterBase
     }
 
     #region Input Actions
-    private void OnMove(EMovementDirection directionToMove)
+    private void OnChangeDirection(MovementDirection directionToMove)
     {
-        blackboard.Input_ChangeDirection.Invoke(directionToMove);
+        blackboard.Input_ChangeDirection?.Invoke(directionToMove);
+        blackboard.InputDirection = directionToMove;
     }
 
     private void OnJump()
     {
-        blackboard.Input_OnJump.Invoke();
+        blackboard.Input_OnJump?.Invoke();
     }
 
     private void OnClick(bool mouseDown)
@@ -106,8 +99,6 @@ public sealed class PlayerCharacter : CharacterBase
         if(mouseDown)
         {
             blackboard.Input_MouseDown?.Invoke();
-            
-            if (CurrenState.CompareState(MoveState)) ChangeState(AttackState);
         }
         else // if (mouseUp)
         {

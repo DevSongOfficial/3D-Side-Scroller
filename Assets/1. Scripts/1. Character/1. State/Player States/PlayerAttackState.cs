@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -15,12 +16,13 @@ public sealed class PlayerAttackState : PlayerStateBase
     {
         base.EnterState();
 
-        player.MovementController.StopMovement();
+        blackBoard.Input_MouseUp += TryAttack;
 
-        sharedData.Input_MouseUp += TryAttack;
+        player.MovementController.ToggleHorizontalMovement(false);
 
         attackDelayLeft = attackDelay;
     }
+
 
     public override void UpdateState()
     {
@@ -38,8 +40,10 @@ public sealed class PlayerAttackState : PlayerStateBase
     {
         base.ExitState();
 
-        sharedData.Input_MouseUp -= TryAttack;
-        
+        blackBoard.Input_MouseUp -= TryAttack;
+
+        player.MovementController.ToggleHorizontalMovement(true);
+
         if (IsAttacking)
         {
             player.StopCoroutine(attackCoroutine);

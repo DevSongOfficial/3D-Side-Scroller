@@ -1,14 +1,10 @@
 using System;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class PlayerMoveState : PlayerStateBase
 {
-    public PlayerMoveState(PlayerCharacter playerCharacter, PlayerBlackboard playerBlackboard) : base(playerCharacter, playerBlackboard) 
-    {
-        sharedData.Input_ChangeDirection += OnChangeDirection;
-        sharedData.Input_OnJump += Jump;
-    }
-
+    public PlayerMoveState(PlayerCharacter playerCharacter, PlayerBlackboard playerBlackboard) : base(playerCharacter, playerBlackboard) { }
 
     private const float animationTransitionTime = 0.1f;
 
@@ -16,11 +12,20 @@ public class PlayerMoveState : PlayerStateBase
     {
         base.EnterState();
 
+        // Add listeners.
+        blackBoard.Input_ChangeDirection += OnChangeDirection;
+        blackBoard.Input_OnJump += SwithToJumpState;
+        blackBoard.Input_MouseDown += SwitchToAttackState;
+        
         // Set up animation.
         player.AnimationController.SetSpeed(AnimationController.Speed.Normal);
         player.AnimationController.ChangeState(AnimationController.Player.Movement.BT_1, animationTransitionTime);
+
+        // Check if player required to change direction during another state's routine, and it hasn't applied.
+        if (blackBoard.InputDirection != player.MovementController.Direction)
+            player.MovementController.ChangeDirectionSmooth(blackBoard.InputDirection);
     }
-    
+
     public override void UpdateState()
     {
         base.UpdateState();
@@ -38,33 +43,29 @@ public class PlayerMoveState : PlayerStateBase
     public override void ExitState()
     {
         base.ExitState();
+
+        // Remove listeners.
+        blackBoard.Input_ChangeDirection -= OnChangeDirection;
+        blackBoard.Input_OnJump -= SwithToJumpState;
+        blackBoard.Input_MouseDown -= SwitchToAttackState;
     }
 
-    EMovementDirection wishDirection;
-    private void OnChangeDirection(EMovementDirection newDirection)
+    private void OnChangeDirection(MovementDirection newDirection)
     {
-        wishDirection = newDirection;
-        player.MovementController.ChangeDirectionSmooth(wishDirection);
+        player.MovementController.ChangeDirectionSmooth(newDirection);
     }
 
     private void HandleMovement()
     {
-        // Handle velocity
-        var velocity = player.MovementController.CalculateVelocity(player.Info.MovementSpeed, player.Info.Acceleration, player.Info.Mass);
-        velocity.x = wishDirection == EMovementDirection.None ? 0 : velocity.x;
-        player.MovementController.Move(velocity * Time.fixedDeltaTime);
-        
-        // Handle X rotation 
+        // Handle velocity X
+        float velocityX = blackBoard.InputDirection == MovementDirection.None ? 0 : player.Info.MovementSpeed;
+        player.MovementController.ApplyHorizontalVelocity(velocityX, player.Info.Acceleration);
+
+        // Handle rotation X
         HandleXRotation();
 
         // Handle character controller settings
-        player.Controller.stepOffset = player.Controller.isGrounded ? 0.3f : 0;
-        
-    }
-
-    private void Jump()
-    {
-        player.MovementController.Jump(player.Info.JumpPower);
+        player.MovementController.SetStepOffset(player.MovementController.IsGrounded ? 0.3f : 0);
     }
 
     private void HandleXRotation()
@@ -79,10 +80,21 @@ public class PlayerMoveState : PlayerStateBase
     private void HandleAnimation()
     {
         var param_MoveSpeed = AnimationController.Parameter.MoveSpeed;
-        var velocity = MathF.Abs(player.MovementController.CalculateVelocity(
-            player.Info.MovementSpeed, player.Info.Acceleration, player.Info.Mass).x);
-        velocity = wishDirection == EMovementDirection.None ? 0 : velocity;
 
-        player.AnimationController.SetFloat(param_MoveSpeed, velocity);
+        var speedX = Math.Abs(player.MovementController.Velocity.x);
+        speedX = blackBoard.InputDirection == MovementDirection.None ? 0 : speedX;
+
+        player.AnimationController.SetFloat(param_MoveSpeed, speedX);
+    }
+
+    private void SwithToJumpState()
+    {
+        if (!player.MovementController.IsGrounded) return;
+        player.ChangeState(player.JumpState);
+    }
+
+    private void SwitchToAttackState()
+    {
+        player.ChangeState(player.AttackState);
     }
 }

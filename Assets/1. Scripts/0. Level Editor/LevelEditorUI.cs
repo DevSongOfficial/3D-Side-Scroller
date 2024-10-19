@@ -18,7 +18,7 @@ public class LevelEditorUI : MonoBehaviour
 
     private void Awake()
     {
-        LevelEditorManager.OnEditorModeToggled += (bool IsEditorActive) => objectSelectionGroup.SetActive(IsEditorActive);
+        LevelEditorManager.OnEditorModeToggled += (bool isOn) => objectSelectionGroup.SetActive(isOn);
 
         mouseCursorDetector.Add(MouseSectionType.Left, mouseCursorDetectorImages[0]);
         mouseCursorDetector.Add(MouseSectionType.Right, mouseCursorDetectorImages[1]);
@@ -34,7 +34,7 @@ public class LevelEditorUI : MonoBehaviour
         {
             var button = Instantiate(AssetManager.GetPrefab(Prefab.UI.SpawnButton_1), objectSelectionButtonsPanel.transform).
                 GetComponent<ObjectSelectionButton>();
-            var prefab = AssetManager.GetPrefab((Prefab.General)i).GetComponent<PlaceableObject>();
+            var prefab = AssetManager.GetPrefab((Prefab.General)i).GetComponent<PlaceableObjectBase>();
 
             button.Initialize(prefab);
             objectSelectionButtons[i] = button;

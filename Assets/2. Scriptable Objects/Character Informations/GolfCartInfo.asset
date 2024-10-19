@@ -15,4 +15,4 @@ MonoBehaviour:
   maxHealth: 100
   interactionRange: 2
   movementSpeed: 5
-  acceleration: 10
+  acceleration: 0.7

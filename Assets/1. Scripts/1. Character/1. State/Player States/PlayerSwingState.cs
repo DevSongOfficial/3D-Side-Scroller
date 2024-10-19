@@ -32,10 +32,10 @@ public class PlayerSwingState : PlayerStateBase
     {
         base.EnterState();
 
-        sharedData.Input_MouseUp += StartDownSwing;
+        blackBoard.Input_MouseUp += StartDownSwing;
 
         player.AnimationController.ChangeState(AnimationController.Player.Attack.Swing, 0.01f);
-        player.MovementController.ChangeMovementDirection(EMovementDirection.Right, smoothRotation: false);
+        player.MovementController.ChangeMovementDirection(MovementDirection.Right, smoothRotation: false);
 
         currentFrame = 0;
         powerCharged = powerDefault;
@@ -44,15 +44,19 @@ public class PlayerSwingState : PlayerStateBase
         backSwingCoroutine = player.StartCoroutine(BackSwing());
     }
 
+    public override void FixedUpdateState()
+    {
+        base.FixedUpdateState();
+    }
+
     public override void ExitState()
     {
         base.ExitState();
 
-        sharedData.Input_MouseUp -= StartDownSwing;
+        blackBoard.Input_MouseUp -= StartDownSwing;
 
         Cursor.lockState = CursorLockMode.None;
         player.AnimationController.SetSpeed(AnimationController.Speed.Normal);
-        player.MovementController.StopMovement();
 
         player.SetAuraAlpha(0);
 
@@ -183,6 +187,6 @@ public class PlayerSwingState : PlayerStateBase
     private void PlaySwingAnimation(float frame)
     {
         player.AnimationController.SetSpeed(AnimationController.Speed.Pause);
-        player.AnimationController.Play(frame / MaxFrame);
+        player.AnimationController.SetFrame(frame / MaxFrame);
     }
 }

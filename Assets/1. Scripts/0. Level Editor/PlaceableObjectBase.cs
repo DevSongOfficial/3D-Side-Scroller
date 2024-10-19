@@ -4,30 +4,32 @@ using UnityEngine;
 using static GameSystem;
 
 [RequireComponent(typeof(Collider))]
-//[RequireComponent(typeof(Rigidbody))]
-public class PlaceableObject : MonoBehaviour
+[RequireComponent(typeof(Rigidbody))]
+public abstract class PlaceableObjectBase : MonoBehaviour
 {
     [Tooltip("The name displayed in UI or editor for this object.")]
     [SerializeField] private string displayName;
     public string DisplayName => displayName;
 
     [Tooltip("This stops forces or collisions from affecting the rigidbody")]
-    [SerializeField] private bool isKinematic;
+    [SerializeField] protected bool isKinematic;
 
     // [editorCollider] is only for checking if placeableObjects are overlapped with other GameObjects.
-    // Actual collider when playing game is [gameColliders]. (In case one has more than two colliders, I used generic list.)
     protected Collider editorCollider;
+    
+    // Actual collider when playing game is [gameColliders]. (In case one has more than two colliders, I used generic list.)
+    // Characters basically have [CharacterController] instead of [Collider]s and [Rigidbody].
     private List<Collider> gameColliders = new List<Collider>();
     protected Rigidbody rigidBody;
 
-    public bool CanBePlaced { get { return overlappedObjectsCount <= 0; } }
+    public bool CanBePlaced { get { return overlappedObjectsCount == 0; } }
     private int overlappedObjectsCount;
 
     // Events
-    public static event Action<PlaceableObject> OnObjectSelectedForPlacing;
+    public static event Action<PlaceableObjectBase> OnObjectSelectedForPlacing;
 
-    public static PlaceableObject CurrentlySelected { get; private set; } // The object player's dealing with at the moment.
-    public static void SelectCurrentObject(PlaceableObject newPlaceableObject) { CurrentlySelected = newPlaceableObject; }
+    public static PlaceableObjectBase CurrentlySelected { get; private set; } // The object player's dealing with at the moment.
+    public static void SelectCurrentObject(PlaceableObjectBase newPlaceableObject) { CurrentlySelected = newPlaceableObject; }
 
     // This function is called only when player click a button in the level editor in order to create new object.
     public void OnSelectObjectWhenPlacing()
@@ -42,13 +44,13 @@ public class PlaceableObject : MonoBehaviour
     }
 
     #region Registration of Object Placement
-    private static List<PlaceableObject> PlaceableObjectsInTheScene;
-    private static void RegisterPlaceableObject(PlaceableObject newPlaceableObject) 
+    private static List<PlaceableObjectBase> PlaceableObjectsInTheScene;
+    private static void RegisterPlaceableObject(PlaceableObjectBase newPlaceableObject) 
     {
         PlaceableObjectsInTheScene.Add(newPlaceableObject);
     }
 
-    public static void UnregisterPlaceableObject(PlaceableObject newPlaceableObject)
+    public static void UnregisterPlaceableObject(PlaceableObjectBase newPlaceableObject)
     {
         if (PlaceableObjectsInTheScene.Contains(newPlaceableObject))
         {
@@ -60,13 +62,13 @@ public class PlaceableObject : MonoBehaviour
 
     protected virtual void Awake()
     {
+        rigidBody = GetComponent<Rigidbody>();
+        rigidBody.isKinematic = true;
+
         editorCollider = GetComponent<Collider>();
+        editorCollider.isTrigger = true;
 
         gameObject.SetLayer(Layer.PlaceableObject);
-
-        // Initialize Rigidbody
-        rigidBody = GetComponent<Rigidbody>();
-        if (rigidBody != null) rigidBody.isKinematic = true;
 
         // Initialize actual collider(s) of the body.
         for (int i = 0; i < transform.childCount; i++)
@@ -84,7 +86,7 @@ public class PlaceableObject : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void Initialization()
     {
-        PlaceableObjectsInTheScene = new List<PlaceableObject>();
+        PlaceableObjectsInTheScene = new List<PlaceableObjectBase>();
     }
 
     private void OnEnable()
@@ -104,12 +106,10 @@ public class PlaceableObject : MonoBehaviour
         transform.Rotate(0, 180, 0);
     }
 
-    protected virtual void OnLevelEditorToggled(bool active)
+    protected virtual void OnLevelEditorToggled(bool isOn)
     {
-        SetBodyCollision(!active);
-        SetEditorCollision(active);
-        
-        if(rigidBody != null) rigidBody.isKinematic = isKinematic ? true: active;
+        SetBodyCollision(!isOn);
+        SetEditorCollision(isOn);        
     }
 
     public void SetActive(bool active)
@@ -130,9 +130,9 @@ public class PlaceableObject : MonoBehaviour
         }
     }
 
-    private PlaceableObject CreatePlaceableObject()
+    private PlaceableObjectBase CreatePlaceableObject()
     {
-        var newObject = Instantiate(gameObject).GetComponent<PlaceableObject>();
+        var newObject = Instantiate(gameObject).GetComponent<PlaceableObjectBase>();
 
         return newObject;
     }
@@ -140,7 +140,6 @@ public class PlaceableObject : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareLayer(Layer.PlaceableObject)) return;
-        if (other.gameObject == gameObject) return;
 
         overlappedObjectsCount++;
     }

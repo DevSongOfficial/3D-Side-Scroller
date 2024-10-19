@@ -3,74 +3,47 @@ using UnityEngine;
 
 public class Detector : MonoBehaviour
 {
-    private MovementController movementController;
-    private new Collider collider;
-
-    // Ground Detection
-    [SerializeField] private Transform groundDetectorLeft;
-    [SerializeField] private Transform groundDetectorRight;
-    public Transform GroundDetector_Left => groundDetectorLeft;
-    public Transform GroundDetector_Right => groundDetectorRight;
+    private CharacterMovementController movementController;
+    [SerializeField] private Collider Hitbox;
 
     public Vector3 ColliderCenter
     {
         get
         {
+            if (Hitbox == null) return transform.position;
+
             Vector3 vector;
-            if (collider.enabled == false)
+            if (Hitbox.enabled == false)
             {
-                collider.enabled = true;
-                vector = collider.bounds.center;
-                collider.enabled = false;
+                Hitbox.enabled = true;
+                vector = Hitbox.bounds.center;
+                Hitbox.enabled = false;
                 return vector;
             }
-            return collider.bounds.center;
+            return Hitbox.bounds.center;
         }
     }
 
     [Header("Debug Detection Ray (ONLY FOR DEBUGGING)")]
-    [SerializeField] private bool Detection_Ground = false;
     //[SerializeField] private bool Detection_Wall = false;
     [SerializeField] private bool Detection_Ray = false;
     [SerializeField] private bool Detection_Sphere = false;
 
     private void LateUpdate()
     {
-        Debug_GroundDetectionRay();
         //if (Detection_Wall) { /* DebugWallDetectionRay(); */ }
     }
 
     private void Awake()
     {
-        movementController = GetComponent<MovementController>();
-        collider = GetComponentInChildren<BoxCollider>();
-    }
-
-    public bool GroundDetected()
-    {
-        float extraLength = 0.1f;
-        var rayDistance = collider.bounds.extents.y + extraLength;
-        
-        bool rightSide;
-        {
-            var startingPosition = new Vector3(collider.bounds.max.x, collider.bounds.center.y, collider.bounds.center.z);
-            rightSide = Physics.Raycast(startingPosition, Vector3.down, rayDistance);
-        }
-
-        bool leftSide;
-        {
-            var startingPosition = new Vector3(collider.bounds.min.x, collider.bounds.center.y, collider.bounds.center.z);
-            leftSide = Physics.Raycast(startingPosition, Vector3.down, rayDistance);
-        }
-
-        return rightSide || leftSide;
+        movementController = GetComponent<CharacterMovementController>();
     }
 
     public bool CharacterDetected<T/* T: Type of component trying to get */>(RayInfo rayInfo, out T character) where T : CharacterBase
     {
         character = null;
 
-        var startingPosition = rayInfo.startingPosition ?? collider.bounds.center;
+        var startingPosition = rayInfo.startingPosition ?? Hitbox.bounds.center;
         var direction = rayInfo.direction ?? movementController.Direction.ConvertToVector3();
         var distance = rayInfo.distance;
 
@@ -157,28 +130,6 @@ public class Detector : MonoBehaviour
 
     #region Functions for debugging
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
-    private void Debug_GroundDetectionRay()
-    {
-        if (!Detection_Ground) return;
-
-        float extraLength = 0.1f;
-        var rayDistance = collider.bounds.extents.y + extraLength;
-
-        bool rightSide;
-        {
-            var startingPosition = new Vector3(collider.bounds.max.x, collider.bounds.center.y, collider.bounds.center.z);
-            rightSide = Physics.Raycast(startingPosition, Vector3.down, rayDistance);
-            UnityEngine.Debug.DrawRay(startingPosition, Vector3.down * rayDistance, Color.yellow);
-        }
-        bool leftSide;
-        {
-            var startingPosition = new Vector3(collider.bounds.min.x, collider.bounds.center.y, collider.bounds.center.z);
-            leftSide = Physics.Raycast(startingPosition, Vector3.down, rayDistance);
-            UnityEngine.Debug.DrawRay(startingPosition, Vector3.down * rayDistance, Color.green);
-        }
-    }
-
-    [System.Diagnostics.Conditional("UNITY_EDITOR")]
     private void Debug_DrawRay(Vector3 start, Vector3 dir, Color color)
     {
         if (!Detection_Ray) return;
@@ -201,12 +152,12 @@ public class Detector : MonoBehaviour
 
     public void EnableCollider()
     {
-        collider.enabled = true;
+        //Hitbox.enabled = true;
     }
 
     public void DisableCollider()
     {
-        collider.enabled = false;
+        //Hitbox.enabled = false;
     }
 }
 
@@ -223,7 +174,7 @@ public struct RayInfo
         this.distance = distance;
     }
 
-    public RayInfo(EMovementDirection direction, float distance, Vector3? startingPosition = null)
+    public RayInfo(MovementDirection direction, float distance, Vector3? startingPosition = null)
     {
         this.startingPosition = startingPosition;
         this.distance = distance;

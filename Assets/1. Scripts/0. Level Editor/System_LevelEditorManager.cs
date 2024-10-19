@@ -32,7 +32,7 @@ public class System_LevelEditorManager : MonoBehaviour
 
     private void Awake()
     {
-        PlaceableObject.OnObjectSelectedForPlacing += delegate { SetEditorMode(EditorMode.Placing); };
+        PlaceableObjectBase.OnObjectSelectedForPlacing += delegate { SetEditorMode(EditorMode.Placing); };
     }
 
     private void Start()
@@ -69,10 +69,10 @@ public class System_LevelEditorManager : MonoBehaviour
         switch (Mode)
         {
             case EditorMode.None:
-                PlaceableObject.SelectCurrentObject(null);
+                PlaceableObjectBase.SelectCurrentObject(null);
                 break;
             case EditorMode.Editing:
-                PlaceableObject.SelectCurrentObject(null);
+                PlaceableObjectBase.SelectCurrentObject(null);
                 break;
             case EditorMode.Placing:
                 break;
@@ -90,17 +90,17 @@ public class System_LevelEditorManager : MonoBehaviour
 
     private void PlaceSelectedObject()
     {
-        if (PlaceableObject.CurrentlySelected is null) return;
-        if (!PlaceableObject.CurrentlySelected.CanBePlaced) return;
+        if (PlaceableObjectBase.CurrentlySelected is null) return;
+        if (!PlaceableObjectBase.CurrentlySelected.CanBePlaced) return;
         SetEditorMode(EditorMode.Editing);
     }
 
     private void RemoveSelectedObject()
     {
-        if (PlaceableObject.CurrentlySelected is null) return;
+        if (PlaceableObjectBase.CurrentlySelected is null) return;
 
-        PlaceableObject.UnregisterPlaceableObject(PlaceableObject.CurrentlySelected);
-        PlaceableObject.CurrentlySelected.SetActive(false);
+        PlaceableObjectBase.UnregisterPlaceableObject(PlaceableObjectBase.CurrentlySelected);
+        PlaceableObjectBase.CurrentlySelected.SetActive(false);
 
         SetEditorMode(EditorMode.Editing);
     }
@@ -119,7 +119,7 @@ public class System_LevelEditorManager : MonoBehaviour
 
     private void HandleObjectRemovement()
     {
-        if(PlaceableObject.CurrentlySelected is null) return;
+        if(PlaceableObjectBase.CurrentlySelected is null) return;
 
         if (Input.GetKeyDown(removeObject))
         {
@@ -133,23 +133,23 @@ public class System_LevelEditorManager : MonoBehaviour
         
         if(Input.GetKeyDown(selectObject))
         {
-            if(PlaceableObject.CurrentlySelected != null)
+            if(PlaceableObjectBase.CurrentlySelected != null)
             {
-                if (!PlaceableObject.CurrentlySelected.CanBePlaced) return;
+                if (!PlaceableObjectBase.CurrentlySelected.CanBePlaced) return;
 
-                PlaceableObject.SelectCurrentObject(null);
+                PlaceableObjectBase.SelectCurrentObject(null);
                 movementOffset = Vector3.zero;
                 return;
             }
 
-            if(!UI.TryGetComponentFromMousePosition(out PlaceableObject selectedObject, Layer.PlaceableObject))
+            if(!UI.TryGetComponentFromMousePosition(out PlaceableObjectBase selectedObject, Layer.PlaceableObject))
             {
                  Debug.Log("Detected Object: NOTHING");
                  return;
             }
             else Debug.Log($"Detected Object: {selectedObject}");
 
-            PlaceableObject.SelectCurrentObject(selectedObject);
+            PlaceableObjectBase.SelectCurrentObject(selectedObject);
             movementOffset = selectedObject.transform.position - UI.GetWorldPositionFromMousePosition(ignorePlaceableObjectLayer: false);
         }
     }
@@ -157,7 +157,7 @@ public class System_LevelEditorManager : MonoBehaviour
     private Vector3 movementOffset;
     private void HandleObjectMovement()
     {
-        var obj = PlaceableObject.CurrentlySelected;
+        var obj = PlaceableObjectBase.CurrentlySelected;
 
         if (obj is null) return;
         obj.transform.position = UI.GetWorldPositionFromMousePosition() + movementOffset;
@@ -168,12 +168,12 @@ public class System_LevelEditorManager : MonoBehaviour
 
     private void HandleObjectRotation()
     {
-        if (PlaceableObject.CurrentlySelected is null) return;
+        if (PlaceableObjectBase.CurrentlySelected is null) return;
         if (Mode != EditorMode.Placing && Mode != EditorMode.Editing) return;
 
         if (Input.GetKeyDown(reverseRotation))
         {
-            PlaceableObject.CurrentlySelected.InverseRotation();
+            PlaceableObjectBase.CurrentlySelected.InverseRotation();
         }
     }
 }

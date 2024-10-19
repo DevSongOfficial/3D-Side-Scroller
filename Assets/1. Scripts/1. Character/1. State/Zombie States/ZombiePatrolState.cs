@@ -5,7 +5,7 @@ using UnityEngine;
 public sealed class ZombiePatrolState : ZombieStateBase
 {
     private ZombieMovementBase movement;
-    private EMovementDirection movementDirection = EMovementDirection.None;
+    private MovementDirection movementDirection = MovementDirection.None;
 
     public ZombiePatrolState(ZombieCharacter zombieCharacter, ZombieBlackboard zomebieBlackboard, ZombieMovementBase movementType) : base(zombieCharacter, zomebieBlackboard)
     {
@@ -24,8 +24,8 @@ public sealed class ZombiePatrolState : ZombieStateBase
         base.UpdateState();
 
         // For Debugging
-        if (Input.GetKeyDown(KeyCode.X)) { movementDirection = EMovementDirection.Right; }
-        if (Input.GetKeyDown(KeyCode.Z)) { movementDirection = EMovementDirection.Left; }
+        if (Input.GetKeyDown(KeyCode.X)) { movementDirection = MovementDirection.Right; }
+        if (Input.GetKeyDown(KeyCode.Z)) { movementDirection = MovementDirection.Left; }
     }
 
     public override void FixedUpdateState()
@@ -46,7 +46,7 @@ public sealed class ZombiePatrolState : ZombieStateBase
 
         if (zombie.Detector.CharacterDetected(rayInfo, out PlayerCharacter target))
         {
-            sharedData.targetCharacter = target;
+            blackBoard.targetCharacter = target;
             zombie.ChangeState(zombie.ChaseState);
             return;
         }

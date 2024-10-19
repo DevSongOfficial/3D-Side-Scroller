@@ -2,39 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed class PlaceableCharacter : PlaceableObject
+[RequireComponent(typeof(CharacterBase))]
+[RequireComponent(typeof(CharacterController))]
+public sealed class PlaceableCharacter : PlaceableObjectBase
 {
     private CharacterBase character;
-    private Detector detector;
 
     protected override void Awake()
     {
         base.Awake();
 
         character = GetComponent<CharacterBase>();
-        detector = GetComponent<Detector>();
     }
 
     protected override void Start()
     {
         base.Start();
 
-        character.MovementController.ChangeMovementDirection(EMovementDirection.Right);
+        character.MovementController.ChangeMovementDirection(MovementDirection.Right);
     }
 
-    protected override void OnLevelEditorToggled(bool active)
+    protected override void OnLevelEditorToggled(bool isOn)
     {
-        base.OnLevelEditorToggled(active);
+        base.OnLevelEditorToggled(isOn);
 
-        character.enabled = !active;
-        detector.enabled = !active;
+        character.enabled = !isOn;
+        character.Detector.enabled = !isOn;
+        character.MovementController.SetActive(!isOn);
     }
 
     public override void InverseRotation()
     {
-        if(character.MovementController.Direction == EMovementDirection.Left)
-            character.MovementController.ChangeMovementDirection(EMovementDirection.Right);
+        if(character.MovementController.Direction == MovementDirection.Left)
+            character.MovementController.ChangeMovementDirection(MovementDirection.Right);
         else
-            character.MovementController.ChangeMovementDirection(EMovementDirection.Left);
+            character.MovementController.ChangeMovementDirection(MovementDirection.Left);
     }
 }

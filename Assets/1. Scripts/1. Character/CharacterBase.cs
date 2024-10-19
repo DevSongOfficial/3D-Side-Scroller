@@ -4,22 +4,23 @@ using UnityEngine.Networking;
 using static GameSystem;
 
 [RequireComponent(typeof(Detector))]
-[RequireComponent(typeof(MovementController))]
-[RequireComponent(typeof(AnimationController))]
+[RequireComponent(typeof(CharacterMovementController))]
 public abstract class CharacterBase : MonoBehaviour, IDamageable
 {
     // Movement Controller
-    public MovementController MovementController { get; private set; }
+    public CharacterMovementController MovementController { get; private set; }
 
-    // Animation Controller
-    public AnimationController AnimationController { get; private set; }
 
     // Detector for detecting wall, ground, other characters, and anything else.
     // This component also handles [Collider] of the character.
     public Detector Detector { get; private set; }
 
-    // Interactor (Non-Monobehaviour)
+    // Interactor
     public Interactor Interactor { get; protected set; }
+
+    // Animation Controller
+    public AnimationController AnimationController { get; private set; }
+    private Animator animator;
 
     // Health System
     protected HealthSystem healthSystem;
@@ -44,11 +45,13 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
     protected virtual void Awake()
     {
         Detector = GetComponent<Detector>();
-        MovementController = GetComponent<MovementController>();
-        AnimationController = GetComponent<AnimationController>();
+        MovementController = GetComponent<CharacterMovementController>();
 
         healthSystem = new HealthSystem(info.MaxHealth);
         Interactor = new Interactor(this);
+
+        animator = GetComponentInChildren<Animator>();
+        AnimationController = new AnimationController(animator);
     }
 
     protected virtual void Start() { }
@@ -82,7 +85,6 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
     }
 
     // Downcast for CharacterBase-Derived objects that are being upcast
-
     public virtual PlayerCharacter AsPlayer()
     {
         return null;

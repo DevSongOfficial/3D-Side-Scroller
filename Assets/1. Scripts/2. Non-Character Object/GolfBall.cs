@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(SphereCollider))]
 [RequireComponent(typeof(Rigidbody))]
-public sealed class GolfBall : PlaceableObject, IDamageable
+public sealed class GolfBall : PlaceableProb, IDamageable
 {
     public static readonly float FixedZPosition = -0.85f;
 
