@@ -1,15 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public sealed class ZombieBlackboard : BlackboardBase
 {
-    // Constructors
-    public ZombieBlackboard() { }
-
-    // Target Detectection
+    // Properties
     public CharacterBase targetCharacter;
+    public bool isDead;
 
-    // Events
+    // Shader effects
+    public SkinnedMeshRenderer skinnedMeshRenderer;
+    public List<Material> skinMaterials;
 }

@@ -53,7 +53,7 @@ MonoBehaviour:
   damageEvent:
     senderType: 2
     damage: 45
-    knockBackVector: {x: 250, y: 50, z: 0}
+    knockBackVelocity: {x: 5, y: 4, z: 0}
 --- !u!33 &2559094890462520710
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -157,7 +157,7 @@ MonoBehaviour:
   damageEvent:
     senderType: 2
     damage: 15
-    knockBackVector: {x: 100, y: 25, z: 0}
+    knockBackVelocity: {x: 2, y: 2, z: 0}
 --- !u!33 &6196278816430614379
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -343,7 +343,7 @@ MonoBehaviour:
   damageEvent:
     senderType: 1
     damage: 10
-    knockBackVector: {x: 10, y: 10, z: 0}
+    knockBackVelocity: {x: 1, y: 1, z: 0}
 --- !u!1 &2641207341594066961
 GameObject:
   m_ObjectHideFlags: 0
@@ -537,7 +537,7 @@ MonoBehaviour:
   damageEvent:
     senderType: 2
     damage: 25
-    knockBackVector: {x: 100, y: 150, z: 0}
+    knockBackVelocity: {x: 3, y: 6, z: 0}
 --- !u!33 &1995522523270915113
 MeshFilter:
   m_ObjectHideFlags: 0

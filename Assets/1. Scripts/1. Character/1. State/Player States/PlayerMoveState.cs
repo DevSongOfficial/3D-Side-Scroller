@@ -1,5 +1,4 @@
 using System;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class PlayerMoveState : PlayerStateBase
@@ -23,7 +22,7 @@ public class PlayerMoveState : PlayerStateBase
 
         // Check if player required to change direction during another state's routine, and it hasn't applied.
         if (blackBoard.InputDirection != player.MovementController.Direction)
-            player.MovementController.ChangeDirectionSmooth(blackBoard.InputDirection);
+            player.MovementController.StopAndChangeDirection(blackBoard.InputDirection);
     }
 
     public override void UpdateState()
@@ -52,11 +51,13 @@ public class PlayerMoveState : PlayerStateBase
 
     private void OnChangeDirection(MovementDirection newDirection)
     {
-        player.MovementController.ChangeDirectionSmooth(newDirection);
+        player.MovementController.StopAndChangeDirection(newDirection);
     }
 
     private void HandleMovement()
     {
+        if (player.MovementController.IsStunned) return;
+
         // Handle velocity X
         float velocityX = blackBoard.InputDirection == MovementDirection.None ? 0 : player.Info.MovementSpeed;
         player.MovementController.ApplyHorizontalVelocity(velocityX, player.Info.Acceleration);

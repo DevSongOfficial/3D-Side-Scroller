@@ -93,7 +93,7 @@ public class GolfCart : MonoBehaviour, IInteractable
     private void OnChangeDirection(MovementDirection newDirection)
     {
         velocityMultiplier = newDirection == MovementDirection.None ? 0 : 1;
-        movementController.ChangeDirectionSmooth(newDirection);
+        movementController.StopAndChangeDirection(newDirection);
     }
 
     private void HandleMovement()
@@ -127,7 +127,7 @@ public class GolfCart : MonoBehaviour, IInteractable
                 if (character is null) continue;
 
                 var newDamageEvent = damageEvent.
-                    MultiplyKnockback(movementController.Velocity.x * 0.5f).
+                    MultiplyVelocity(movementController.Velocity.x * 0.5f).
                     ApplyDirection(movementController.FacingDirection);
                 character.TakeDamage(newDamageEvent);
             }
@@ -141,16 +141,5 @@ public class GolfCart : MonoBehaviour, IInteractable
 
         ObjectOnTheTray = pickupable;
 
-        Debug.Log("Enter");
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        var pickupable = other.transform.parent?.GetComponent<IPickupable>();
-        if (pickupable != ObjectOnTheTray) return;
-
-        ObjectOnTheTray = null;
-
-        Debug.Log("Exit");
     }
 }

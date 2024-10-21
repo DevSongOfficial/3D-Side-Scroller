@@ -781,7 +781,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Hitbox: {fileID: 0}
-  Detection_Ground: 0
   Detection_Ray: 0
   Detection_Sphere: 1
 --- !u!143 &656215150

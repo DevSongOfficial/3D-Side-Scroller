@@ -152,7 +152,7 @@ public class PlayerSwingState : PlayerStateBase
 
             var damageEvent = player.Interactor.AsGolfer.CurrentClub.DamageEvent.
                 ApplyDirection(player.MovementController.FacingDirection).
-                MultiplyKnockback(powerCharged).
+                MultiplyVelocity(powerCharged).
                 MultiplyDamage(powerCharged > 2 ? 3 : 2);
 
             foreach (var damageable in damageables)

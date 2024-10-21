@@ -18,6 +18,8 @@ public sealed class ZombieAttackState : ZombieStateBase
     public override void EnterState()
     {
         base.EnterState();
+
+        zombie.MovementController.SetVelocity(0, zombie.MovementController.Velocity.y);
     }
 
     public override void UpdateState()
@@ -74,7 +76,7 @@ public sealed class ZombieAttackState : ZombieStateBase
         yield return new WaitForSeconds(0.85f);
 
         if(zombie.IsTargetWithInDistance(blackBoard.targetCharacter, zombie.Info.AttackRange))
-            attackBase.Execute(blackBoard.targetCharacter);
+            attackBase.Execute(zombie, blackBoard.targetCharacter);
 
         yield return new WaitForSeconds(0.75f);
 

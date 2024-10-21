@@ -1808,6 +1808,9 @@ MonoBehaviour:
   movementOnPatrol: {fileID: 11400000, guid: 61fde9025cafa364eba295a0d55ada1d, type: 2}
   movementOnChase: {fileID: 11400000, guid: 1b92bca5191cb544d9ee90df479fa96e, type: 2}
   attackDefault: {fileID: 11400000, guid: 2fa11e0b8dea3894aad890aed83da8e4, type: 2}
+  skinnedMeshRenderer: {fileID: 2548272326740091275}
+  mat1: {fileID: 2100000, guid: 11f2d89aaba026846910e1a56590b659, type: 2}
+  mat2: {fileID: 2100000, guid: dfe0945ecdb39444d82df8c7e1619ec9, type: 2}
 --- !u!114 &2515465148627592982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1821,7 +1824,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Hitbox: {fileID: 7674178464137032800}
-  Detection_Ground: 0
   Detection_Ray: 0
   Detection_Sphere: 0
 --- !u!114 &1422607468576884980
@@ -1894,7 +1896,7 @@ CharacterController:
   m_Height: 1.61
   m_Radius: 0.32
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0.1
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.8, z: 0}

@@ -7,6 +7,13 @@ using UnityEngine;
 public sealed class CharacterMovementController : MovementController
 {
     public override bool IsGrounded => controller.isGrounded;
+    public bool IsStunned { get; private set; }
+    public void StunCharacter()
+    {
+        IsStunned = true;
+        groundedAfterLand = false;
+    }
+    private bool groundedAfterLand;
 
     // [CharacterMovementController] uses [CharacterController] for movement.
     private CharacterController controller;
@@ -16,6 +23,13 @@ public sealed class CharacterMovementController : MovementController
         base.Awake();
 
         controller = GetComponent<CharacterController>();
+    }
+
+    protected override void FixedUpdate()
+    {
+        base.FixedUpdate();
+
+        HandleStun();
     }
 
     protected override void Move()
@@ -34,8 +48,22 @@ public sealed class CharacterMovementController : MovementController
         controller.enabled = isOn;
     }
 
+    // Unstun after landing.
+    private void HandleStun()
+    {
+        if (!IsStunned) return;
+        if (!IsGrounded)
+        {
+            groundedAfterLand = true;
+            return;
+        }
+        if (!groundedAfterLand) return;
+
+        IsStunned = false;
+        groundedAfterLand = false;
+    }
+
     // Transform
-    #region Child's Transform
     public void SetPosition(Vector3 position)
     {
         bool isEnabled = enabled;
@@ -54,5 +82,4 @@ public sealed class CharacterMovementController : MovementController
     {
         transform.GetChild(0).localEulerAngles = rotation;
     }
-    #endregion
 }

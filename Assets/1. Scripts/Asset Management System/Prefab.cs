@@ -16,4 +16,3 @@ public struct Prefab {
 		SpawnButton_1,
 	}
 }
-

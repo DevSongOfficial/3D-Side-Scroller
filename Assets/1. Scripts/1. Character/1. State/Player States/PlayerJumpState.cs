@@ -13,7 +13,7 @@ public class PlayerJumpState : PlayerStateBase
 
         blackBoard.Input_ChangeDirection += OnChangeDirection;
 
-        player.MovementController.Jump(player.Info.JumpPower);
+        player.MovementController.SetVelocity(player.MovementController.Velocity.x, player.Info.JumpPower);
         player.AnimationController.ChangeState(AnimationController.Player.Movement.Jump, 0);
     }
     public override void UpdateState()
@@ -41,7 +41,7 @@ public class PlayerJumpState : PlayerStateBase
 
     private void OnChangeDirection(MovementDirection newDirection)
     {
-        player.MovementController.ChangeDirectionSmooth(newDirection);
+        player.MovementController.StopAndChangeDirection(newDirection);
     }
 
 }

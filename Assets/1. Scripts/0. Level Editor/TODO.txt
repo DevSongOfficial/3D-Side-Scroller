@@ -1,8 +1,2 @@
-﻿
-
-
-<<< 추가할 사항 >>>
-1. 오브젝트끼리 겹치는지(X, Y) 판단 (O)
-1.1 Placing Mode 중 겹치면 겹친다고 표시 - 셰이더 사용
+﻿1.1 Placing Mode 중 overlapped 영역 표시 - 셰이더 사용
 2. 에디터 모드 중 화면 움직임 -> 이 부분 리팩토링
-	+ LevelEditorManager에서 UI 관련 LevelEditorUI.cs 로 옮기기

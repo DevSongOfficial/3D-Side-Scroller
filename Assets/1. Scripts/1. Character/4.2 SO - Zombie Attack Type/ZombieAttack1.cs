@@ -7,8 +7,9 @@ public sealed class ZombieAttack1 : ZombieAttackBase
 {
     [SerializeField] private DamageEvent damageEvent;
 
-    public override void Execute(CharacterBase target)
+    public override void Execute(ZombieCharacter attacker, CharacterBase target)
     {
-        target.TakeDamage(damageEvent) ;
+        var direction = attacker.MovementController.GetDirectionFrom(target);
+        target.TakeDamage(damageEvent.ApplyDirection(direction));
     }
 }

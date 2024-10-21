@@ -1,3 +1,4 @@
+using System.Threading;
 using UnityEngine;
 using static GameSystem;
 
@@ -32,7 +33,6 @@ public sealed class PlayerCharacter : CharacterBase
     {
         auraEffect.sharedMaterial.SetFloat("_AlphaMultiplier", alphaMultiplier);
     }
-
 
     protected override void Awake()
     {
@@ -148,6 +148,7 @@ public sealed class PlayerCharacter : CharacterBase
     public override void TakeDamage(DamageEvent damageEvent)
     {
         base.TakeDamage(damageEvent);
+        MovementController.StunCharacter();
     }
 
     public override PlayerCharacter AsPlayer()

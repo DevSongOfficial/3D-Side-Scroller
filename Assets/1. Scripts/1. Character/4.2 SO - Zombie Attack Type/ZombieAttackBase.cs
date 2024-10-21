@@ -16,5 +16,5 @@ public abstract class ZombieAttackBase : ScriptableObject
     public float CooldownTime => cooldownTime;
     
 
-    public abstract void Execute(CharacterBase target /* Target character to attack */);
+    public abstract void Execute(ZombieCharacter attacker, CharacterBase target /* Target character to attack */);
 }

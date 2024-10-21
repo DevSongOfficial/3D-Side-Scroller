@@ -7,35 +7,35 @@ public struct DamageEvent
     public EventSenderType senderType;
 
     public int damage;
-    public Vector3 knockBackVector;
+    public Vector3 knockBackVelocity;
 
     public DamageEvent(EventSenderType senderType, int damage)
     {
         this.senderType = senderType;
         this.damage = damage;
-        knockBackVector = Vector3.zero;
+        knockBackVelocity = Vector3.zero;
     }
 
-    public DamageEvent(EventSenderType senderType, int damage, Vector3 knockBackVector) 
+    public DamageEvent(EventSenderType senderType, int damage, Vector3 knockBackVelocity) 
     {
         this.senderType = senderType;
         this.damage = damage;
-        this.knockBackVector = knockBackVector;
+        this.knockBackVelocity = knockBackVelocity;
     }
 
     public DamageEvent MultiplyDamage(int multiplier)
     {
-        return new DamageEvent(senderType, damage * multiplier, knockBackVector);
+        return new DamageEvent(senderType, damage * multiplier, knockBackVelocity);
     }
 
-    public DamageEvent MultiplyKnockback(float multiplier)
+    public DamageEvent MultiplyVelocity(float multiplier)
     {
-        return new DamageEvent(senderType, damage, knockBackVector * multiplier);
+        return new DamageEvent(senderType, damage, knockBackVelocity * multiplier);
     }
 
     public DamageEvent ApplyDirection(MovementDirection direction)
     {
-        return new DamageEvent(senderType, damage, new Vector3((int)direction * knockBackVector.x, knockBackVector.y, knockBackVector.z));
+        return new DamageEvent(senderType, damage, new Vector3((int)direction * knockBackVelocity.x, knockBackVelocity.y, knockBackVelocity.z));
     }
 
     public bool CompareSenderTypeWith(EventSenderType eventSenderType)

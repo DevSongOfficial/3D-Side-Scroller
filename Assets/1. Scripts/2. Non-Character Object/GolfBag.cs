@@ -127,7 +127,7 @@ public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
             transform.position = new Vector3(transform.position.x, transform.position.y, 0);
         }
 
-        rigidBody.isKinematic = false;
         bodyCollider.enabled = true;
+        rigidBody.isKinematic = false;
     }
 }

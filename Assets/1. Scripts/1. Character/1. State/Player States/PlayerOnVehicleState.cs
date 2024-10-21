@@ -40,7 +40,7 @@ public class PlayerOnVehicleState : PlayerStateBase
         player.MovementController.SetBodyLocalPosition(originalLocalPosition);
 
         player.transform.eulerAngles = originalEulerAngles;
-        player.MovementController.ChangeDirectionSmooth(player.MovementController.FacingDirection);
+        player.MovementController.StopAndChangeDirection(player.MovementController.FacingDirection);
         player.MovementController.SetPosition(player.transform.position + Vector3.up * 1.5f);
     }
 

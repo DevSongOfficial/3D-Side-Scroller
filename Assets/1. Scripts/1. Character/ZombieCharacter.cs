@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public sealed class ZombieCharacter : CharacterBase
@@ -8,25 +6,27 @@ public sealed class ZombieCharacter : CharacterBase
     // Zombie Info
     public new ZombieInfo Info => info.AsZombieInfo();
 
-    [Space(10)]
     [Header("Zomebie Movement Type")]
     // Needs to be set from the inspector
     [SerializeField] private ZombieMovementBase movementOnPatrol;
     [SerializeField] private ZombieMovementBase movementOnChase;
 
-    [Space(10)]
     [Header("Zomebie Attack Type")]
     // Needs to be set from the inspector
     [SerializeField] private ZombieAttackBase attackDefault;
+
+    [Header("Renderer")]
+    [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
 
     // States
     // Must excute the contructor in Awake() after adding new state.
     public ZombieStateBase PatrolState { get; private set; }
     public ZombieStateBase ChaseState { get; private set; }
     public ZombieStateBase AttackState { get; private set; }
+    public ZombieStateBase StunnedState { get; private set; }
 
     // Black Board
-    private ZombieBlackboard zombieBlackboard;
+    private ZombieBlackboard blackboard;
 
     protected override void Awake()
     {
@@ -35,11 +35,13 @@ public sealed class ZombieCharacter : CharacterBase
         transform.GetChild(0).gameObject.SetLayer(Layer.Character);
         transform.GetChild(0).gameObject.SetTag(Tag.Enemy);
 
-        zombieBlackboard = new ZombieBlackboard();
+        blackboard = new ZombieBlackboard();
+        blackboard.skinnedMeshRenderer = skinnedMeshRenderer;
 
-        PatrolState = new ZombiePatrolState(this, zombieBlackboard, movementOnPatrol);
-        ChaseState = new ZombieChaseState(this, zombieBlackboard, movementOnChase);
-        AttackState = new ZombieAttackState(this, zombieBlackboard, attackDefault);
+        PatrolState = new ZombiePatrolState(this, blackboard, movementOnPatrol);
+        ChaseState = new ZombieChaseState(this, blackboard, movementOnChase);
+        AttackState = new ZombieAttackState(this, blackboard, attackDefault);
+        StunnedState = new ZombieStunnedState(this, blackboard);
 
         healthSystem.OnCharacterDie += OnDie;
     }
@@ -69,11 +71,24 @@ public sealed class ZombieCharacter : CharacterBase
     public override void TakeDamage(DamageEvent damageEvent)
     {
         base.TakeDamage(damageEvent);
+        ChangeState(StunnedState);
     }
 
+    [SerializeField] private Material mat1;
+    [SerializeField] private Material mat2;
     private void OnDie()
     {
-        Destroy(gameObject, 0.5f);
+        // Modify materials
+        blackboard.skinMaterials = new List<Material> { mat1, mat2 };
+        blackboard.skinnedMeshRenderer.SetMaterials(blackboard.skinMaterials);
+
+        // Get it stunned
+        blackboard.isDead = true;
+        ChangeState(StunnedState);
+
+        // Inactivate & destroy
+        Destroy(gameObject, 3f);
+        MovementController.SetActive(false);
     }
 
     public override ZombieCharacter AsZombie()

@@ -1,8 +1,3 @@
-using JetBrains.Annotations;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public sealed class ZombieChaseState : ZombieStateBase
 {
     private ZombieMovementBase movement;
@@ -22,6 +17,12 @@ public sealed class ZombieChaseState : ZombieStateBase
     public override void UpdateState()
     {
         base.UpdateState();
+
+        if (!zombie.MovementController.IsGrounded)
+        {
+            zombie.ChangeState(zombie.StunnedState);
+            return;
+        }
     }
 
     public override void FixedUpdateState()
@@ -42,11 +43,10 @@ public sealed class ZombieChaseState : ZombieStateBase
             SetDirection(zombie.MovementController.Direction.ConvertToVector3()).
             SetDistance(zombie.Info.DetectionDistance * 2);
 
-        if (!zombie.Detector.CharacterDetected(rayInfo, out CharacterBase target))
+        if (!zombie.Detector.CharacterDetected(rayInfo, out CharacterBase target) || !zombie.MovementController.IsGrounded)
         {
             zombie.ChangeState(zombie.PatrolState);
             return;
-
         }
         
         if (zombie.IsTargetWithInDistance(blackBoard.targetCharacter, zombie.Info.AttackRange))

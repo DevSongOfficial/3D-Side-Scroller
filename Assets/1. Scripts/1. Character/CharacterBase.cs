@@ -69,8 +69,8 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
     public virtual void TakeDamage(DamageEvent damageEvent)
     {
         // Take damage
+        MovementController.SetVelocity(damageEvent.knockBackVelocity);
         healthSystem.TakeDamage(damageEvent.damage);
-        //MovementController.AddForce(damageEvent.knockBackVector);
 
         // Generate damage effect
         var damageText = Instantiate(AssetManager.GetPrefab(Prefab.UI.DamageText).GetComponent<TMP_Text>(), UIManager.Canvas.transform);

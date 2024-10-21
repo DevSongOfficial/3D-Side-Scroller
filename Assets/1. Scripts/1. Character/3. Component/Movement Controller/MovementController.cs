@@ -7,7 +7,6 @@ public abstract class MovementController : MonoBehaviour
 {
     public Vector3 Velocity => velocity;
     protected Vector3 velocity;
-    private float wishVelocity; // Velocity for calculating accleration.
 
     public abstract bool IsGrounded { get; }
 
@@ -44,6 +43,14 @@ public abstract class MovementController : MonoBehaviour
             }
             return MovementDirection.None;
         }
+    }
+
+    public void StopAndChangeDirection(MovementDirection newDirection)
+    {
+        if (newDirection != Direction)
+            velocity.x = 0;
+
+        ChangeMovementDirection(newDirection, Space.Self);
     }
 
     public void ChangeMovementDirection(MovementDirection newDirection, Space space = Space.World, bool smoothRotation = true)
@@ -119,29 +126,24 @@ public abstract class MovementController : MonoBehaviour
     {
         return target.transform.position.x > transform.position.x ? MovementDirection.Right : MovementDirection.Left;
     }
-
-    public void ChangeDirectionSmooth(MovementDirection newDirection)
-    {
-        if (newDirection != Direction)
-            wishVelocity = 0;
-
-        ChangeMovementDirection(newDirection, Space.Self);
-    }
     #endregion
 
     // MOVEMENT SECTION
     #region Velocity
-    public void Jump(float jumpVelocity)
+    public void SetVelocity(Vector3 velocity)
     {
-        ySpeed = -0.8f;
-        ySpeed = jumpVelocity;
+        SetVelocity(velocity.x, velocity.y);
+    }
+    public void SetVelocity(float velocityX, float velocityY)
+    {
+        velocity.x = velocityX;
+        velocity.y = velocityY;
     }
 
     private bool canMoveHorizontally = true;
     public void ToggleHorizontalMovement(bool isOn, float wishVelocity = 0)
     {
         canMoveHorizontally = isOn;
-        this.wishVelocity = wishVelocity;
         velocity.x = wishVelocity;
     }
 
@@ -150,8 +152,8 @@ public abstract class MovementController : MonoBehaviour
     {
         if (!canMoveHorizontally) return Vector3.zero;
 
-        wishVelocity = speed;
-        velocity.x = (int)FacingDirection * wishVelocity;
+        velocity.x = speed * (int)FacingDirection;
+
         return Velocity;
     }
 
@@ -160,27 +162,23 @@ public abstract class MovementController : MonoBehaviour
     {
         if (!canMoveHorizontally) return Vector3.zero;
 
-        wishVelocity = Math.Abs(wishVelocity) < speed ? wishVelocity + acceleration : speed;
-        velocity.x = (int)FacingDirection * wishVelocity;
+        velocity.x = Math.Abs(velocity.x) < speed ? velocity.x + acceleration * (int)FacingDirection : speed * (int)FacingDirection;
+
         return Velocity;
     }
 
-    private float ySpeed;
     private readonly float MinYSpeed = -30;
     private readonly float YSpeedMultiplier = 0.1f;
     public Vector3 ApplyVerticalVelocity(float mass)
     {
         if ((!IsGrounded))
         {
-            ySpeed -= mass * YSpeedMultiplier;
+            velocity.y -= mass * YSpeedMultiplier;
         }
 
-        ySpeed = ySpeed < MinYSpeed ? MinYSpeed : ySpeed;
-        velocity.y = ySpeed;
+        velocity.y = velocity.y < MinYSpeed ? MinYSpeed : velocity.y;
 
         return Velocity;
     }
     #endregion
-
-
 }

@@ -17,4 +17,4 @@ MonoBehaviour:
   damageEvent:
     senderType: 1
     damage: 10
-    knockBackVector: {x: 25, y: 25, z: 0}
+    knockBackVelocity: {x: 4.72, y: 7, z: 0}

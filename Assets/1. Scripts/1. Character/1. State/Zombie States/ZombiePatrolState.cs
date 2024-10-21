@@ -23,6 +23,12 @@ public sealed class ZombiePatrolState : ZombieStateBase
     {
         base.UpdateState();
 
+        if (!zombie.MovementController.IsGrounded)
+        {
+            zombie.ChangeState(zombie.StunnedState);
+            return;
+        }
+
         // For Debugging
         if (Input.GetKeyDown(KeyCode.X)) { movementDirection = MovementDirection.Right; }
         if (Input.GetKeyDown(KeyCode.Z)) { movementDirection = MovementDirection.Left; }
