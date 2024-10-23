@@ -16,9 +16,10 @@ MonoBehaviour:
   interactionRange: 2
   movementSpeed: 4
   acceleration: 0.19
-  mass: 7
   jumpPower: 8
-  localPosition_Attack: {x: 1, y: 1, z: 0}
+  mass: 7
+  localPosition_Attack: {x: 1, y: 0, z: 0}
   attackRadius: 1.5
   attackDamage: 15
-  localPosition_Swing: {x: 0.2, y: 1.35, z: -0.3}
+  damageDelay: 0.3
+  localPosition_Swing: {x: 0.25, y: 0, z: -0.3}

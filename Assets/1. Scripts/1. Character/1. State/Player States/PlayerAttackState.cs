@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public sealed class PlayerAttackState : PlayerStateBase
 {
@@ -77,21 +78,17 @@ public sealed class PlayerAttackState : PlayerStateBase
     {
         player.AnimationController.ChangeState(AnimationController.Player.Attack.Downward_1, 0);
 
-        // todo: Use animation event instead of coroutine, to delay applying damage.
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(player.Info.DamageDelay);
 
         var attackPosition = player.transform.position;
         attackPosition += player.Info.LocalPosition_Attack.ChangeVectorXWithDirection(player.MovementController.FacingDirection);
 
-        if (player.Detector.CharactersDetected(attackPosition, player.Info.AttackRadius, out Collider[] characters))
+        if (player.Detector.CharactersDetected(attackPosition, player.Info.AttackRadius, out ZombieCharacter[] characters))
         {
-            foreach(Collider collider in characters)
+            foreach (var character in characters)
             {
-                var character = collider.GetComponentInParent<ZombieCharacter>();
-                if (character is null) continue;
-
                 var damageEvent = player.Interactor.AsGolfer.CurrentClub.DamageEvent;
-                character.TakeDamage(damageEvent.ApplyDirection(player.MovementController.FacingDirection));
+                character?.TakeDamage(damageEvent.ApplyDirection(player.MovementController.FacingDirection));
             }
         }
 

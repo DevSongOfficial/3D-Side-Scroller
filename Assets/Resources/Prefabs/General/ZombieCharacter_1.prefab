@@ -533,8 +533,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1158338357424687865}
   - component: {fileID: 5112450127432241283}
-  - component: {fileID: 7674178464137032800}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Zombie Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -579,27 +578,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!65 &7674178464137032800
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1970586751843061827}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.46944505, y: 1.6486909, z: 0.4725654}
-  m_Center: {x: -0, y: 0.84788287, z: 0}
 --- !u!1 &2341587534446549098
 GameObject:
   m_ObjectHideFlags: 0
@@ -1769,6 +1747,7 @@ GameObject:
   - component: {fileID: 4530510466929922455}
   - component: {fileID: 2122761299691049191}
   - component: {fileID: 7117263704709738698}
+  - component: {fileID: 3868047160466757080}
   m_Layer: 20
   m_Name: ZombieCharacter_1
   m_TagString: Untagged
@@ -1823,7 +1802,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c461cbeab93726f4aaa79479998e2960, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Hitbox: {fileID: 7674178464137032800}
+  collider: {fileID: 4530510466929922455}
   Detection_Ray: 0
   Detection_Sphere: 0
 --- !u!114 &1422607468576884980
@@ -1927,6 +1906,21 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &3868047160466757080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7118990355573265311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82ea5faccc06cb945bded6b0ec28930a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collider: {fileID: 0}
+  Detection_Ray: 1
+  Detection_Sphere: 0
 --- !u!1 &7595755178568445614
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,17 +3,15 @@ using UnityEngine;
 using UnityEngine.Networking;
 using static GameSystem;
 
-[RequireComponent(typeof(Detector))]
+[RequireComponent(typeof(CharacterOwnedDetector))]
 [RequireComponent(typeof(CharacterMovementController))]
 public abstract class CharacterBase : MonoBehaviour, IDamageable
 {
     // Movement Controller
     public CharacterMovementController MovementController { get; private set; }
 
-
     // Detector for detecting wall, ground, other characters, and anything else.
-    // This component also handles [Collider] of the character.
-    public Detector Detector { get; private set; }
+    public CharacterOwnedDetector Detector { get; private set; }
 
     // Interactor
     public Interactor Interactor { get; protected set; }
@@ -44,7 +42,7 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
 
     protected virtual void Awake()
     {
-        Detector = GetComponent<Detector>();
+        Detector = GetComponent<CharacterOwnedDetector>();
         MovementController = GetComponent<CharacterMovementController>();
 
         healthSystem = new HealthSystem(info.MaxHealth);

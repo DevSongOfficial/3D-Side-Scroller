@@ -8,9 +8,6 @@ public class PlayerOnVehicleState : PlayerStateBase
     private readonly Vector3 originalLocalEulerAngles = Vector3.zero;
     private readonly Vector3 carLocalPosition = new Vector3(0, -1.269f + 0.483f, 0.2f);
     private readonly Vector3 carLocalEulerAngles = Vector3.up * 17;
-
-    private readonly Vector3 originalEulerAngles = Vector3.up * 90;
-
     
     public override void EnterState()
     {
@@ -18,7 +15,6 @@ public class PlayerOnVehicleState : PlayerStateBase
 
         player.Interactor.AsDriver.OnDrive += Drive;
 
-        player.Detector.DisableCollider();
         player.MovementController.SetActive(false);
 
         player.MovementController.SetBodyLocalEulerAngles(carLocalEulerAngles);
@@ -33,13 +29,11 @@ public class PlayerOnVehicleState : PlayerStateBase
 
         player.Interactor.AsDriver.OnDrive -= Drive;
 
-        player.Detector.EnableCollider();
         player.MovementController.SetActive(true);
 
         player.MovementController.SetBodyLocalEulerAngles(originalLocalEulerAngles);
         player.MovementController.SetBodyLocalPosition(originalLocalPosition);
 
-        player.transform.eulerAngles = originalEulerAngles;
         player.MovementController.StopAndChangeDirection(player.MovementController.FacingDirection);
         player.MovementController.SetPosition(player.transform.position + Vector3.up * 1.5f);
     }

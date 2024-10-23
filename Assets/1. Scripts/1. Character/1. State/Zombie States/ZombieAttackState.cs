@@ -28,11 +28,13 @@ public sealed class ZombieAttackState : ZombieStateBase
 
         if (IsAttacking) return;
 
+        if (!zombie.IsTargetWithInDistance(blackBoard.targetCharacter, zombie.Info.AttackRange))
+        {
+            zombie.ChangeState(zombie.PatrolState);
+            return;
+        }
+
         HandleAttack();
-
-        if (zombie.IsTargetWithInDistance(blackBoard.targetCharacter, zombie.Info.AttackRange)) return;
-
-        zombie.ChangeState(zombie.PatrolState);
     }
 
     public override void FixedUpdateState()
@@ -61,7 +63,7 @@ public sealed class ZombieAttackState : ZombieStateBase
 
             zombie.AnimationController.ChangeState(AnimationController.Zombie.Attack.ZombieThreaten);
         }
-        else
+        else 
         {
             cooldownLeft = attackBase.CooldownTime;
 

@@ -13,6 +13,7 @@ public class PlayerInfo : ObjectInfo
     [SerializeField] private Vector3 localPosition_Attack;
     [SerializeField] private float attackRadius;
     [SerializeField] private int attackDamage;
+    [SerializeField] private float damageDelay = 0.3f;
 
     [Header("Swing")]
     [SerializeField] private Vector3 localPosition_Swing;
@@ -23,6 +24,8 @@ public class PlayerInfo : ObjectInfo
 
     public Vector3 LocalPosition_Attack => localPosition_Attack;
     public float AttackRadius => attackRadius;
+    public float DamageDelay => damageDelay;
+
     public Vector3 LocalPosition_Swing => localPosition_Swing;
 
     public override PlayerInfo AsPlayerInfo()

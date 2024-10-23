@@ -35,7 +35,7 @@ public class PlayerSwingState : PlayerStateBase
         blackBoard.Input_MouseUp += StartDownSwing;
 
         player.AnimationController.ChangeState(AnimationController.Player.Attack.Swing, 0.01f);
-        player.MovementController.ChangeMovementDirection(MovementDirection.Right, smoothRotation: false);
+        player.MovementController.ChangeMovementDirection(MovementDirection.Right, Space.Self , smoothRotation: false);
 
         currentFrame = 0;
         powerCharged = powerDefault;
@@ -47,6 +47,10 @@ public class PlayerSwingState : PlayerStateBase
     public override void FixedUpdateState()
     {
         base.FixedUpdateState();
+
+        // Handle velocity X
+        if (!player.MovementController.IsStunned)
+            player.MovementController.SetVelocity(0, player.MovementController.Velocity.y);
     }
 
     public override void ExitState()
@@ -110,7 +114,6 @@ public class PlayerSwingState : PlayerStateBase
 
     private void StartDownSwing()
     {
-        if (!player.CurrenState.CompareState(player.SwingState)) return;
         if (swingStep != SwingStep.BackSwing) return;
         if (downSwingCoroutine != null) return;
 
@@ -147,6 +150,11 @@ public class PlayerSwingState : PlayerStateBase
         {
             hasHit = true;
 
+            var localSwingPosition = player.Info.LocalPosition_Swing;
+            {
+                localSwingPosition.x -= player.transform.rotation.x * 0.04f;
+                localSwingPosition.y -= player.transform.rotation.x * 0.01f;
+            }
             var swingPosition = player.transform.position + player.Info.LocalPosition_Swing;
             var damageables = player.Detector.ComponentsDetected<IDamageable>(swingPosition, player.Interactor.AsGolfer.CurrentClub.SwingRadius, Utility.GetLayerMask(Layer.Character, Layer.PlaceableObject), Tag.Player);
 

@@ -119,17 +119,15 @@ public class GolfCart : MonoBehaviour, IInteractable
         if (!IsTaken) return;
         if (movementController.Velocity.x < 3.5f) return;
 
-        if (detector.CharactersDetected(transform.position + offset_CollisionPosition, collisionRadius, out Collider[] colliders))
+        if (detector.CharactersDetected(transform.position + offset_CollisionPosition, collisionRadius, out CharacterBase[] characters))
         {
-            foreach (Collider collider in colliders)
+            foreach (var character in characters)
             {
-                var character = collider.GetComponentInParent<ZombieCharacter>();
-                if (character is null) continue;
-
                 var newDamageEvent = damageEvent.
                     MultiplyVelocity(movementController.Velocity.x * 0.5f).
                     ApplyDirection(movementController.FacingDirection);
-                character.TakeDamage(newDamageEvent);
+
+                character?.TakeDamage(newDamageEvent);
             }
         }
     }

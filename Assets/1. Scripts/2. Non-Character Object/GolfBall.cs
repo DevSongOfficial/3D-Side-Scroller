@@ -12,7 +12,7 @@ public sealed class GolfBall : PlaceableProb, IDamageable
     {
         if(damageEvent.CompareSenderTypeWith(EventSenderType.Club))
         {
-            rigidBody.AddForce(damageEvent.knockBackVelocity);
+            rigidBody.AddForce(damageEvent.knockBackVelocity * 35);
         }
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public sealed class ZombiePatrolState : ZombieStateBase
@@ -48,7 +46,10 @@ public sealed class ZombiePatrolState : ZombieStateBase
 
     private void Patrol()
     {
-        RayInfo rayInfo = new RayInfo(zombie.MovementController.Direction, zombie.Info.DetectionDistance);
+        // Detect character.
+        RayInfo rayInfo = new RayInfo().
+            SetDirection(zombie.transform.forward.normalized).
+            SetDistance(zombie.Info.DetectionDistance);
 
         if (zombie.Detector.CharacterDetected(rayInfo, out PlayerCharacter target))
         {
@@ -56,7 +57,14 @@ public sealed class ZombiePatrolState : ZombieStateBase
             zombie.ChangeState(zombie.ChaseState);
             return;
         }
-        
+
+        // Handle rotation X
+        if (Physics.Raycast(zombie.transform.position, Vector3.down, out RaycastHit hit, 1.2f, Layer.Default.GetMask()))
+        {
+            Quaternion targetRotation = Quaternion.FromToRotation(zombie.transform.up, hit.normal) * zombie.transform.rotation;
+            zombie.transform.rotation = Quaternion.Slerp(zombie.transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
+
         movement.Execute(zombie.MovementController, zombie.AnimationController, zombie.Info, movementDirection);
     }
 }

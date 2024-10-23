@@ -4,23 +4,24 @@ using UnityEngine;
 public class Detector : MonoBehaviour
 {
     private CharacterMovementController movementController;
-    [SerializeField] private Collider Hitbox;
+    [Tooltip("Collider for calculating precise position and bound.")]
+    [SerializeField] protected new Collider collider;
 
     public Vector3 ColliderCenter
     {
         get
         {
-            if (Hitbox == null) return transform.position;
+            if (collider == null) return transform.position;
 
             Vector3 vector;
-            if (Hitbox.enabled == false)
+            if (collider.enabled == false)
             {
-                Hitbox.enabled = true;
-                vector = Hitbox.bounds.center;
-                Hitbox.enabled = false;
+                collider.enabled = true;
+                vector = collider.bounds.center;
+                collider.enabled = false;
                 return vector;
             }
-            return Hitbox.bounds.center;
+            return collider.bounds.center;
         }
     }
 
@@ -34,39 +35,43 @@ public class Detector : MonoBehaviour
         //if (Detection_Wall) { /* DebugWallDetectionRay(); */ }
     }
 
-    private void Awake()
+    protected virtual void Awake()
     {
         movementController = GetComponent<CharacterMovementController>();
     }
 
-    public bool CharacterDetected<T/* T: Type of component trying to get */>(RayInfo rayInfo, out T character) where T : CharacterBase
+    public bool CharacterDetected<T>(RayInfo rayInfo, out T character) where T : CharacterBase
     {
         character = null;
-
-        var startingPosition = rayInfo.startingPosition ?? Hitbox.bounds.center;
+        var startingPosition = rayInfo.startingPosition ?? collider.bounds.center;
         var direction = rayInfo.direction ?? movementController.Direction.ConvertToVector3();
         var distance = rayInfo.distance;
 
-        if (!Physics.Raycast(startingPosition, direction, out RaycastHit hit, distance, Layer.Character.GetMask()))
+        if (!Physics.Raycast(startingPosition, direction, out RaycastHit hit, distance))
             return false;
 
         Debug_DrawRay(startingPosition, direction * distance, Color.cyan);
 
-        character = hit.collider?.GetComponentInParent<T>();
+        character = hit.collider.GetComponent<T>();
 
         return character != null;
     }
 
-    public bool CharactersDetected(Vector3 center, float radius, out Collider[] characters)
+    public bool CharactersDetected<T>(Vector3 center, float radius, out T[] characters) where T : CharacterBase
     {
         characters = null;
 
         Debug_DrawSphere(center, radius);
 
-        if (!Physics.CheckSphere(center, radius, Layer.Character.GetMask())) return false;
+        if (!Physics.CheckSphere(center, radius)) return false;
 
-        characters = Physics.OverlapSphere(center, radius, Layer.Character.GetMask());
-        
+        var colliders = Physics.OverlapSphere(center, radius);
+        characters = new T[colliders.Length];
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            characters[i] = colliders[i].GetComponent<T>();
+        }
+
         return true;
     }
 
@@ -97,10 +102,10 @@ public class Detector : MonoBehaviour
         return components;
     }
 
-    public List<T> ComponentsDetected<T>(Vector3 center, float radius, int layerMask, Tag tagExcepted)
+    public List<T> ComponentsDetected<T>(Vector3 center, float radius, int layerMask, Tag ignoreTag = Tag.Untagged)
     {
         var colliders = Physics.OverlapSphere(center, radius, layerMask);
-        
+
         Debug_DrawSphere(center, radius);
 
         var components = new List<T>();
@@ -109,7 +114,7 @@ public class Detector : MonoBehaviour
         {
             var collider = colliders[i];
 
-            if (collider.CompareTag(tagExcepted)) continue;
+            if (collider.CompareTag(ignoreTag)) continue;
 
             if (collider.TryGetComponent(out T component))
             {
@@ -148,17 +153,6 @@ public class Detector : MonoBehaviour
         Destroy(sphere, duration);
     }
     #endregion
-
-
-    public void EnableCollider()
-    {
-        //Hitbox.enabled = true;
-    }
-
-    public void DisableCollider()
-    {
-        //Hitbox.enabled = false;
-    }
 }
 
 public struct RayInfo

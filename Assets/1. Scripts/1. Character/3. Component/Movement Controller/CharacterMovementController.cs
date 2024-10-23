@@ -8,11 +8,6 @@ public sealed class CharacterMovementController : MovementController
 {
     public override bool IsGrounded => controller.isGrounded;
     public bool IsStunned { get; private set; }
-    public void StunCharacter()
-    {
-        IsStunned = true;
-        groundedAfterLand = false;
-    }
     private bool groundedAfterLand;
 
     // [CharacterMovementController] uses [CharacterController] for movement.
@@ -46,6 +41,12 @@ public sealed class CharacterMovementController : MovementController
     {
         enabled = isOn;
         controller.enabled = isOn;
+    }
+
+    public void StunCharacter()
+    {
+        IsStunned = true;
+        groundedAfterLand = false;
     }
 
     // Unstun after landing.

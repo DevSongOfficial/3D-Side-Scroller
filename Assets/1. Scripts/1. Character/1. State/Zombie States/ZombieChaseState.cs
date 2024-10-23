@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public sealed class ZombieChaseState : ZombieStateBase
 {
     private ZombieMovementBase movement;
@@ -40,8 +42,8 @@ public sealed class ZombieChaseState : ZombieStateBase
     private void Chase()
     {
         RayInfo rayInfo = new RayInfo().
-            SetDirection(zombie.MovementController.Direction.ConvertToVector3()).
-            SetDistance(zombie.Info.DetectionDistance * 2);
+            SetDirection(zombie.transform.forward.normalized).
+            SetDistance(zombie.Info.DetectionDistance);
 
         if (!zombie.Detector.CharacterDetected(rayInfo, out CharacterBase target) || !zombie.MovementController.IsGrounded)
         {
@@ -53,6 +55,13 @@ public sealed class ZombieChaseState : ZombieStateBase
         {
             zombie.ChangeState(zombie.AttackState);
             return;
+        }
+
+        // Handle rotation X
+        if (Physics.Raycast(zombie.transform.position, Vector3.down, out RaycastHit hit, 1.2f, Layer.Default.GetMask()))
+        {
+            Quaternion targetRotation = Quaternion.FromToRotation(zombie.transform.up, hit.normal) * zombie.transform.rotation;
+            zombie.transform.rotation = Quaternion.Slerp(zombie.transform.rotation, targetRotation, Time.deltaTime * 10f);
         }
 
         var wishDirection = zombie.MovementController.GetDirectionFrom(blackBoard.targetCharacter);

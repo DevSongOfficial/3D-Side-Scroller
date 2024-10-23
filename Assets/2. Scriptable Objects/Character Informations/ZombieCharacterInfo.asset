@@ -17,5 +17,5 @@ MonoBehaviour:
   movementSpeed: 2
   acceleration: 0.03
   mass: 7
-  detectionDistance: 2
-  attackRange: 1.5
+  detectionDistance: 3
+  attackRange: 1.8
