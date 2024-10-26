@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.UI.Image;
 
 public class Detector : MonoBehaviour
 {
@@ -25,15 +26,9 @@ public class Detector : MonoBehaviour
         }
     }
 
-    [Header("Debug Detection Ray (ONLY FOR DEBUGGING)")]
-    //[SerializeField] private bool Detection_Wall = false;
+    [Header("Debug Detection Ray / Sphere (ONLY FOR DEBUGGING)")]
     [SerializeField] private bool Detection_Ray = false;
     [SerializeField] private bool Detection_Sphere = false;
-
-    private void LateUpdate()
-    {
-        //if (Detection_Wall) { /* DebugWallDetectionRay(); */ }
-    }
 
     protected virtual void Awake()
     {
@@ -43,7 +38,7 @@ public class Detector : MonoBehaviour
     public bool CharacterDetected<T>(RayInfo rayInfo, out T character) where T : CharacterBase
     {
         character = null;
-        var startingPosition = rayInfo.startingPosition ?? collider.bounds.center;
+        var startingPosition = rayInfo.origin ?? collider.bounds.center;
         var direction = rayInfo.direction ?? movementController.Direction.ConvertToVector3();
         var distance = rayInfo.distance;
 
@@ -133,6 +128,25 @@ public class Detector : MonoBehaviour
         return components;
     }
 
+    public bool WallDetected(RayInfo rayInfo)
+    {
+        var origin = rayInfo.origin ?? collider.bounds.center;
+        var direction = rayInfo.direction ?? movementController.Direction.ConvertToVector3();
+        var distance = rayInfo.distance;
+        
+        Debug_DrawRay(origin, direction * distance, Color.yellow);
+
+        if (Physics.Raycast(origin, direction, out RaycastHit hit, distance))
+        {
+            if (hit.collider.CompareLayer(Layer.Ground))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     #region Functions for debugging
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
     private void Debug_DrawRay(Vector3 start, Vector3 dir, Color color)
@@ -157,31 +171,31 @@ public class Detector : MonoBehaviour
 
 public struct RayInfo
 {
-    public Vector3? startingPosition;
+    public Vector3? origin;
     public Vector3? direction;
     public float distance;
 
-    public RayInfo(float distance, Vector3? direction = null, Vector3? startingPosition = null)
+    public RayInfo(float distance, Vector3? direction = null, Vector3? origin = null)
     {
-        this.startingPosition = startingPosition;
+        this.origin = origin;
         this.direction = direction;
         this.distance = distance;
     }
 
-    public RayInfo(MovementDirection direction, float distance, Vector3? startingPosition = null)
+    public RayInfo(MovementDirection direction, float distance, Vector3? origin = null)
     {
-        this.startingPosition = startingPosition;
+        this.origin = origin;
         this.distance = distance;
         this.direction = direction.ConvertToVector3();
     }
 
     
-    // Builder functions for builder pattern.
+    // Builder functions
     #region Builder Functions
 
-    public RayInfo SetStartingPosition(Vector3 startingPosition)
+    public RayInfo SetOrigin(Vector3 origin)
     {
-        this.startingPosition = startingPosition;
+        this.origin = origin;
 
         return this;
     }

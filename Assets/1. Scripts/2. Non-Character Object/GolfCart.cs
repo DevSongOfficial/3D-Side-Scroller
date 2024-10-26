@@ -43,7 +43,7 @@ public class GolfCart : MonoBehaviour, IInteractable
 
     private void LateUpdate()
     {
-        HandleXRotation();
+        movementController.AlignToGround();
 
         if (!IsTaken) return;
 
@@ -99,19 +99,6 @@ public class GolfCart : MonoBehaviour, IInteractable
     private void HandleMovement()
     {
         movementController.ApplyHorizontalVelocity(info.MovementSpeed * velocityMultiplier, info.Acceleration);
-    }
-
-    private void HandleXRotation()
-    {
-        Physics.Raycast(movementController.RaycastPosition_ForwardWheel, Vector3.down, out RaycastHit hitForward, 1.2f, Layer.Default.GetMask());
-        Physics.Raycast(movementController.RaycastPosition_RealWheel, Vector3.down, out RaycastHit hitRear, 1.2f, Layer.Default.GetMask());
-
-        Vector3 normalVector = Vector3.zero;
-        normalVector.x = (hitRear.normal.x + hitForward.normal.x) * 0.5f;
-        normalVector.y = (hitRear.normal.y + hitForward.normal.y) * 0.5f;
-
-        Quaternion targetRotation = Quaternion.FromToRotation(transform.up, normalVector) * transform.rotation;
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
     }
 
     void AttackOnCollide()

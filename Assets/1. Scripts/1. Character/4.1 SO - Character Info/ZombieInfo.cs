@@ -9,12 +9,14 @@ public class ZombieInfo : ObjectInfo
 
     [Header("Attack & Detection")]
     [Tooltip("Distance that ray checks for detecting objective")]
-    [SerializeField] private float detectionDistance = 2;
+    [SerializeField] private float characterDetectionDistance = 2;
+    [SerializeField] private float wallDetectionDistance = 2;
     [SerializeField] private float attackRange = 1;
 
 
     public int Mass => mass;
-    public float DetectionDistance => detectionDistance;
+    public float DetectionDistance => characterDetectionDistance;
+    public float WallDetectionDistance => wallDetectionDistance;
     public float AttackRange => attackRange;
 
     public override ZombieInfo AsZombieInfo()

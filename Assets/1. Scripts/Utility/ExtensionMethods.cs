@@ -22,7 +22,20 @@ public static class ExtensionMethods
         }
     }
 
-    public static int GetYAngle(this MovementDirection direction)
+    public static MovementDirection GetFlippedDirection(this MovementDirection direction)
+    {
+        switch (direction)
+        {
+            case MovementDirection.Right:
+                return MovementDirection.Left;
+            case MovementDirection.Left:
+                return MovementDirection.Right;
+            default:
+                return MovementDirection.None;
+        }
+    }
+
+    public static int GetYRotationValue(this MovementDirection direction)
     {
         switch (direction)
         {

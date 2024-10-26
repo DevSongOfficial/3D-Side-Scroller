@@ -17,5 +17,6 @@ MonoBehaviour:
   movementSpeed: 2
   acceleration: 0.03
   mass: 7
-  detectionDistance: 3
+  characterDetectionDistance: 2
+  wallDetectionDistance: 1
   attackRange: 1.8

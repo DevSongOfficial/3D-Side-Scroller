@@ -1,4 +1,5 @@
 using UnityEngine;
+using static AnimationController;
 
 public sealed class ZombieChaseState : ZombieStateBase
 {
@@ -58,11 +59,7 @@ public sealed class ZombieChaseState : ZombieStateBase
         }
 
         // Handle rotation X
-        if (Physics.Raycast(zombie.transform.position, Vector3.down, out RaycastHit hit, 1.2f, Layer.Default.GetMask()))
-        {
-            Quaternion targetRotation = Quaternion.FromToRotation(zombie.transform.up, hit.normal) * zombie.transform.rotation;
-            zombie.transform.rotation = Quaternion.Slerp(zombie.transform.rotation, targetRotation, Time.deltaTime * 10f);
-        }
+        zombie.MovementController.AlignToGround();
 
         var wishDirection = zombie.MovementController.GetDirectionFrom(blackBoard.targetCharacter);
         movement.Execute(zombie.MovementController, zombie.AnimationController, zombie.Info, wishDirection);

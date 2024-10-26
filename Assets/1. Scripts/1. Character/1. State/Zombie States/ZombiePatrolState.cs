@@ -26,10 +26,6 @@ public sealed class ZombiePatrolState : ZombieStateBase
             zombie.ChangeState(zombie.StunnedState);
             return;
         }
-
-        // For Debugging
-        if (Input.GetKeyDown(KeyCode.X)) { movementDirection = MovementDirection.Right; }
-        if (Input.GetKeyDown(KeyCode.Z)) { movementDirection = MovementDirection.Left; }
     }
 
     public override void FixedUpdateState()
@@ -46,11 +42,12 @@ public sealed class ZombiePatrolState : ZombieStateBase
 
     private void Patrol()
     {
-        // Detect character.
+        // Get ray information.
         RayInfo rayInfo = new RayInfo().
-            SetDirection(zombie.transform.forward.normalized).
-            SetDistance(zombie.Info.DetectionDistance);
+                SetDirection(zombie.transform.forward.normalized).
+                SetDistance(zombie.Info.DetectionDistance);
 
+        // Detect character.
         if (zombie.Detector.CharacterDetected(rayInfo, out PlayerCharacter target))
         {
             blackBoard.targetCharacter = target;
@@ -58,12 +55,19 @@ public sealed class ZombiePatrolState : ZombieStateBase
             return;
         }
 
-        // Handle rotation X
-        if (Physics.Raycast(zombie.transform.position, Vector3.down, out RaycastHit hit, 1.2f, Layer.Default.GetMask()))
+        // Detect wall and set direction.
+        movementDirection = zombie.MovementController.FacingDirection;
+        if (zombie.Detector.WallDetected(rayInfo.SetDistance(zombie.Info.WallDetectionDistance)) && !zombie.MovementController.IsChangingDirection)
         {
-            Quaternion targetRotation = Quaternion.FromToRotation(zombie.transform.up, hit.normal) * zombie.transform.rotation;
-            zombie.transform.rotation = Quaternion.Slerp(zombie.transform.rotation, targetRotation, Time.deltaTime * 10f);
+            movementDirection = movementDirection.GetFlippedDirection();
         }
+
+        // Handle rotation X.
+        zombie.MovementController.AlignToGround();
+
+        // For Debugging
+        if (Input.GetKeyDown(KeyCode.X)) { movementDirection = MovementDirection.Right; }
+        if (Input.GetKeyDown(KeyCode.Z)) { movementDirection = MovementDirection.Left; }
 
         movement.Execute(zombie.MovementController, zombie.AnimationController, zombie.Info, movementDirection);
     }

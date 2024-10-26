@@ -63,19 +63,10 @@ public class PlayerMoveState : PlayerStateBase
         player.MovementController.ApplyHorizontalVelocity(velocityX, player.Info.Acceleration);
 
         // Handle rotation X
-        HandleXRotation();
+        player.MovementController.AlignToGround();
 
         // Handle character controller settings
         player.MovementController.SetStepOffset(player.MovementController.IsGrounded ? 0.3f : 0);
-    }
-
-    private void HandleXRotation()
-    {
-        if (Physics.Raycast(player.transform.position, Vector3.down, out RaycastHit hit, 1.2f, Layer.Default.GetMask()))
-        {
-            Quaternion targetRotation = Quaternion.FromToRotation(player.transform.up, hit.normal) * player.transform.rotation;
-            player.transform.rotation = Quaternion.Slerp(player.transform.rotation, targetRotation, Time.deltaTime * 10f);
-        }
     }
 
     private void HandleAnimation()

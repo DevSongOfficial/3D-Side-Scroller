@@ -44,6 +44,7 @@ public abstract class MovementController : MonoBehaviour
             return MovementDirection.None;
         }
     }
+    public bool IsChangingDirection => Direction != FacingDirection;
 
     public void StopAndChangeDirection(MovementDirection newDirection)
     {
@@ -69,7 +70,7 @@ public abstract class MovementController : MonoBehaviour
         if (smoothRotation)
             directionChangeCoroutine = StartCoroutine(UpdateDirectionRoutine(newDirection, space));
         else
-            SetEulerAngleY(Direction.GetYAngle(), space);
+            SetEulerAngleY(Direction.GetYRotationValue(), space);
 
 
         OnDirectionChange?.Invoke(newDirection);
@@ -82,25 +83,25 @@ public abstract class MovementController : MonoBehaviour
         {
             if (wishDirection == MovementDirection.Left)
             {
-                if (transform.eulerAngles.y < wishDirection.GetYAngle())
+                if (transform.eulerAngles.y < wishDirection.GetYRotationValue())
                 {
                     Rotate(RotationSpeed * Time.fixedDeltaTime, space);
                 }
                 else
                 {
-                    SetEulerAngleY(wishDirection.GetYAngle(), space);
+                    SetEulerAngleY(wishDirection.GetYRotationValue(), space);
                     wishDirection = MovementDirection.None;
                 }
             }
             else if (wishDirection == MovementDirection.Right)
             {
-                if (transform.eulerAngles.y > wishDirection.GetYAngle())
+                if (transform.eulerAngles.y > wishDirection.GetYRotationValue())
                 {
                     Rotate(-RotationSpeed * Time.fixedDeltaTime, space);
                 }
                 else
                 {
-                    SetEulerAngleY(wishDirection.GetYAngle(), space);
+                    SetEulerAngleY(wishDirection.GetYRotationValue(), space);
                     wishDirection = MovementDirection.None;
                 }
             }
@@ -181,4 +182,13 @@ public abstract class MovementController : MonoBehaviour
         return Velocity;
     }
     #endregion
+
+    // ROTATION SECTION
+    public virtual Quaternion AlignToGround()
+    {
+        if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 1.2f, Layer.Ground.GetMask())) return transform.rotation = Quaternion.Euler(0, 90, 0);
+        
+        Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
+        return transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+    }
 }
