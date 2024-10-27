@@ -5,9 +5,9 @@ public struct Prefab {
 		System_LevelEditorManager,
 	}
 	public enum General {
-		Cube_1,
-		GolfBag,
-		GolfBall,
+		PO_Cube_1,
+		PO_GolfBag,
+		PO_GolfBall,
 		PO_GolfCart,
 		PO_ZombieCharacter_1,
 	}

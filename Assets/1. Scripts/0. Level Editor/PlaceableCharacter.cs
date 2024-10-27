@@ -20,7 +20,7 @@ public sealed class PlaceableCharacter : PlaceableObjectBase
 
     protected override void LateUpdate()
     {
-        if (!isOn) return;
+        if (!isEditorMode) return;
         childCharacter.MovementController.SetPosition(transform.position);
     }
 

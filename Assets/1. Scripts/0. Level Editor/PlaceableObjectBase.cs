@@ -3,22 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using static GameSystem;
 
+// Only for checking if placeableObjects are overlapped with other GameObjects.
 [RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(Rigidbody))]
 public abstract class PlaceableObjectBase : MonoBehaviour
 {
-    protected bool isOn;
+    protected bool isEditorMode;
 
     [Tooltip("The name displayed in UI or editor for this object.")]
     [SerializeField] private string displayName;
     public string DisplayName => displayName;
 
-    // [editorCollider] is only for checking if placeableObjects are overlapped with other GameObjects.
-    protected Collider editorCollider;
+    private Rigidbody rigidBody;
+    private new Collider collider;
 
     // Child's Information
     protected Transform child;
     private Rigidbody child_rigidBody;
-    private bool isKinematic;
+    private bool child_IsKinematic;
 
     public bool CanBePlaced { get { return overlappedObjectsCount == 0; } }
     private int overlappedObjectsCount;
@@ -60,15 +62,17 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
     protected virtual void Awake()
     {
-        editorCollider = GetComponent<Collider>();
-        editorCollider.isTrigger = true;
+        rigidBody = GetComponent<Rigidbody>();
+        collider = GetComponent<Collider>();
+        rigidBody.isKinematic = true;
+        collider.isTrigger = true;
 
         child = transform.GetChild(0);
         child.SetParent(null);
         child_rigidBody = child.GetComponent<Rigidbody>();
-        isKinematic = child_rigidBody.isKinematic;
+        child_IsKinematic = child_rigidBody.isKinematic;
 
-        gameObject.SetLayer(Layer.PlaceableObject);
+        gameObject.SetLayer(Layer.Placeable);
     }
 
     protected virtual void Start() { }
@@ -91,7 +95,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
     protected virtual void LateUpdate()
     {
-        if (!isOn) return;
+        if (!isEditorMode) return;
         child.position = transform.position;
     }
 
@@ -102,13 +106,17 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
     protected virtual void OnLevelEditorToggled(bool isOn)
     {
-        this.isOn = isOn;
-        editorCollider.enabled = isOn;
+        isEditorMode = isOn;
+        rigidBody.isKinematic = isOn;
 
-        if (isOn) transform.position = child.position;
+        if (isOn)
+        {
+            transform.position = child.position;
+            transform.eulerAngles = child.eulerAngles;
+        }
 
         if (child_rigidBody == null) return;
-        if (!isKinematic) child_rigidBody.isKinematic = isOn;
+        if (!child_IsKinematic) child_rigidBody.isKinematic = isOn;
     }
 
     public void SetActive(bool active)
@@ -126,14 +134,13 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareLayer(Layer.PlaceableObject)) return;
-
+        if (!other.CompareLayer(Layer.Placeable)) return;
         overlappedObjectsCount++;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (!other.CompareLayer(Layer.PlaceableObject)) return;
+        if (!other.CompareLayer(Layer.Placeable)) return;
 
         overlappedObjectsCount--;
     }

@@ -10,8 +10,9 @@ public enum Layer
     Character = 8,
     Ground = 9,
     Wall = 10,
-    PlaceableObject = 20,
-    InteractableObject = 25,
+    Placeable = 20,
+    Damageable = 24,
+    Interactable = 25,
     RaycastBlockerForLevelEditor = 31,
 }
 

@@ -133,7 +133,7 @@ public sealed class PlayerCharacter : CharacterBase
             return;   
         }
 
-        var pickupables = Detector.ComponentsDetected<IPickupable>(Detector.ColliderCenter, 1.5f, Layer.InteractableObject.GetMask());
+        var pickupables = Detector.ComponentsDetected<IPickupable>(Detector.ColliderCenter, 1.5f, Layer.Interactable.GetMask());
         foreach (var pickupable in pickupables)
         {
             currentlyCarriedObject = pickupable;

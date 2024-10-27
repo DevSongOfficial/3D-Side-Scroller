@@ -28,7 +28,7 @@ public class Interactor
 
     public bool FindAndInteractWithinRange(float distance = 1.5f)
     {
-        var components = interactorCharacter.Detector.ComponentsDetected<IInteractable>(interactorCharacter.Detector.ColliderCenter, distance, Layer.InteractableObject.GetMask());
+        var components = interactorCharacter.Detector.ComponentsDetected<IInteractable>(interactorCharacter.Detector.ColliderCenter, distance, Layer.Interactable.GetMask());
         foreach (var component in components)
         {
             if(component == null) continue;

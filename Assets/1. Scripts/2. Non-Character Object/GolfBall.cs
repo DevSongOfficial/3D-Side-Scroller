@@ -4,15 +4,20 @@ using UnityEngine;
 
 [RequireComponent(typeof(SphereCollider))]
 [RequireComponent(typeof(Rigidbody))]
-public sealed class GolfBall : PlaceableProb, IDamageable
+public sealed class GolfBall : MonoBehaviour, IDamageable
 {
-    public static readonly float FixedZPosition = -0.85f;
+    private Rigidbody rigidBody;
+
+    private void Awake()
+    {
+        rigidBody = GetComponent<Rigidbody>();
+    }
 
     public void TakeDamage(DamageEvent damageEvent)
     {
         if(damageEvent.CompareSenderTypeWith(EventSenderType.Club))
         {
-            //rigidBody.AddForce(damageEvent.knockBackVelocity * 35);
+            rigidBody.AddForce(damageEvent.knockBackVelocity * 35);
         }
     }
 }

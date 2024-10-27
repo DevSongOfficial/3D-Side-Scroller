@@ -27,12 +27,12 @@ TagManager:
   - 
   - 
   - 
-  - PlaceableObject
+  - Placeable
   - 
   - 
   - 
-  - 
-  - InteractableObject
+  - Damageable
+  - Interactable
   - 
   - 
   - 

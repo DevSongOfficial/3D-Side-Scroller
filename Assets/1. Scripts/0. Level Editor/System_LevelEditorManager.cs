@@ -141,7 +141,7 @@ public class System_LevelEditorManager : MonoBehaviour
                 return;
             }
 
-            if(!UI.TryGetComponentFromMousePosition(out PlaceableObjectBase selectedObject, Layer.PlaceableObject))
+            if(!UI.TryGetComponentFromMousePosition(out PlaceableObjectBase selectedObject, Layer.Placeable))
             {
                  //Debug.Log("Detected Object: NOTHING");
                  return;
@@ -160,9 +160,9 @@ public class System_LevelEditorManager : MonoBehaviour
 
         if (obj is null) return;
         obj.transform.position = UI.GetWorldPositionFromMousePosition() + movementOffset;
-
-        if (obj is GolfBall)
-            obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, GolfBall.FixedZPosition);
+        
+        if(obj is PlaceableProb)
+            obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, (obj as PlaceableProb).ZPostion);
     }
 
     private void HandleObjectRotation()
