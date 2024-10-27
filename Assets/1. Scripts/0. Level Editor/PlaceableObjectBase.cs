@@ -4,23 +4,21 @@ using UnityEngine;
 using static GameSystem;
 
 [RequireComponent(typeof(Collider))]
-[RequireComponent(typeof(Rigidbody))]
 public abstract class PlaceableObjectBase : MonoBehaviour
 {
+    protected bool isOn;
+
     [Tooltip("The name displayed in UI or editor for this object.")]
     [SerializeField] private string displayName;
     public string DisplayName => displayName;
 
-    [Tooltip("This stops forces or collisions from affecting the rigidbody")]
-    [SerializeField] protected bool isKinematic;
-
     // [editorCollider] is only for checking if placeableObjects are overlapped with other GameObjects.
     protected Collider editorCollider;
-    
-    // Actual collider when playing game is [gameColliders]. (In case one has more than two colliders, I used generic list.)
-    // Characters basically have [CharacterController] instead of [Collider]s and [Rigidbody].
-    private List<Collider> gameColliders = new List<Collider>();
-    protected Rigidbody rigidBody;
+
+    // Child's Information
+    protected Transform child;
+    private Rigidbody child_rigidBody;
+    private bool isKinematic;
 
     public bool CanBePlaced { get { return overlappedObjectsCount == 0; } }
     private int overlappedObjectsCount;
@@ -62,23 +60,15 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
     protected virtual void Awake()
     {
-        rigidBody = GetComponent<Rigidbody>();
-        rigidBody.isKinematic = true;
-
         editorCollider = GetComponent<Collider>();
         editorCollider.isTrigger = true;
 
-        gameObject.SetLayer(Layer.PlaceableObject);
+        child = transform.GetChild(0);
+        child.SetParent(null);
+        child_rigidBody = child.GetComponent<Rigidbody>();
+        isKinematic = child_rigidBody.isKinematic;
 
-        // Initialize actual collider(s) of the body.
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            var childCollider = transform.GetChild(i).GetComponent<Collider>();
-            if (childCollider != null)
-            {
-                gameColliders.Add(childCollider);
-            }
-        }
+        gameObject.SetLayer(Layer.PlaceableObject);
     }
 
     protected virtual void Start() { }
@@ -91,14 +81,18 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
     private void OnEnable()
     {
-        OnLevelEditorToggled(true);
-
         LevelEditorManager.OnEditorModeToggled += OnLevelEditorToggled;
     }
 
     private void OnDisable()
     {
         LevelEditorManager.OnEditorModeToggled -= OnLevelEditorToggled;
+    }
+
+    protected virtual void LateUpdate()
+    {
+        if (!isOn) return;
+        child.position = transform.position;
     }
 
     public virtual void InverseRotation()
@@ -108,26 +102,19 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
     protected virtual void OnLevelEditorToggled(bool isOn)
     {
-        SetBodyCollision(!isOn);
-        SetEditorCollision(isOn);        
+        this.isOn = isOn;
+        editorCollider.enabled = isOn;
+
+        if (isOn) transform.position = child.position;
+
+        if (child_rigidBody == null) return;
+        if (!isKinematic) child_rigidBody.isKinematic = isOn;
     }
 
     public void SetActive(bool active)
     {
+        child.gameObject.SetActive(active);
         gameObject.SetActive(active);
-    }
-
-    private void SetEditorCollision(bool enabled)
-    {
-        editorCollider.enabled = enabled;
-    }
-
-    private void SetBodyCollision(bool enabled) 
-    {
-        for(int i = 0; i < gameColliders.Count; i++)
-        {
-            gameColliders[i].enabled = enabled;
-        }
     }
 
     private PlaceableObjectBase CreatePlaceableObject()

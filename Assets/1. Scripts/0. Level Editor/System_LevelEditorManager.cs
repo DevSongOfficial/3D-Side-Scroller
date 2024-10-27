@@ -1,5 +1,4 @@
 using System;
-using UnityEditor;
 using UnityEngine;
 
 public enum EditorMode
@@ -144,10 +143,10 @@ public class System_LevelEditorManager : MonoBehaviour
 
             if(!UI.TryGetComponentFromMousePosition(out PlaceableObjectBase selectedObject, Layer.PlaceableObject))
             {
-                 Debug.Log("Detected Object: NOTHING");
+                 //Debug.Log("Detected Object: NOTHING");
                  return;
             }
-            else Debug.Log($"Detected Object: {selectedObject}");
+            else //.Log($"Detected Object: {selectedObject}");
 
             PlaceableObjectBase.SelectCurrentObject(selectedObject);
             movementOffset = selectedObject.transform.position - UI.GetWorldPositionFromMousePosition(ignorePlaceableObjectLayer: false);
