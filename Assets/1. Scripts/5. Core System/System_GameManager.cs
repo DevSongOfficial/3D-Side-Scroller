@@ -125,14 +125,16 @@ public class System_GameManager : MonoBehaviour
         if (String.IsNullOrEmpty(data)) return;
 
         SaveDataHandler dataHandler = JsonUtility.FromJson<SaveDataHandler>(data);
-        
+
+        LevelEditorManager.RemoveEveryRegisterdObject();
+
         foreach (var prefab in dataHandler.prefabDatas)
         {
             var placeableObject = Instantiate(AssetManager.GetPrefab(prefab.type).GetComponent<PlaceableObjectBase>());
             placeableObject.SetType(prefab.type);
             placeableObject.transform.position = prefab.position.GetValue();
             placeableObject.transform.eulerAngles = prefab.eulerAngles.GetValue();
-            
+
             PlaceableObjectBase.RegisterPlaceableObject(placeableObject);
 
             LevelEditorManager.SetPlayMode(PlayMode.Editing);

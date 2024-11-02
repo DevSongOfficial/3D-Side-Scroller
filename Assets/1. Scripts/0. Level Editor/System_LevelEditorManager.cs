@@ -99,10 +99,23 @@ public class System_LevelEditorManager : MonoBehaviour
     {
         if (PlaceableObjectBase.CurrentlySelected is null) return;
 
-        PlaceableObjectBase.UnregisterPlaceableObject(PlaceableObjectBase.CurrentlySelected);
-        PlaceableObjectBase.CurrentlySelected.SetActive(false);
+        RemovePlaceableObject(PlaceableObjectBase.CurrentlySelected);
 
         SetPlayMode(PlayMode.Editing);
+    }
+
+    public void RemovePlaceableObject(PlaceableObjectBase po)
+    {
+        PlaceableObjectBase.UnregisterPlaceableObject(po);
+        po.SetActive(false);
+    }
+
+    public void RemoveEveryRegisterdObject()
+    {
+        for(int i = PlaceableObjectBase.PlaceableObjectsInTheScene.Count - 1; i >= 0; i--)
+        {
+            RemovePlaceableObject(PlaceableObjectBase.PlaceableObjectsInTheScene[i]);
+        }
     }
 
     private void HandleObjectPlacement()

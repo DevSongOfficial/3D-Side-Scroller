@@ -74,7 +74,6 @@ public abstract class PlaceableObjectBase : MonoBehaviour
         collider.isTrigger = true;
 
         child = transform.GetChild(0);
-        child.SetParent(null);
         child_rigidBody = child.GetComponent<Rigidbody>();
         child_IsKinematic = child_rigidBody.isKinematic;
 
