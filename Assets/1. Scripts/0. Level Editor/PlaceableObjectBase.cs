@@ -88,12 +88,12 @@ public abstract class PlaceableObjectBase : MonoBehaviour
         PlaceableObjectsInTheScene = new List<PlaceableObjectBase>();
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         LevelEditorManager.OnEditorModeToggled += OnLevelEditorToggled;
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         LevelEditorManager.OnEditorModeToggled -= OnLevelEditorToggled;
     }
@@ -138,13 +138,13 @@ public abstract class PlaceableObjectBase : MonoBehaviour
         return newObject;
     }
 
-    private void OnTriggerEnter(Collider other)
+    protected virtual void OnTriggerEnter(Collider other)
     {
         if (!other.CompareLayer(Layer.Placeable)) return;
         overlappedObjectsCount++;
     }
 
-    private void OnTriggerExit(Collider other)
+    protected virtual void OnTriggerExit(Collider other)
     {
         if (!other.CompareLayer(Layer.Placeable)) return;
 

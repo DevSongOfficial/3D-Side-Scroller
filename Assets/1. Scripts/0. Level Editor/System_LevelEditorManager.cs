@@ -173,10 +173,22 @@ public class System_LevelEditorManager : MonoBehaviour
         var obj = PlaceableObjectBase.CurrentlySelected;
 
         if (obj is null) return;
-        obj.transform.position = UI.GetWorldPositionFromMousePosition() + movementOffset;
-        
-        if(obj is PlaceableProb)
-            obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, (obj as PlaceableProb).ZPostion);
+
+        var currentPosition = UI.GetWorldPositionFromMousePosition() + movementOffset;
+
+        if (obj is PlaceableProb)
+        {
+            obj.transform.position = new Vector3(currentPosition.x, currentPosition.y, (obj as PlaceableProb).ZPostion);
+            return;
+        }
+
+        if (obj is PlaceableGround)
+        {
+            obj.transform.position = new Vector3(Mathf.Round(currentPosition.x), Mathf.Round(currentPosition.y), currentPosition.z);
+            return;
+        }
+
+        obj.transform.position = currentPosition;
     }
 
     private void HandleObjectRotation()

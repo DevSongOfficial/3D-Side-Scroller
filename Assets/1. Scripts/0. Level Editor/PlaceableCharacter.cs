@@ -1,4 +1,4 @@
-using Unity.Collections.LowLevel.Unsafe;
+using static GameSystem;
 
 public sealed class PlaceableCharacter : PlaceableObjectBase
 {
@@ -18,6 +18,20 @@ public sealed class PlaceableCharacter : PlaceableObjectBase
         childCharacter.MovementController.ChangeMovementDirection(MovementDirection.Right);
     }
 
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+        childCharacter.OnDestroy += RemovePlaceableCharacter;
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+
+        childCharacter.OnDestroy -= RemovePlaceableCharacter;
+    }
+
     protected override void LateUpdate()
     {
         if (!isEditorMode) return;
@@ -31,6 +45,11 @@ public sealed class PlaceableCharacter : PlaceableObjectBase
         childCharacter.enabled = !isOn;
         childCharacter.Detector.enabled = !isOn;
         childCharacter.MovementController.SetActive(!isOn);
+    }
+
+    private void RemovePlaceableCharacter()
+    {
+        LevelEditorManager.RemovePlaceableObject(this);
     }
 
     public override void InverseRotation()

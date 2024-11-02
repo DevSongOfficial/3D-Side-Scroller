@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -21,7 +23,8 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
     private Animator animator;
 
     // Health System
-    protected HealthSystem healthSystem;
+    public HealthSystem HealthSystem { get; protected set; }
+    public Action OnDestroy;
 
     // State (Each character runs as a single state machine)
     public StateBase CurrenState { get; private set; }
@@ -45,7 +48,7 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
         Detector = GetComponent<CharacterOwnedDetector>();
         MovementController = GetComponent<CharacterMovementController>();
 
-        healthSystem = new HealthSystem(info.MaxHealth);
+        HealthSystem = new HealthSystem(info.MaxHealth);
         Interactor = new Interactor(this);
 
         animator = GetComponentInChildren<Animator>();
@@ -68,12 +71,19 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
     {
         // Take damage
         MovementController.SetVelocity(damageEvent.knockBackVelocity);
-        healthSystem.TakeDamage(damageEvent.damage);
+        HealthSystem.TakeDamage(damageEvent.damage);
 
         // Generate damage effect
         var damageText = Instantiate(AssetManager.GetPrefab(Prefab.UI.DamageText).GetComponent<TMP_Text>(), UIManager.Canvas.transform);
         UIManager.PopupUI(damageText, Camera.main.WorldToScreenPoint(Detector.ColliderCenter), PopupType.MoveAndFadeOut);
         damageText.text = damageEvent.damage.ToString();
+    }
+
+    protected IEnumerator DestroyRoutine(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+
+        OnDestroy?.Invoke();
     }
 
     public bool IsTargetWithInDistance(CharacterBase targetCharacter, float range)

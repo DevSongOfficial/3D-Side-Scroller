@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -43,7 +45,7 @@ public sealed class ZombieCharacter : CharacterBase
         AttackState = new ZombieAttackState(this, blackboard, attackDefault);
         StunnedState = new ZombieStunnedState(this, blackboard);
 
-        healthSystem.OnCharacterDie += OnDie;
+        HealthSystem.OnCharacterDie += OnDie;
     }
 
     protected override void Start()
@@ -87,8 +89,8 @@ public sealed class ZombieCharacter : CharacterBase
         ChangeState(StunnedState);
 
         // Inactivate & destroy
-        Destroy(gameObject, 3f);
         MovementController.SetActive(false);
+        StartCoroutine(DestroyRoutine(3));
     }
 
     public override ZombieCharacter AsZombie()
