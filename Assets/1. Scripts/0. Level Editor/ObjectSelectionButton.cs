@@ -18,7 +18,6 @@ public class ObjectSelectionButton : MonoBehaviour
     public void Initialize(PlaceableObjectBase prefab)
     {
         Prefab = prefab;
-
         text.text = Prefab.DisplayName;
         Button.onClick.AddListener(Prefab.OnSelectObjectWhenPlacing);
     }

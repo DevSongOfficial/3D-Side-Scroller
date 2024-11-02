@@ -34,7 +34,9 @@ public class LevelEditorUI : MonoBehaviour
         {
             var button = Instantiate(AssetManager.GetPrefab(Prefab.UI.SpawnButton_1), objectSelectionButtonsPanel.transform).
                 GetComponent<ObjectSelectionButton>();
+
             var prefab = AssetManager.GetPrefab((Prefab.General)i).GetComponent<PlaceableObjectBase>();
+            prefab.SetType((Prefab.General)i);
 
             button.Initialize(prefab);
             objectSelectionButtons[i] = button;
@@ -45,7 +47,7 @@ public class LevelEditorUI : MonoBehaviour
 
     public void MoveScreenDependingOnMousePosition(int speed)
     {
-        if (LevelEditorManager.Mode == EditorMode.None) return;
+        if (LevelEditorManager.Mode == PlayMode.Playing) return;
 
         switch (GetScreenMovementDirectionFromMousePosition())
         {

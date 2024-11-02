@@ -186,10 +186,17 @@ public abstract class MovementController : MonoBehaviour
     // ROTATION SECTION
     public virtual Quaternion AlignToGround()
     {
-        //if(!IsGrounded) return transform.rotation = Quaternion.Euler(transform.rotation.x, FacingDirection.GetYRotationValue(), 0);
-        if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 1.2f, Layer.Ground.GetMask())) return transform.rotation = Quaternion.Euler(transform.rotation.x, FacingDirection.GetYRotationValue(), 0);
-        
+        if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 1.2f, Layer.Ground.GetMask()))
+            return Quaternion.identity;
+
         Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
+
+        // Convert Quaternion to Euler for clamping x rotation, and then convert it back to Quaternion.
+        Vector3 targetEulerAngles = targetRotation.eulerAngles;
+        if (targetEulerAngles.x > 180) targetEulerAngles.x -= 360;
+        targetEulerAngles.x = Mathf.Clamp(targetEulerAngles.x, -40, 40);
+        targetRotation = Quaternion.Euler(targetEulerAngles);
+
         return transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
     }
 }

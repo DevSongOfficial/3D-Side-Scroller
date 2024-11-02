@@ -14,6 +14,10 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     [SerializeField] private string displayName;
     public string DisplayName => displayName;
 
+    // Prefab Type
+    public Prefab.General Type { get; private set; }
+    public void SetType(Prefab.General type) { Type = type; }
+
     private Rigidbody rigidBody;
     private new Collider collider;
 
@@ -35,7 +39,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     public void OnSelectObjectWhenPlacing()
     {
         if (CurrentlySelected != null) return;
-
+        
         var selectedObject = CreatePlaceableObject();
 
         OnObjectSelectedForPlacing.Invoke(selectedObject);
@@ -44,19 +48,21 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     }
 
     #region Registration of Object Placement
-    private static List<PlaceableObjectBase> PlaceableObjectsInTheScene;
-    private static void RegisterPlaceableObject(PlaceableObjectBase newPlaceableObject) 
+    public static List<PlaceableObjectBase> PlaceableObjectsInTheScene;
+    public static void RegisterPlaceableObject(PlaceableObjectBase newPlaceableObject) 
     {
         PlaceableObjectsInTheScene.Add(newPlaceableObject);
+        GameManager.AttachToMap(newPlaceableObject.transform);
+        GameManager.AttachToMap(newPlaceableObject.child.transform);
     }
 
     public static void UnregisterPlaceableObject(PlaceableObjectBase newPlaceableObject)
     {
-        if (PlaceableObjectsInTheScene.Contains(newPlaceableObject))
-        {
-            PlaceableObjectsInTheScene.Remove(newPlaceableObject);
-        }
-        else Debug.LogWarning("No Placeable Object Matches in the List");
+        if (!PlaceableObjectsInTheScene.Contains(newPlaceableObject)) return;
+            
+        PlaceableObjectsInTheScene.Remove(newPlaceableObject);
+        GameManager.MoveToLagacy(newPlaceableObject.transform);
+        GameManager.MoveToLagacy(newPlaceableObject.child.transform);
     }
     #endregion
 
@@ -78,7 +84,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     protected virtual void Start() { }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    private static void Initialization()
+    private static void InitializeBeforeSceneLoad()
     {
         PlaceableObjectsInTheScene = new List<PlaceableObjectBase>();
     }
@@ -101,7 +107,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
     public virtual void InverseRotation()
     {
-        transform.Rotate(0, 180, 0);
+        child.transform.Rotate(0, 180, 0);
     }
 
     protected virtual void OnLevelEditorToggled(bool isOn)
@@ -127,7 +133,8 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
     private PlaceableObjectBase CreatePlaceableObject()
     {
-        var newObject = Instantiate(gameObject).GetComponent<PlaceableObjectBase>();
+        var newObject = Instantiate(this);
+        newObject.SetType(Type);
 
         return newObject;
     }

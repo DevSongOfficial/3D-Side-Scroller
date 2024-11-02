@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public enum EditorMode
+public enum PlayMode
 {
-    None,
+    Playing,
     Editing,
     Placing,
 }
@@ -24,19 +25,19 @@ public class System_LevelEditorManager : MonoBehaviour
     [SerializeField] private Camera levelEditorCamera;
 
     // Current Editor Mode
-    public EditorMode Mode { get; private set; }
-    public bool IsEditorActive => Mode == EditorMode.None ? false : true; 
+    public PlayMode Mode { get; private set; }
+    public bool IsEditorActive => Mode == PlayMode.Playing ? false : true; 
 
     public event Action<bool> OnEditorModeToggled;
 
     private void Awake()
     {
-        PlaceableObjectBase.OnObjectSelectedForPlacing += delegate { SetEditorMode(EditorMode.Placing); };
+        PlaceableObjectBase.OnObjectSelectedForPlacing += delegate { SetPlayMode(PlayMode.Placing); };
     }
 
     private void Start()
     {
-        SetEditorMode(EditorMode.None);
+        SetPlayMode(PlayMode.Playing);
     }
 
 
@@ -45,7 +46,7 @@ public class System_LevelEditorManager : MonoBehaviour
     {
         SwitchMode();
 
-        if (Mode != EditorMode.Placing && Mode != EditorMode.Editing) return;
+        if (Mode != PlayMode.Placing && Mode != PlayMode.Editing) return;
 
         HandleObjectMovement();
         HandleObjectRotation();
@@ -56,7 +57,7 @@ public class System_LevelEditorManager : MonoBehaviour
         UI.MoveScreenDependingOnMousePosition(speed: 5);
     }
 
-    public void SetEditorMode(EditorMode editorMode)
+    public void SetPlayMode(PlayMode editorMode)
     {
         Mode = editorMode;
         OnEditorModeToggled.Invoke(IsEditorActive);
@@ -67,13 +68,13 @@ public class System_LevelEditorManager : MonoBehaviour
 
         switch (Mode)
         {
-            case EditorMode.None:
+            case PlayMode.Playing:
                 PlaceableObjectBase.SelectCurrentObject(null);
                 break;
-            case EditorMode.Editing:
+            case PlayMode.Editing:
                 PlaceableObjectBase.SelectCurrentObject(null);
                 break;
-            case EditorMode.Placing:
+            case PlayMode.Placing:
                 break;
         }
     }    
@@ -82,8 +83,8 @@ public class System_LevelEditorManager : MonoBehaviour
     {
         if (Input.GetKeyDown(switchMode))
         {
-            if (Mode == EditorMode.None) SetEditorMode(EditorMode.Editing);
-            else if (Mode == EditorMode.Editing) SetEditorMode(EditorMode.None);
+            if (Mode == PlayMode.Playing) SetPlayMode(PlayMode.Editing);
+            else if (Mode == PlayMode.Editing) SetPlayMode(PlayMode.Playing);
         }
     }
 
@@ -91,7 +92,7 @@ public class System_LevelEditorManager : MonoBehaviour
     {
         if (PlaceableObjectBase.CurrentlySelected is null) return;
         if (!PlaceableObjectBase.CurrentlySelected.CanBePlaced) return;
-        SetEditorMode(EditorMode.Editing);
+        SetPlayMode(PlayMode.Editing);
     }
 
     private void RemoveSelectedObject()
@@ -101,12 +102,12 @@ public class System_LevelEditorManager : MonoBehaviour
         PlaceableObjectBase.UnregisterPlaceableObject(PlaceableObjectBase.CurrentlySelected);
         PlaceableObjectBase.CurrentlySelected.SetActive(false);
 
-        SetEditorMode(EditorMode.Editing);
+        SetPlayMode(PlayMode.Editing);
     }
 
     private void HandleObjectPlacement()
     {
-        if (Mode != EditorMode.Placing) return;
+        if (Mode != PlayMode.Placing) return;
         if (UI.IsMouseCursorOnTheArea(UI.objectSelectionButtonsPanel.rectTransform)) return;
         if (Input.GetKeyDown(placeObject))
         { 
@@ -128,7 +129,7 @@ public class System_LevelEditorManager : MonoBehaviour
 
     private void HandleObjectSelection()
     {
-        if (Mode != EditorMode.Editing) return;
+        if (Mode != PlayMode.Editing) return;
         
         if(Input.GetKeyDown(selectObject))
         {
@@ -168,7 +169,7 @@ public class System_LevelEditorManager : MonoBehaviour
     private void HandleObjectRotation()
     {
         if (PlaceableObjectBase.CurrentlySelected is null) return;
-        if (Mode != EditorMode.Placing && Mode != EditorMode.Editing) return;
+        if (Mode != PlayMode.Placing && Mode != PlayMode.Editing) return;
 
         if (Input.GetKeyDown(reverseRotation))
         {

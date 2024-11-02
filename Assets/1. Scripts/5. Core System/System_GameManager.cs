@@ -1,5 +1,6 @@
 using Cinemachine;
 using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static GameSystem;
@@ -23,25 +24,37 @@ public enum Tag
 
 public class System_GameManager : MonoBehaviour
 {
-    // Main Camera
-    [SerializeField] private CinemachineBrain cinemachineBrain;
-
     private void Awake()
     {
         input = GetComponent<PlayerInput>();
         LevelEditorManager.OnEditorModeToggled += (bool enable) => ToggleInput(!enable);
     }
 
-    // Cinemachine Camera
+    // Main Camera & Cinemachine
+    [SerializeField] private CinemachineBrain cinemachineBrain;
     public void SetCameraUpdateMethod(CinemachineBrain.UpdateMethod method)
     {
         cinemachineBrain.m_UpdateMethod = method;
     }
 
+    // Transform where every object being placed at runtime is going be here.
+    [SerializeField] private Transform map;
+    public void AttachToMap(Transform objectToBeAttached)
+    {
+        objectToBeAttached.SetParent(map);
+    }
+
+    // This is where unused objects will be located, which is automatically going to be removed on changing scene.
+    [SerializeField] private Transform lagacy;
+    public void MoveToLagacy(Transform objectToBeRemoved)
+    {
+        objectToBeRemoved.SetParent(lagacy);
+    }
+
     // Input System
     private PlayerInput input;
     public void ToggleInput(bool enable) => input.enabled = enable;
-
+    #region Inputs
     public event Action<MovementDirection> Input_OnChangeDirection;
     public event Action Input_OnJump;
     public event Action<bool> Input_OnClick;
@@ -88,5 +101,41 @@ public class System_GameManager : MonoBehaviour
     private void OnTogglePickup() // [R] pressed
     {
         Input_OnTogglePickup.Invoke();
+    }
+    #endregion
+
+    // Save System
+    [ContextMenu("SAVE")]
+    public void SaveGame()
+    {
+        SaveDataHandler dataHandler = new SaveDataHandler();
+        foreach(var placeableObject in PlaceableObjectBase.PlaceableObjectsInTheScene)
+        {
+            dataHandler.Add(placeableObject.Type, placeableObject.transform.position, placeableObject.transform.eulerAngles);
+        }
+        var data = JsonUtility.ToJson(dataHandler);
+        Debug.Log(data);
+        SaveManager.SaveData(data);
+    }
+
+    [ContextMenu("LOAD")]
+    public void LoadGame()
+    {
+        var data = SaveManager.LoadData();
+        if (String.IsNullOrEmpty(data)) return;
+
+        SaveDataHandler dataHandler = JsonUtility.FromJson<SaveDataHandler>(data);
+        
+        foreach (var prefab in dataHandler.prefabDatas)
+        {
+            var placeableObject = Instantiate(AssetManager.GetPrefab(prefab.type).GetComponent<PlaceableObjectBase>());
+            placeableObject.SetType(prefab.type);
+            placeableObject.transform.position = prefab.position.GetValue();
+            placeableObject.transform.eulerAngles = prefab.eulerAngles.GetValue();
+            
+            PlaceableObjectBase.RegisterPlaceableObject(placeableObject);
+
+            LevelEditorManager.SetPlayMode(PlayMode.Editing);
+        }
     }
 }

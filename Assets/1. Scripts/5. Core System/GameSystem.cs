@@ -5,6 +5,9 @@ public class GameSystem : MonoBehaviour
     public static System_GameManager GameManager => gameManager;
     private static System_GameManager gameManager;
 
+    public static System_SaveManager SaveManager => saveManager;
+    private static System_SaveManager saveManager;
+
     public static System_UIManager UIManager => uiManager;
     private static System_UIManager uiManager;
 
@@ -14,6 +17,7 @@ public class GameSystem : MonoBehaviour
     private void Awake()
     {
         gameManager = FindObjectOfType<System_GameManager>();
+        saveManager = FindObjectOfType<System_SaveManager>();
         uiManager = FindObjectOfType<System_UIManager>();
 
         var levelEditorManagerPrefab = AssetManager.GetPrefab(Prefab.Debugger.System_LevelEditorManager);

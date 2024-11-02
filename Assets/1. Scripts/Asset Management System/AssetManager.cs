@@ -87,7 +87,7 @@ public class PrefabScriptEditor : Editor
 
         if (!saveThisScript)
         {
-            Debug.Log("<color=cyan>Reverted Completely</color>");
+            Debug.Log("<color=cyan>Reverted Successfully</color>");
             return null;
         }
 
