@@ -21,10 +21,10 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     private Rigidbody rigidBody;
     private new Collider collider;
 
-    // Child's Information
-    protected Transform child;
-    private Rigidbody child_rigidBody;
-    private bool child_IsKinematic;
+    // The actual object connected to PO.
+    protected Transform actualObject;
+    protected Rigidbody actualObject_rigidBody;
+    protected bool actualObject_IsKinematic;
 
     public bool CanBePlaced { get { return overlappedObjectsCount == 0; } }
     private int overlappedObjectsCount;
@@ -53,7 +53,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     {
         PlaceableObjectsInTheScene.Add(newPlaceableObject);
         GameManager.AttachToMap(newPlaceableObject.transform);
-        GameManager.AttachToMap(newPlaceableObject.child.transform);
+        GameManager.AttachToMap(newPlaceableObject.actualObject.transform);
     }
 
     public static void UnregisterPlaceableObject(PlaceableObjectBase newPlaceableObject)
@@ -62,7 +62,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
             
         PlaceableObjectsInTheScene.Remove(newPlaceableObject);
         GameManager.MoveToLagacy(newPlaceableObject.transform);
-        GameManager.MoveToLagacy(newPlaceableObject.child.transform);
+        GameManager.MoveToLagacy(newPlaceableObject.actualObject.transform);
     }
     #endregion
 
@@ -70,17 +70,19 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     {
         rigidBody = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
-        rigidBody.isKinematic = true;
+
+        actualObject = transform.GetChild(0);
+        actualObject_rigidBody = actualObject.GetComponent<Rigidbody>();
+        if(actualObject_rigidBody != null) actualObject_IsKinematic = actualObject_rigidBody.isKinematic;
+        
         collider.isTrigger = true;
-
-        child = transform.GetChild(0);
-        child_rigidBody = child.GetComponent<Rigidbody>();
-        child_IsKinematic = child_rigidBody.isKinematic;
-
-        gameObject.SetLayer(Layer.Placeable);
+        rigidBody.isKinematic = true;
     }
 
-    protected virtual void Start() { }
+    protected virtual void Start() 
+    {
+        gameObject.SetLayer(Layer.Placeable);
+    }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void InitializeBeforeSceneLoad()
@@ -101,12 +103,12 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     protected virtual void LateUpdate()
     {
         if (!isEditorMode) return;
-        child.position = transform.position;
+        actualObject.position = transform.position;
     }
 
     public virtual void InverseRotation()
     {
-        child.transform.Rotate(0, 180, 0);
+        actualObject.transform.Rotate(0, 180, 0);
     }
 
     protected virtual void OnLevelEditorToggled(bool isOn)
@@ -116,17 +118,18 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
         if (isOn)
         {
-            transform.position = child.position;
-            transform.eulerAngles = child.eulerAngles;
+            transform.position = actualObject.position;
+            transform.eulerAngles = actualObject.eulerAngles;
         }
 
-        if (child_rigidBody == null) return;
-        if (!child_IsKinematic) child_rigidBody.isKinematic = isOn;
+        if (actualObject_rigidBody == null) return;
+
+        if (!actualObject_IsKinematic) actualObject_rigidBody.isKinematic = isOn;
     }
 
     public void SetActive(bool active)
     {
-        child.gameObject.SetActive(active);
+        actualObject.gameObject.SetActive(active);
         gameObject.SetActive(active);
     }
 

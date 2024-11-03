@@ -5,10 +5,15 @@ public struct Prefab {
 		System_LevelEditorManager,
 	}
 	public enum General {
-		PO_Cube_1,
 		PO_GolfBag,
 		PO_GolfBall,
 		PO_GolfCart,
+		PO_Ground_1,
+		PO_Ground_2,
+		PO_Ground_3,
+		PO_PlayerSpawnPoint,
+		PO_Uphill_1,
+		PO_Uphill_2,
 		PO_ZombieCharacter_1,
 	}
 	public enum UI {
