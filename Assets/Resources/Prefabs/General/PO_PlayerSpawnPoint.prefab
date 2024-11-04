@@ -1297,7 +1297,7 @@ GameObject:
   - component: {fileID: 6070850389626375382}
   - component: {fileID: 6880216655989268677}
   - component: {fileID: 6237842682089536678}
-  - component: {fileID: 3047853209041996444}
+  - component: {fileID: 8343983905799111892}
   m_Layer: 20
   m_Name: PO_PlayerSpawnPoint
   m_TagString: Untagged
@@ -1369,7 +1369,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &3047853209041996444
+--- !u!114 &8343983905799111892
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1378,11 +1378,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 3849039467700723095}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5125ce0bd1dc2c548a8063673446c511, type: 3}
+  m_Script: {fileID: 11500000, guid: 49a860c7db20bb0478c1201b8fb56fba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   displayName: Player Spawn Point
-  wishZPosition: 0
 --- !u!1 &3887778419107596387
 GameObject:
   m_ObjectHideFlags: 0

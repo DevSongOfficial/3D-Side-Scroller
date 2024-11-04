@@ -16,6 +16,7 @@ public class System_LevelEditorManager : MonoBehaviour
     [SerializeField] private KeyCode reverseRotation = KeyCode.R;
     [SerializeField] private KeyCode selectObject = KeyCode.Mouse0;
     [SerializeField] private KeyCode placeObject = KeyCode.Mouse0;
+    [SerializeField] private KeyCode placeInARow = KeyCode.Space;
     [SerializeField] private KeyCode removeObject = KeyCode.Mouse1;
 
     public LevelEditorUI UI => levelEditorUI;
@@ -69,10 +70,10 @@ public class System_LevelEditorManager : MonoBehaviour
         switch (Mode)
         {
             case PlayMode.Playing:
-                PlaceableObjectBase.SelectCurrentObject(null);
+                PlaceableObjectBase.SetCurrentObject(null);
                 break;
             case PlayMode.Editing:
-                PlaceableObjectBase.SelectCurrentObject(null);
+                PlaceableObjectBase.SetCurrentObject(null);
                 break;
             case PlayMode.Placing:
                 break;
@@ -92,7 +93,15 @@ public class System_LevelEditorManager : MonoBehaviour
     {
         if (PlaceableObjectBase.CurrentlySelected is null) return;
         if (!PlaceableObjectBase.CurrentlySelected.CanBePlaced) return;
+
+        PlaceableObjectBase.SetPreviouslyPlacedObject(PlaceableObjectBase.CurrentlySelected);
         SetPlayMode(PlayMode.Editing);
+
+        if (Input.GetKey(placeInARow))
+        {
+            var po = AssetManager.GetPrefab(PlaceableObjectBase.PreviouslyPlaced.Type).GetComponent<PlaceableObjectBase>();
+            po.OnSelectObjectWhenPlacing();
+        }
     }
 
     private void RemoveSelectedObject()
@@ -143,14 +152,14 @@ public class System_LevelEditorManager : MonoBehaviour
     private void HandleObjectSelection()
     {
         if (Mode != PlayMode.Editing) return;
-        
-        if(Input.GetKeyDown(selectObject))
+
+        if (Input.GetKeyDown(selectObject))
         {
             if(PlaceableObjectBase.CurrentlySelected != null)
             {
                 if (!PlaceableObjectBase.CurrentlySelected.CanBePlaced) return;
 
-                PlaceableObjectBase.SelectCurrentObject(null);
+                PlaceableObjectBase.SetCurrentObject(null);
                 movementOffset = Vector3.zero;
                 return;
             }
@@ -162,7 +171,7 @@ public class System_LevelEditorManager : MonoBehaviour
             }
             else //.Log($"Detected Object: {selectedObject}");
 
-            PlaceableObjectBase.SelectCurrentObject(selectedObject);
+            PlaceableObjectBase.SetCurrentObject(selectedObject);
             movementOffset = selectedObject.transform.position - UI.GetWorldPositionFromMousePosition(ignorePlaceableObjectLayer: false);
         }
     }

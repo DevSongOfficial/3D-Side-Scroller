@@ -10,8 +10,8 @@ public sealed class PlaceableGround : PlaceableObjectBase
         actualObject_rigidBody.isKinematic = true;
         actualObject_IsKinematic = true;
 
-        actualObject.gameObject.SetLayer(Layer.Ground);
-        try { actualObject.GetChild(0).gameObject.SetLayer(Layer.Ground); }
+        ActualObject.gameObject.SetLayer(Layer.Ground);
+        try { ActualObject.GetChild(0).gameObject.SetLayer(Layer.Ground); }
         catch { }
     }
 

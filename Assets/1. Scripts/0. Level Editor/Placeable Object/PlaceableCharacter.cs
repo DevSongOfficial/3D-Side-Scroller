@@ -8,7 +8,7 @@ public sealed class PlaceableCharacter : PlaceableObjectBase
     {
         base.Awake();
 
-        childCharacter = actualObject.GetComponent<CharacterBase>();
+        childCharacter = ActualObject.GetComponent<CharacterBase>();
     }
 
     protected override void Start()

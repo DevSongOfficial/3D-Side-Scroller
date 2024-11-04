@@ -22,7 +22,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     private new Collider collider;
 
     // The actual object connected to PO.
-    protected Transform actualObject;
+    public Transform ActualObject { get; protected set; }
     protected Rigidbody actualObject_rigidBody;
     protected bool actualObject_IsKinematic;
 
@@ -33,7 +33,9 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     public static event Action<PlaceableObjectBase> OnObjectSelectedForPlacing;
 
     public static PlaceableObjectBase CurrentlySelected { get; private set; } // The object player's dealing with at the moment.
-    public static void SelectCurrentObject(PlaceableObjectBase newPlaceableObject) { CurrentlySelected = newPlaceableObject; }
+    public static PlaceableObjectBase PreviouslyPlaced { get; private set; }
+    public static void SetCurrentObject(PlaceableObjectBase po) { CurrentlySelected = po; }
+    public static void SetPreviouslyPlacedObject(PlaceableObjectBase po) {  PreviouslyPlaced = po; }
 
     // This function is called only when player click a button in the level editor in order to create new object.
     public void OnSelectObjectWhenPlacing()
@@ -43,7 +45,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
         var selectedObject = CreatePlaceableObject();
 
         OnObjectSelectedForPlacing.Invoke(selectedObject);
-        SelectCurrentObject(selectedObject);
+        SetCurrentObject(selectedObject);
         RegisterPlaceableObject(selectedObject);
     }
 
@@ -53,7 +55,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     {
         PlaceableObjectsInTheScene.Add(newPlaceableObject);
         GameManager.AttachToMap(newPlaceableObject.transform);
-        GameManager.AttachToMap(newPlaceableObject.actualObject.transform);
+        GameManager.AttachToMap(newPlaceableObject.ActualObject.transform);
     }
 
     public static void UnregisterPlaceableObject(PlaceableObjectBase newPlaceableObject)
@@ -62,7 +64,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
             
         PlaceableObjectsInTheScene.Remove(newPlaceableObject);
         GameManager.MoveToLagacy(newPlaceableObject.transform);
-        GameManager.MoveToLagacy(newPlaceableObject.actualObject.transform);
+        GameManager.MoveToLagacy(newPlaceableObject.ActualObject.transform);
     }
     #endregion
 
@@ -71,8 +73,8 @@ public abstract class PlaceableObjectBase : MonoBehaviour
         rigidBody = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
 
-        actualObject = transform.GetChild(0);
-        actualObject_rigidBody = actualObject.GetComponent<Rigidbody>();
+        ActualObject = transform.GetChild(0);
+        actualObject_rigidBody = ActualObject.GetComponent<Rigidbody>();
         if(actualObject_rigidBody != null) actualObject_IsKinematic = actualObject_rigidBody.isKinematic;
         
         collider.isTrigger = true;
@@ -103,12 +105,12 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     protected virtual void LateUpdate()
     {
         if (!isEditorMode) return;
-        actualObject.position = transform.position;
+        ActualObject.position = transform.position;
     }
 
     public virtual void InverseRotation()
     {
-        actualObject.transform.Rotate(0, 180, 0);
+        ActualObject.transform.Rotate(0, 180, 0);
     }
 
     protected virtual void OnLevelEditorToggled(bool isOn)
@@ -118,8 +120,8 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
         if (isOn)
         {
-            transform.position = actualObject.position;
-            transform.eulerAngles = actualObject.eulerAngles;
+            transform.position = ActualObject.position;
+            transform.eulerAngles = ActualObject.eulerAngles;
         }
 
         if (actualObject_rigidBody == null) return;
@@ -129,7 +131,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
     public void SetActive(bool active)
     {
-        actualObject.gameObject.SetActive(active);
+        ActualObject.gameObject.SetActive(active);
         gameObject.SetActive(active);
     }
 

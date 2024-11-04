@@ -1,4 +1,3 @@
-using System.Threading;
 using UnityEngine;
 using static GameSystem;
 
@@ -59,6 +58,8 @@ public sealed class PlayerCharacter : CharacterBase
         Interactor.AddGolfer(itemHolder_1).AddDriver();
         Interactor.AsDriver.OnEnterVehicle += () => ChangeState(OnVehiclState);
         Interactor.AsDriver.OnExitVehicle  += () => ChangeState(MoveState);
+
+        SaveManager.OnLoadData += Reposition;
     }
 
     protected override void Start()
@@ -75,6 +76,11 @@ public sealed class PlayerCharacter : CharacterBase
     protected override void Update()
     {
         base.Update();
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            Reposition();
+        }
     }
 
     protected override void FixedUpdate()
@@ -149,6 +155,15 @@ public sealed class PlayerCharacter : CharacterBase
     {
         base.TakeDamage(damageEvent);
         MovementController.StunCharacter();
+    }
+
+    private void Reposition()
+    {
+        var po = FindObjectOfType<PlaceableSpawnPoint>();
+        if (po == null) return;
+
+        var newPosition = po.transform.position;
+        MovementController.SetPosition(newPosition);
     }
 
     public override PlayerCharacter AsPlayer()

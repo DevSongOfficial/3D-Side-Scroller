@@ -14,6 +14,9 @@ public struct Prefab {
 		PO_PlayerSpawnPoint,
 		PO_Uphill_1,
 		PO_Uphill_2,
+		PO_Uphill_3,
+		PO_Uphill_4,
+		PO_Uphill_5,
 		PO_ZombieCharacter_1,
 	}
 	public enum UI {
