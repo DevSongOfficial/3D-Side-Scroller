@@ -518,6 +518,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: 3
   displayName: Driver
+  clubType: 2
   swingRadius: 1.9
   chargeSpeed: 2
   damageEvent:
@@ -754,12 +755,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: 1
   displayName: Putter
+  clubType: 0
   swingRadius: 1.5
   chargeSpeed: 1
   damageEvent:
     senderType: 2
     damage: 15
-    knockBackVelocity: {x: 2, y: 2, z: 0}
+    knockBackVelocity: {x: 4, y: 0.25, z: 0}
 --- !u!33 &5761479226917265198
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -857,6 +859,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotType: 0
   displayName: Fist
+  clubType: 0
   swingRadius: 1.5
   chargeSpeed: 2.2
   damageEvent:
@@ -910,7 +913,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slotType: 2
-  displayName: Iron
+  displayName: Iron 7
+  clubType: 1
   swingRadius: 1.5
   chargeSpeed: 0.8
   damageEvent:

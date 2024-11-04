@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 using static GameSystem;
 
 
@@ -11,12 +10,15 @@ public class PlayerSwingState : PlayerStateBase
     // Steps to swing
     private enum SwingStep { None, BackSwing, DownSwing }
     private SwingStep swingStep;
+    
 
     // Animation Frame
-    private const int MaxFrame = 119;
-    private const int MaxFrameOnBackSwing = 34;
-    private const int MaxFrameOnDownSwing = 110;
-    private const int HitFrame = 48;
+    // Default Swing
+    private ClubType swingType;
+    private int MaxFrame => swingType == ClubType.Putter ? 81 : 119;
+    private int MaxFrameOnBackSwing => swingType == ClubType.Putter? 29 : 34; 
+    private int MaxFrameOnDownSwing => swingType == ClubType.Putter ? 81 : 110;
+    private int HitFrame => swingType == ClubType.Putter ? 37 : 48;
 
     private float currentFrame;
     private float frameOnStartDownSwing;
@@ -34,9 +36,10 @@ public class PlayerSwingState : PlayerStateBase
 
         blackBoard.Input_MouseUp += StartDownSwing;
 
-        player.AnimationController.ChangeState(AnimationController.Player.Attack.Swing, 0.01f);
+        player.AnimationController.ChangeState(player.Interactor.AsGolfer.CurrentClub.AnimationType, 0.01f);
         player.MovementController.ChangeMovementDirection(MovementDirection.Right, Space.Self , smoothRotation: false);
 
+        swingType = player.Interactor.AsGolfer.CurrentClub.SwingType;
         currentFrame = 0;
         powerCharged = powerDefault;
         hasHit = false;
@@ -77,7 +80,7 @@ public class PlayerSwingState : PlayerStateBase
         }
     }
 
-    Coroutine backSwingCoroutine;
+    private Coroutine backSwingCoroutine;
     private IEnumerator BackSwing()
     {
         swingStep = SwingStep.BackSwing;
@@ -187,6 +190,7 @@ public class PlayerSwingState : PlayerStateBase
 
     private float GetProperMultiplierDependingOnTheFrame(float frame)
     {
+        if (player.Interactor.AsGolfer.CurrentClub.SwingType == ClubType.Putter) return 1;
         if (frame > 80) return 4;
         else if (frame > 60) return 2;
         return 1;

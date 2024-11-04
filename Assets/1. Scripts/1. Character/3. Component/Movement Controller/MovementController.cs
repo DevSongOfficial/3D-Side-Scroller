@@ -191,7 +191,7 @@ public abstract class MovementController : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
 
-        // Convert Quaternion to Euler for clamping x rotation, and then convert it back to Quaternion.
+        // Clamp x rotation by converting Quaternion to Euler and then convert it back into Quaternion.
         Vector3 targetEulerAngles = targetRotation.eulerAngles;
         if (targetEulerAngles.x > 180) targetEulerAngles.x -= 360;
         targetEulerAngles.x = Mathf.Clamp(targetEulerAngles.x, -40, 40);

@@ -24,19 +24,26 @@ public enum Tag
 
 public class System_GameManager : MonoBehaviour
 {
+
     private void Awake()
     {
         input = GetComponent<PlayerInput>();
         LevelEditorManager.OnEditorModeToggled += (bool enable) => ToggleInput(!enable);
     }
 
-    // Main Camera & Cinemachine
+    private void Start()
+    {
+        if (loadGameOnStart) LoadGame();
+    }
+
+    [Header("Main Camera & Cinemachine")]
     [SerializeField] private CinemachineBrain cinemachineBrain;
     public void SetCameraUpdateMethod(CinemachineBrain.UpdateMethod method)
     {
         cinemachineBrain.m_UpdateMethod = method;
     }
 
+    [Header("Map Transform")]
     // Transform where every object being placed at runtime is going be here.
     [SerializeField] private Transform map;
     public void AttachToMap(Transform objectToBeAttached)
@@ -51,8 +58,9 @@ public class System_GameManager : MonoBehaviour
         objectToBeRemoved.SetParent(lagacy);
     }
 
-    // Input System
-    private PlayerInput input;
+
+    [Header("Input System")]
+    [SerializeField] private PlayerInput input;
     public void ToggleInput(bool enable) => input.enabled = enable;
     #region Inputs
     public event Action<MovementDirection> Input_OnChangeDirection;
@@ -104,7 +112,9 @@ public class System_GameManager : MonoBehaviour
     }
     #endregion
 
-    // Save System
+
+    [Header("Save & Load")]
+    [SerializeField] private bool loadGameOnStart;
     [ContextMenu("SAVE")]
     public void SaveGame()
     {

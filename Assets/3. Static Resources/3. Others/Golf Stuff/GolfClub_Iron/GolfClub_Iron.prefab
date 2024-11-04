@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &62380652399909499
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1594268496651123806}
+  - component: {fileID: 6321706462339291782}
+  - component: {fileID: 8585684415565293130}
+  - component: {fileID: 6352307112866579149}
+  m_Layer: 0
+  m_Name: GolfClub_Iron
+  m_TagString: Prob
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1594268496651123806
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62380652399909499}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.66181004, y: -0.13776004, z: 0.043239087, w: 0.73563576}
+  m_LocalPosition: {x: 0.097469956, y: -0.7262737, z: 0.49774468}
+  m_LocalScale: {x: 4.5376015, y: 5.7634745, z: 6.6684437}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: -74.11, y: -71.68, z: 63.941}
+--- !u!33 &6321706462339291782
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62380652399909499}
+  m_Mesh: {fileID: 4300000, guid: 95db3d88ca5d74e40944f583b4a5c007, type: 2}
+--- !u!23 &8585684415565293130
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62380652399909499}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 4ae2ea5e79059bc4d8e16aa83de340e9, type: 2}
+  - {fileID: 2100000, guid: 3912838cc99250a44b09c8ea6aa4c20a, type: 2}
+  - {fileID: 2100000, guid: 19bffb9e7911a5c4fb9cdc15962ee778, type: 2}
+  - {fileID: 2100000, guid: c010c87a27279ff40952a41f1822f3ce, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6352307112866579149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62380652399909499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25177012c1da37a4e98196674dd27e3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displayName: Iron
+  swingRadius: 1.5
+  chargeSpeed: 0.8
+  damageEvent:
+    senderType: 2
+    damage: 25
+    knockBackVector: {x: 100, y: 150, z: 0}

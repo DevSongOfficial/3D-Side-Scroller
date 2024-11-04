@@ -41,7 +41,6 @@ public class System_LevelEditorManager : MonoBehaviour
         SetPlayMode(PlayMode.Playing);
     }
 
-
     // Main routine for the Level Editor
     private void Update()
     {

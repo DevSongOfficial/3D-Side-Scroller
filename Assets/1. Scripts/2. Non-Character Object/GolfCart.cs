@@ -104,7 +104,7 @@ public class GolfCart : MonoBehaviour, IInteractable
     void AttackOnCollide()
     {
         if (!IsTaken) return;
-        if (movementController.Velocity.x < 3.5f) return;
+        if (movementController.Velocity.x < 2.9f) return;
 
         if (detector.CharactersDetected(transform.position + offset_CollisionPosition, collisionRadius, out CharacterBase[] characters))
         {
