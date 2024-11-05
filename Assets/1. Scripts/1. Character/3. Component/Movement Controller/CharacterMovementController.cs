@@ -8,7 +8,6 @@ public sealed class CharacterMovementController : MovementController
 {
     public override bool IsGrounded => controller.isGrounded;
     public bool IsStunned { get; private set; }
-    private bool groundedAfterLand;
 
     // [CharacterMovementController] uses [CharacterController] for movement.
     private CharacterController controller;
@@ -23,13 +22,18 @@ public sealed class CharacterMovementController : MovementController
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
-
-        HandleStun();
     }
 
     protected override void Move()
     {
         controller.Move(Velocity * Time.fixedDeltaTime);
+    }
+
+    protected override void OnLand()
+    {
+        base.OnLand();
+
+        UnstunCharacter();
     }
 
     public void SetStepOffset(float offset)
@@ -46,22 +50,12 @@ public sealed class CharacterMovementController : MovementController
     public void StunCharacter()
     {
         IsStunned = true;
-        groundedAfterLand = false;
     }
 
     // Unstun after landing.
-    private void HandleStun()
+    private void UnstunCharacter()
     {
-        if (!IsStunned) return;
-        if (!IsGrounded)
-        {
-            groundedAfterLand = true;
-            return;
-        }
-        if (!groundedAfterLand) return;
-
         IsStunned = false;
-        groundedAfterLand = false;
     }
 
     // Transform

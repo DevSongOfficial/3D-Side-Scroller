@@ -15,6 +15,7 @@ public abstract class MovementController : MonoBehaviour
     protected virtual void FixedUpdate()
     {
         Move();
+        CheckLanding();
     }
 
     protected abstract void Move();
@@ -169,6 +170,7 @@ public abstract class MovementController : MonoBehaviour
     }
 
     private readonly float MinYSpeed = -30;
+    private readonly float DefaultYSpeed = -1f;
     private readonly float YSpeedMultiplier = 0.1f;
     public Vector3 ApplyVerticalVelocity(float mass)
     {
@@ -198,5 +200,25 @@ public abstract class MovementController : MonoBehaviour
         targetRotation = Quaternion.Euler(targetEulerAngles);
 
         return transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+    }
+
+    // LANDING SECTION
+    public event Action OnLanded;
+    private bool wasGrounded; // True when controller was grounded a frame ago.
+    private void CheckLanding()
+    {
+        if(!wasGrounded && IsGrounded)
+        {
+            OnLand();
+        }
+
+        wasGrounded = IsGrounded;
+    }
+
+    protected virtual void OnLand()
+    {
+        OnLanded?.Invoke();
+
+        velocity.y = DefaultYSpeed;
     }
 }
