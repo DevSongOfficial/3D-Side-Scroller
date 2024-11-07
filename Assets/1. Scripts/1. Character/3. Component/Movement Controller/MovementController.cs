@@ -169,7 +169,7 @@ public abstract class MovementController : MonoBehaviour
         return Velocity;
     }
 
-    private readonly float MinYSpeed = -30;
+    private readonly float MinYSpeed = -20;
     private readonly float DefaultYSpeed = -1f;
     private readonly float YSpeedMultiplier = 0.1f;
     public Vector3 ApplyVerticalVelocity(float mass)

@@ -3,14 +3,16 @@ using UnityEngine;
 
 
 // Interface for gameobjects that are interatcted by [Interactor] objects.
+public enum InteractableType { Vehicle = 0, Equipment = 1} // Interaction Priority 
 public interface IInteractable 
 {
     void Interact(Interactor interactor);
+    public InteractableType GetType();
 }
 
 public interface IPickupable 
 {
-    void OnPickedUp(Transform parent, bool shouldAlignToCenter);
+    void OnPickedUp(Transform parent);
     void OnDropedOff();
 }
 
@@ -19,7 +21,7 @@ public class Interactor
 {
     // General
     private CharacterBase interactorCharacter;
-    private IInteractable currentInteractableObject;
+    private IInteractable currentlyInteractingObject;
 
     public Interactor(CharacterBase interactor)
     {
@@ -28,13 +30,63 @@ public class Interactor
 
     public bool FindAndInteractWithinRange(float distance = 1.5f)
     {
-        var components = interactorCharacter.Detector.ComponentsDetected<IInteractable>(interactorCharacter.Detector.ColliderCenter, distance, Layer.Interactable.GetMask());
-        foreach (var component in components)
-        {
-            if(component == null) continue;
+        var interactables = interactorCharacter.Detector.DetectComponents<IInteractable>(GetPosition(), distance, Layer.Interactable.GetMask());
 
-            currentInteractableObject = component;
-            currentInteractableObject.Interact(this);
+        if (interactables.Count == 0) return false;
+        IInteractable interactable = interactables[0];
+
+        if (interactables.Count > 1)
+        {
+            for(int i = 1; i < interactables.Count; i++)
+            {
+                // Check each's priority.
+                if ((int)interactables[i].GetType() < (int)interactable.GetType())
+                {
+                    interactable = interactables[i];
+                }
+            }
+        }
+
+        currentlyInteractingObject = interactable;
+        currentlyInteractingObject.Interact(this);
+        return true;
+    }
+
+    public bool Toggle_FindAndPickupWithinRange(float distance = 1.5f)
+    {
+        if(AsCarrier == null) return false;
+
+        if (AsCarrier.IsCarryingItem)
+        {
+            AsCarrier.DropOff();
+            return true;
+        }
+
+        var pickupables = interactorCharacter.Detector.DetectComponents<IPickupable>(GetPosition(), distance, Layer.Interactable.GetMask());
+        foreach (var pickupable in pickupables)
+        {
+            AsCarrier.PickUp(pickupable);
+            return true;
+        }
+
+        return false;
+    }
+
+    private const float detectionDistance = 0.85f;
+    public bool Toggle_FindAndLoadCart(float radius = 0.65f)
+    {
+        if (AsCarrier == null || !AsCarrier.IsCarryingItem) return false;
+
+        var position = GetPosition() + detectionDistance * interactorCharacter.MovementController.FacingDirection.ConvertToVector3();
+        var carts = interactorCharacter.Detector.DetectComponents<GolfCart>(position, radius, Layer.Interactable.GetMask());
+        foreach(var cart in carts)
+        {
+            if (Vector3.Distance(cart.CarryPoint.position, position) > detectionDistance * 1.5f) continue;
+
+            var item = AsCarrier.carryingItem;
+            AsCarrier.DropOff();
+            cart.LoadTheTrunk(item);
+
             return true;
         }
 
@@ -52,9 +104,9 @@ public class Interactor
 
     // Golfer
     public Golfer AsGolfer { get; private set; }
-    public Interactor AddGolfer(ItemHolder itemHolder) // Builder for further chaining.
+    public Interactor AddGolfer(ItemHolder itemHolder)
     {
-        AsGolfer = new Golfer(this, itemHolder);
+        AsGolfer = new Golfer(itemHolder);
         return this;
     }
 
@@ -62,18 +114,47 @@ public class Interactor
     public Driver AsDriver { get; private set; }
     public Interactor AddDriver()
     {
-        AsDriver = new Driver(this);
+        AsDriver = new Driver();
+        return this;
+    }
+
+    // Carrier
+    public Carrier AsCarrier { get; private set; }
+    public Interactor AddCarrier(Transform carryPoint)
+    {
+        AsCarrier = new Carrier(carryPoint);
         return this;
     }
 }
 
+public class Carrier
+{
+    private Transform carryPoint;
+    public IPickupable carryingItem;
+    public bool IsCarryingItem => carryingItem != null;
+    
+    public Carrier(Transform carryPoint)
+    {
+        this.carryPoint = carryPoint;
+    }
+
+    public void PickUp(IPickupable pickupable)
+    {
+        carryingItem = pickupable;
+        carryingItem.OnPickedUp(carryPoint);
+    }
+
+    public void DropOff()
+    {
+        carryingItem.OnDropedOff();
+        carryingItem = null;
+    }
+}
 public class Golfer
 {
-    private Interactor golfer;
     private ItemHolder itemHolder;
-    public Golfer(Interactor golfer, ItemHolder itemHolder)
+    public Golfer(ItemHolder itemHolder)
     {
-        this.golfer = golfer;
         this.itemHolder = itemHolder;
     }
 
@@ -82,9 +163,8 @@ public class Golfer
 
     // Events
     public event Action OnClubSwitched;
-    public void InvokeEvent_OnClubSwitched(Interactor sender) // [event] keyword and sender parameter for dependency injection.
+    public void InvokeEvent_OnClubSwitched()
     {
-        if (sender != golfer) return;
         OnClubSwitched?.Invoke(); 
     }
     
@@ -104,30 +184,24 @@ public class Golfer
 
 public class Driver 
 {
-    private Interactor driver;
-
-    public Driver(Interactor driver)
-    {
-        this.driver = driver;
-    }
+    public bool IsDriving { get; private set; }
 
     // Events
     public event Action OnEnterVehicle;
     public event Action<Vector3, Vector3> OnDrive;
     public event Action OnExitVehicle;
-    public void InvokeEvent_OnEnterVehicle(IInteractable sender)
+    public void InvokeEvent_OnEnterVehicle()
     {
-        //if(sender != vehicle) return;
         OnEnterVehicle?.Invoke();
+        IsDriving = true;
     }
-    public void InvokeEvent_OnDrive(IInteractable sender, Vector3 poisition, Vector3 eulerAngles)
+    public void InvokeEvent_OnDrive(Vector3 poisition, Vector3 eulerAngles)
     {
         OnDrive?.Invoke(poisition, eulerAngles);
     }
-    public void InvokeEvent_OnExitVehicle(IInteractable sender)
+    public void InvokeEvent_OnExitVehicle()
     {
-        //if (sender != vehicle) return;
         OnExitVehicle?.Invoke();
+        IsDriving = false;
     }
-
 }

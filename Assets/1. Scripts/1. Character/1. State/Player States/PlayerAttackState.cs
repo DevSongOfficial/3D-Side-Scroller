@@ -83,7 +83,7 @@ public sealed class PlayerAttackState : PlayerStateBase
         var attackPosition = player.transform.position;
         attackPosition += player.Info.LocalPosition_Attack.ChangeVectorXWithDirection(player.MovementController.FacingDirection);
 
-        if (player.Detector.CharactersDetected(attackPosition, player.Info.AttackRadius, out ZombieCharacter[] characters))
+        if (player.Detector.DetectCharacters(attackPosition, player.Info.AttackRadius, out ZombieCharacter[] characters))
         {
             foreach (var character in characters)
             {

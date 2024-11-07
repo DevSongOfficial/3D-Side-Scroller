@@ -12,6 +12,8 @@ public sealed class CharacterMovementController : MovementController
     // [CharacterMovementController] uses [CharacterController] for movement.
     private CharacterController controller;
 
+    [SerializeField] private bool freezeZPostiion = true;
+
     protected override void Awake()
     {
         base.Awake();
@@ -27,6 +29,8 @@ public sealed class CharacterMovementController : MovementController
     protected override void Move()
     {
         controller.Move(Velocity * Time.fixedDeltaTime);
+
+        if(freezeZPostiion) transform.position = new Vector3(transform.position.x, transform.position.y, 0);
     }
 
     protected override void OnLand()

@@ -1,6 +1,5 @@
-using System.Xml.Schema;
+using System;
 using UnityEngine;
-using static AnimationController;
 using static GameSystem;
 
 public class GolfCart : MonoBehaviour, IInteractable
@@ -15,24 +14,31 @@ public class GolfCart : MonoBehaviour, IInteractable
     [SerializeField] private ObjectInfo info;
     [SerializeField] private DamageEvent damageEvent;
 
-    // Collision
+    // Physics
+    private Rigidbody rigidBody;
     private Detector detector;
     private Vector3 offset_CollisionPosition => new Vector3((int)movementController.FacingDirection, -0.3f, 0f);
     private readonly float collisionRadius = 1;
 
     // Cargo Tray
-    private IPickupable ObjectOnTheTray;
-    [SerializeField] private Transform cargoTray;
+    private IPickupable carryingItem;
+    [SerializeField] private Transform carryPoint;
+    public Transform CarryPoint => carryPoint;
 
     private void Awake()
     {
         movementController = GetComponent<CartMovementController>();
         detector = GetComponent<Detector>();
+        rigidBody = GetComponent<Rigidbody>();
     }
 
     private void Start()
     {
         movementController.ChangeMovementDirection(MovementDirection.Right, smoothRotation: false);
+
+        // Initialize cart
+        rigidBody.isKinematic = true;
+        movementController.ToggleHorizontalMovement(false);
     }
 
     private void FixedUpdate()
@@ -47,20 +53,19 @@ public class GolfCart : MonoBehaviour, IInteractable
 
         if (!IsTaken) return;
 
-        driver.AsDriver.InvokeEvent_OnDrive(this, transform.position, transform.eulerAngles);
+        driver.AsDriver.InvokeEvent_OnDrive(transform.position, transform.eulerAngles);
     }
 
     private void GetInTheCart(Interactor driver)
     {
         this.driver = driver;
-        driver.AsDriver.InvokeEvent_OnEnterVehicle(this); // MoveState -> OnVehicleState
+        driver.AsDriver.InvokeEvent_OnEnterVehicle();
 
         GameManager.SetCameraUpdateMethod(Cinemachine.CinemachineBrain.UpdateMethod.FixedUpdate);
         GameManager.Input_OnChangeDirection += OnChangeDirection;
 
         movementController.ToggleHorizontalMovement(true);
-
-        ObjectOnTheTray?.OnPickedUp(cargoTray, shouldAlignToCenter: false);
+        rigidBody.isKinematic = false;
     }
 
     private void GetOutOfTheCart()
@@ -68,13 +73,12 @@ public class GolfCart : MonoBehaviour, IInteractable
         GameManager.SetCameraUpdateMethod(Cinemachine.CinemachineBrain.UpdateMethod.SmartUpdate);
         GameManager.Input_OnChangeDirection -= OnChangeDirection;
 
-        driver.AsDriver.InvokeEvent_OnExitVehicle(this); // OnVehicleState -> MoveState
+        driver.AsDriver.InvokeEvent_OnExitVehicle();
         driver = null;
 
+        rigidBody.isKinematic = true;
         movementController.ToggleHorizontalMovement(false);
         velocityMultiplier = 0;
-
-        ObjectOnTheTray?.OnDropedOff();
     }
 
     public void Interact(Interactor newInteractor)
@@ -89,6 +93,9 @@ public class GolfCart : MonoBehaviour, IInteractable
         }
     }
 
+    public new InteractableType GetType() => InteractableType.Vehicle;
+
+
     private int velocityMultiplier;
     private void OnChangeDirection(MovementDirection newDirection)
     {
@@ -101,12 +108,12 @@ public class GolfCart : MonoBehaviour, IInteractable
         movementController.ApplyHorizontalVelocity(info.MovementSpeed * velocityMultiplier, info.Acceleration);
     }
 
-    void AttackOnCollide()
+    private void AttackOnCollide()
     {
         if (!IsTaken) return;
         if (movementController.Velocity.x < 2.9f) return;
 
-        if (detector.CharactersDetected(transform.position + offset_CollisionPosition, collisionRadius, out CharacterBase[] characters))
+        if (detector.DetectCharacters(transform.position + offset_CollisionPosition, collisionRadius, out CharacterBase[] characters))
         {
             foreach (var character in characters)
             {
@@ -119,12 +126,9 @@ public class GolfCart : MonoBehaviour, IInteractable
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void LoadTheTrunk(IPickupable pickupable)
     {
-        var pickupable = other.transform.parent?.GetComponent<IPickupable>();
-        if (pickupable == null) return;
-
-        ObjectOnTheTray = pickupable;
-
+        carryingItem = pickupable;
+        carryingItem?.OnPickedUp(carryPoint);
     }
 }

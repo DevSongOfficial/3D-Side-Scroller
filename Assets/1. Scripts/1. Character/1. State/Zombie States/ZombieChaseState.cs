@@ -46,7 +46,7 @@ public sealed class ZombieChaseState : ZombieStateBase
             SetDirection(zombie.transform.forward.normalized).
             SetDistance(zombie.Info.DetectionDistance);
 
-        if (!zombie.Detector.CharacterDetected(rayInfo, out CharacterBase target) || !zombie.MovementController.IsGrounded)
+        if (!zombie.Detector.DetectCharacter(rayInfo, out CharacterBase target) || !zombie.MovementController.IsGrounded)
         {
             zombie.ChangeState(zombie.PatrolState);
             return;

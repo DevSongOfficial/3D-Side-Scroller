@@ -55,7 +55,9 @@ public sealed class PlayerCharacter : CharacterBase
         OnVehiclState   = new PlayerOnVehicleState(this, blackboard);
 
         // Initialize Interactor
-        Interactor.AddGolfer(itemHolder_1).AddDriver();
+        Interactor.AddGolfer(itemHolder_1)
+                  .AddCarrier(itemHolder_2)
+                  .AddDriver();
         Interactor.AsDriver.OnEnterVehicle += () => ChangeState(OnVehiclState);
         Interactor.AsDriver.OnExitVehicle  += () => ChangeState(MoveState);
 
@@ -124,28 +126,23 @@ public sealed class PlayerCharacter : CharacterBase
 
     private void OnSwitchClub()
     {
-        Interactor.AsGolfer.InvokeEvent_OnClubSwitched(Interactor);
+        Interactor.AsGolfer.InvokeEvent_OnClubSwitched();
     }
 
     private void OnTogglePickup()
     {
         if (!CurrenState.CompareState(MoveState)) return;
 
-        if (IsCarryingObject)
+        if (Interactor.Toggle_FindAndLoadCart())
         {
-            currentlyCarriedObject.OnDropedOff();
-            currentlyCarriedObject = null;
             AnimationController.SetLayerWeight(AnimationController.Layer.UpperLayer, AnimationController.UpperLayer.Off);
-            return;   
+            return;
         }
 
-        var pickupables = Detector.ComponentsDetected<IPickupable>(Detector.ColliderCenter, 1.5f, Layer.Interactable.GetMask());
-        foreach (var pickupable in pickupables)
+        if (Interactor.Toggle_FindAndPickupWithinRange(info.InteractionRange))
         {
-            currentlyCarriedObject = pickupable;
-            currentlyCarriedObject.OnPickedUp(itemHolder_2, shouldAlignToCenter: true);
-            AnimationController.SetLayerWeight(AnimationController.Layer.UpperLayer, AnimationController.UpperLayer.On);
-            return;
+            var layer = Interactor.AsCarrier.IsCarryingItem ? AnimationController.UpperLayer.On : AnimationController.UpperLayer.Off;
+            AnimationController.SetLayerWeight(AnimationController.Layer.UpperLayer, layer);
         }
     }
 
@@ -157,6 +154,7 @@ public sealed class PlayerCharacter : CharacterBase
         MovementController.StunCharacter();
     }
 
+    // Transfer player to a spawnpoint.
     private void Reposition()
     {
         var po = FindObjectOfType<PlaceableSpawnPoint>();

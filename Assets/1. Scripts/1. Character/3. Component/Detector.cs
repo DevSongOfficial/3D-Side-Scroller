@@ -35,7 +35,7 @@ public class Detector : MonoBehaviour
         movementController = GetComponent<CharacterMovementController>();
     }
 
-    public bool CharacterDetected<T>(RayInfo rayInfo, out T character) where T : CharacterBase
+    public bool DetectCharacter<T>(RayInfo rayInfo, out T character) where T : CharacterBase
     {
         character = null;
         var startingPosition = rayInfo.origin ?? collider.bounds.center;
@@ -52,7 +52,7 @@ public class Detector : MonoBehaviour
         return character != null;
     }
 
-    public bool CharactersDetected<T>(Vector3 center, float radius, out T[] characters) where T : CharacterBase
+    public bool DetectCharacters<T>(Vector3 center, float radius, out T[] characters) where T : CharacterBase
     {
         characters = null;
 
@@ -70,7 +70,7 @@ public class Detector : MonoBehaviour
         return true;
     }
 
-    public List<T> ComponentsDetected<T>(Vector3 center, float radius, int layerMask)
+    public List<T> DetectComponents<T>(Vector3 center, float radius, int layerMask)
     {
         var colliders = Physics.OverlapSphere(center, radius, layerMask);
 
@@ -97,7 +97,7 @@ public class Detector : MonoBehaviour
         return components;
     }
 
-    public List<T> ComponentsDetected<T>(Vector3 center, float radius, int layerMask, Tag ignoreTag = Tag.Untagged)
+    public List<T> DetectComponents<T>(Vector3 center, float radius, int layerMask, Tag ignoreTag = Tag.Untagged)
     {
         var colliders = Physics.OverlapSphere(center, radius, layerMask);
 
@@ -128,7 +128,7 @@ public class Detector : MonoBehaviour
         return components;
     }
 
-    public bool WallDetected(RayInfo rayInfo)
+    public bool DetectWithLayer(RayInfo rayInfo, Layer layer)
     {
         var origin = rayInfo.origin ?? collider.bounds.center;
         var direction = rayInfo.direction ?? movementController.Direction.ConvertToVector3();
@@ -138,7 +138,7 @@ public class Detector : MonoBehaviour
 
         if (Physics.Raycast(origin, direction, out RaycastHit hit, distance))
         {
-            if (hit.collider.CompareLayer(Layer.Ground))
+            if (hit.collider.CompareLayer(layer))
             {
                 return true;
             }

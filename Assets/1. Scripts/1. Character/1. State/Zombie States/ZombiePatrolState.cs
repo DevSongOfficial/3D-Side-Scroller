@@ -48,7 +48,7 @@ public sealed class ZombiePatrolState : ZombieStateBase
                 SetDistance(zombie.Info.DetectionDistance);
 
         // Detect character.
-        if (zombie.Detector.CharacterDetected(rayInfo, out PlayerCharacter target))
+        if (zombie.Detector.DetectCharacter(rayInfo, out PlayerCharacter target))
         {
             blackBoard.targetCharacter = target;
             zombie.ChangeState(zombie.ChaseState);
@@ -57,7 +57,8 @@ public sealed class ZombiePatrolState : ZombieStateBase
 
         // Detect wall and set direction.
         movementDirection = zombie.MovementController.FacingDirection;
-        if (zombie.Detector.WallDetected(rayInfo.SetDistance(zombie.Info.WallDetectionDistance)) && !zombie.MovementController.IsChangingDirection)
+        if (zombie.Detector.DetectWithLayer(rayInfo.SetDistance(zombie.Info.WallDetectionDistance), Layer.Ground) 
+            && !zombie.MovementController.IsChangingDirection)
         {
             movementDirection = movementDirection.GetFlippedDirection();
         }

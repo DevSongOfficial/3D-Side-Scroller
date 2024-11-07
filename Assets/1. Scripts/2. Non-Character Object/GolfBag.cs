@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
 using UnityEngine;
 using static GameSystem;
 
@@ -18,6 +19,7 @@ public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
     private Interactor interactor;
     public bool IsOpen => interactor != null;
 
+
     // Physics
     [SerializeField] private Collider bodyCollider;
     private Rigidbody rigidBody;
@@ -27,9 +29,17 @@ public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
         rigidBody = GetComponent<Rigidbody>();
     }
 
+    private void Update()
+    {
+        CheckDistance();
+        UpdateTimer();
+    }
+
     public void Interact(Interactor newInteractor)
     {
         if (newInteractor.AsGolfer == null) return;
+        if (newInteractor.AsCarrier.IsCarryingItem) return;
+        if (newInteractor.AsDriver.IsDriving) return;
 
         if (IsOpen)
         {
@@ -41,11 +51,8 @@ public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
         OpenTheBag();
     }
 
-    private void Update()
-    {
-        CheckDistance();
-        UpdateTimer();
-    }
+    public new InteractableType GetType() => InteractableType.Equipment;
+
 
     private void OpenTheBag()
     {
@@ -99,35 +106,24 @@ public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
         }
     }
 
-    private bool centeredPosition;
-    // todo: needs to be refactored. (class extraction?)
-    public void OnPickedUp(Transform itemHolder, bool centeredPosition)
+    public void OnPickedUp(Transform carryPoint)
     {
-        this.centeredPosition = centeredPosition;
+        transform.SetParent(carryPoint);
 
-        transform.SetParent(itemHolder);
+        transform.position = carryPoint.position;
 
-        if (centeredPosition)
-        {
-            var offset = itemHolder.position - bodyCollider.bounds.center;
-            transform.position += offset;
-        }
-
-        bodyCollider.enabled = false;
         rigidBody.isKinematic = true;
+        bodyCollider.isTrigger = true;
     }
 
     public void OnDropedOff()
     {
-        transform.SetParent(null);
+        GameManager.AttachToMap(transform);
 
-        if (centeredPosition)
-        {
-            transform.eulerAngles = Vector3.zero;
-            transform.position = new Vector3(transform.position.x, transform.position.y, 0);
-        }
+        transform.eulerAngles = Vector3.zero;
+        transform.position = new Vector3(transform.position.x, transform.position.y, 0);
 
-        bodyCollider.enabled = true;
         rigidBody.isKinematic = false;
+        bodyCollider.isTrigger = false;
     }
 }
