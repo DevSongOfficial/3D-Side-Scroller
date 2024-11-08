@@ -9,6 +9,7 @@ public static class ExtensionMethods
         return ReferenceEquals(state, another);
     }
 
+    // Physics
     public static Vector3 ConvertToVector3(this MovementDirection direction)
     {
         switch (direction)

@@ -38,8 +38,6 @@ public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
     public void Interact(Interactor newInteractor)
     {
         if (newInteractor.AsGolfer == null) return;
-        if (newInteractor.AsCarrier.IsCarryingItem) return;
-        if (newInteractor.AsDriver.IsDriving) return;
 
         if (IsOpen)
         {
@@ -111,6 +109,7 @@ public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
         transform.SetParent(carryPoint);
 
         transform.position = carryPoint.position;
+        transform.eulerAngles = carryPoint.eulerAngles;
 
         rigidBody.isKinematic = true;
         bodyCollider.isTrigger = true;

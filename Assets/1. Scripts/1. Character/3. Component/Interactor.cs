@@ -30,10 +30,17 @@ public class Interactor
 
     public bool FindAndInteractWithinRange(float distance = 1.5f)
     {
-        var interactables = interactorCharacter.Detector.DetectComponents<IInteractable>(GetPosition(), distance, Layer.Interactable.GetMask());
+        var interactables = interactorCharacter.Detector.DetectComponents<IInteractable>(GetPosition(), distance, Layer.Interactable.GetMask(), putClosestInFirst: true);
 
         if (interactables.Count == 0) return false;
         IInteractable interactable = interactables[0];
+
+        if (AsCarrier.IsCarryingItem)
+        {
+            currentlyInteractingObject = interactable;
+            currentlyInteractingObject.Interact(this);
+            return true;
+        }
 
         if (interactables.Count > 1)
         {

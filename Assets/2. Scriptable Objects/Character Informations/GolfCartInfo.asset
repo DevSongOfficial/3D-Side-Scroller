@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   interactionRange: 2
-  movementSpeed: 3
+  movementSpeed: 4
   acceleration: 0.15

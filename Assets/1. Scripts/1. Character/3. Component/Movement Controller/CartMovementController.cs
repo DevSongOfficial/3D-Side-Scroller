@@ -49,8 +49,8 @@ public sealed class CartMovementController : MovementController
 
     public override Quaternion AlignToGround()
     {
-        Physics.Raycast(RaycastPosition_ForwardWheel, Vector3.down, out RaycastHit hitForward, 0.7f, Layer.Ground.GetMask());
-        Physics.Raycast(RaycastPosition_RealWheel, Vector3.down, out RaycastHit hitRear, 0.7f, Layer.Ground.GetMask());
+        Physics.Raycast(RaycastPosition_ForwardWheel, Vector3.down, out RaycastHit hitForward, 2.7f, Layer.Ground.GetMask());
+        Physics.Raycast(RaycastPosition_RealWheel, Vector3.down, out RaycastHit hitRear, 2.7f, Layer.Ground.GetMask());
 
         if (hitForward.collider == null && hitRear.collider == null) return transform.rotation = Quaternion.Euler(0, FacingDirection.GetYRotationValue(), 0);
 

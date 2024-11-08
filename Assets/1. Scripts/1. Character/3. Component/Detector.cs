@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static UnityEngine.UI.Image;
 
 public class Detector : MonoBehaviour
@@ -70,6 +71,54 @@ public class Detector : MonoBehaviour
         return true;
     }
 
+    public List<T> DetectComponents<T>(Vector3 center, float radius, int layerMask, bool putClosestInFirst)
+    {
+        var colliders = Physics.OverlapSphere(center, radius, layerMask);
+
+        Debug_DrawSphere(center, radius);
+
+        var components = new List<T>();
+        float closestDistance = 100f;
+
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            var collider = colliders[i];
+            T componentToAdd;
+            
+            if (collider.TryGetComponent(out T component))
+            {
+                componentToAdd = component;
+            }
+            else
+            {
+                var componentInParent = collider.transform.GetComponentInParent<T>();
+                if (componentInParent != null)
+                {
+                    componentToAdd = componentInParent;
+                }
+                else
+                {
+                    continue;
+                }
+            }
+
+            var distance = Vector3.Distance(transform.position, collider.transform.position);
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                components.Insert(0, componentToAdd);
+            }
+            else
+            {
+                components.Add(componentToAdd);
+            }
+        }
+
+        return components;
+    }
+
+
     public List<T> DetectComponents<T>(Vector3 center, float radius, int layerMask)
     {
         var colliders = Physics.OverlapSphere(center, radius, layerMask);
@@ -80,13 +129,15 @@ public class Detector : MonoBehaviour
 
         for (int i = 0; i < colliders.Length; i++)
         {
-            if (colliders[i].TryGetComponent(out T component))
+            var collider = colliders[i];
+
+            if (collider.TryGetComponent(out T component))
             {
                 components.Add(component);
             }
             else
             {
-                var componentInParent = colliders[i].transform.GetComponentInParent<T>();
+                var componentInParent = collider.transform.GetComponentInParent<T>();
                 if (componentInParent != null)
                 {
                     components.Add(componentInParent);
