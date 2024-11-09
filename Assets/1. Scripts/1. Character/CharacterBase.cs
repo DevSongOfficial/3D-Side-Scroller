@@ -20,7 +20,6 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
 
     // Animation Controller
     public AnimationController AnimationController { get; private set; }
-    private Animator animator;
 
     // Health System
     public HealthSystem HealthSystem { get; protected set; }
@@ -51,8 +50,7 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
         HealthSystem = new HealthSystem(info.MaxHealth);
         Interactor = new Interactor(this);
 
-        animator = GetComponentInChildren<Animator>();
-        AnimationController = new AnimationController(animator);
+        AnimationController = new AnimationController(GetComponentInChildren<Animator>());
     }
 
     protected virtual void Start() { }

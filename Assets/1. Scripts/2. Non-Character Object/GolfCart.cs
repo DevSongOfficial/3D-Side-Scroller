@@ -9,6 +9,7 @@ public class GolfCart : MonoBehaviour, IInteractable
     public bool IsTaken => driver != null;
 
     private CartMovementController movementController;
+    private AnimationController animationController;
 
     [Header("Golf Cart Information")]
     [SerializeField] private ObjectInfo info;
@@ -25,9 +26,11 @@ public class GolfCart : MonoBehaviour, IInteractable
     [SerializeField] private Transform carryPoint;
     public Transform CarryPoint => carryPoint;
 
+
     private void Awake()
     {
         movementController = GetComponent<CartMovementController>();
+        animationController = new AnimationController(GetComponent<Animator>());
         detector = GetComponent<Detector>();
         rigidBody = GetComponent<Rigidbody>();
     }
@@ -39,6 +42,7 @@ public class GolfCart : MonoBehaviour, IInteractable
         // Initialize cart
         rigidBody.isKinematic = true;
         movementController.ToggleHorizontalMovement(false);
+        animationController.SetSpeed(AnimationController.Speed.Pause);
     }
 
     private void FixedUpdate()
@@ -54,6 +58,10 @@ public class GolfCart : MonoBehaviour, IInteractable
         if (!IsTaken) return;
 
         driver.AsDriver.InvokeEvent_OnDrive(transform.position, transform.eulerAngles);
+        
+        // Set wheel rotation speed.
+        float speedMultiplier = Mathf.Abs(movementController.Velocity.x);
+        animationController.SetSpeed(0.5f * speedMultiplier);
     }
 
     private void GetInTheCart(Interactor driver)

@@ -96,7 +96,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayName: Golf Ball
-  wishZPosition: -0.85
+  fixedZPosition: -0.85
 --- !u!1 &5962190086412504176
 GameObject:
   m_ObjectHideFlags: 0

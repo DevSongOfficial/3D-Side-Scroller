@@ -179,10 +179,15 @@ public class System_LevelEditorManager : MonoBehaviour
     private void HandleObjectMovement()
     {
         var obj = PlaceableObjectBase.CurrentlySelected;
-
         if (obj is null) return;
 
         var currentPosition = UI.GetWorldPositionFromMousePosition() + movementOffset;
+
+        if (obj is PlaceableGround)
+        {
+            obj.transform.position = new Vector3(Mathf.Round(currentPosition.x), Mathf.Round(currentPosition.y), (obj as PlaceableProb).ZPostion);
+            return;
+        }
 
         if (obj is PlaceableProb)
         {
@@ -190,12 +195,7 @@ public class System_LevelEditorManager : MonoBehaviour
             return;
         }
 
-        if (obj is PlaceableGround)
-        {
-            obj.transform.position = new Vector3(Mathf.Round(currentPosition.x), Mathf.Round(currentPosition.y), currentPosition.z);
-            return;
-        }
-
+        // If (obj is PlaceableCharacter)
         obj.transform.position = currentPosition;
     }
 

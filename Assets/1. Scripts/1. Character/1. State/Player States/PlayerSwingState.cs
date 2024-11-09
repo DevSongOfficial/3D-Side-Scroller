@@ -39,7 +39,7 @@ public class PlayerSwingState : PlayerStateBase
         player.AnimationController.ChangeState(player.Interactor.AsGolfer.CurrentClub.AnimationType, 0.01f);
         player.MovementController.ChangeMovementDirection(MovementDirection.Right, Space.Self , smoothRotation: false);
 
-        swingType = player.Interactor.AsGolfer.CurrentClub.SwingType;
+        swingType = player.Interactor.AsGolfer.CurrentClub.ClubType;
         currentFrame = 0;
         powerCharged = powerDefault;
         hasHit = false;
@@ -190,7 +190,7 @@ public class PlayerSwingState : PlayerStateBase
 
     private float GetProperMultiplierDependingOnTheFrame(float frame)
     {
-        if (player.Interactor.AsGolfer.CurrentClub.SwingType == ClubType.Putter) return 1;
+        if (player.Interactor.AsGolfer.CurrentClub.ClubType == ClubType.Putter) return 1;
         if (frame > 80) return 4;
         else if (frame > 60) return 2;
         return 1;

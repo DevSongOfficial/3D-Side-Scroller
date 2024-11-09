@@ -8,6 +8,7 @@ public struct Prefab {
 		PO_GolfBag,
 		PO_GolfBall,
 		PO_GolfCart,
+		PO_GreenWithHole,
 		PO_Ground_1,
 		PO_Ground_2,
 		PO_Ground_3,

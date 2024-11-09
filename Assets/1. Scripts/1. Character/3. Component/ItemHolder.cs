@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ItemSlotType { Empty, Putter, Iron, Driver }
 
 // This manages the attachment of items or weapons to specified body parts. (mostly weapon in the right hand)
 // Should be attached to the correct specified [Transform]
@@ -11,15 +10,15 @@ public class ItemHolder : MonoBehaviour, IEnumerable
 {
     [SerializeField] private Transform[] itemSlot;
 
-    public Transform GetSlotTransform(ItemSlotType slotType)
+    public Transform GetSlotTransform(ClubType slotType)
     {
         switch (slotType)
         {
-            case ItemSlotType.Putter:
+            case ClubType.Putter:
                 return itemSlot[1];
-            case ItemSlotType.Iron
+            case ClubType.Iron
                 : return itemSlot[2];
-            case ItemSlotType.Driver:
+            case ClubType.Driver:
                 return itemSlot[3];
             default: return itemSlot[0];
         }

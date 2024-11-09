@@ -516,11 +516,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25177012c1da37a4e98196674dd27e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotType: 3
   displayName: Driver
-  clubType: 2
+  clubType: 3
   swingRadius: 1.9
-  chargeSpeed: 2
+  chargeSpeed: 1
   damageEvent:
     senderType: 2
     damage: 45
@@ -753,9 +752,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25177012c1da37a4e98196674dd27e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotType: 1
   displayName: Putter
-  clubType: 0
+  clubType: 1
   swingRadius: 1.5
   chargeSpeed: 1
   damageEvent:
@@ -857,7 +855,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25177012c1da37a4e98196674dd27e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotType: 0
   displayName: Fist
   clubType: 0
   swingRadius: 1.5
@@ -912,11 +909,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25177012c1da37a4e98196674dd27e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotType: 2
   displayName: Iron 7
-  clubType: 1
+  clubType: 2
   swingRadius: 1.5
-  chargeSpeed: 0.8
+  chargeSpeed: 1.4
   damageEvent:
     senderType: 2
     damage: 25

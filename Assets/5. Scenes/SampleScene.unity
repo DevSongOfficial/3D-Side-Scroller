@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 329f74c88bf2af348afe0574523e8718, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 71f14a2d79f732f4d9893ef1b911f4ff, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 4553865196435602989}
-  m_IndirectSpecularColor: {r: 0.04365709, g: 0.044818856, b: 0.05955075, a: 1}
+  m_IndirectSpecularColor: {r: 0.48395744, g: 0.5757396, b: 0.68019843, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -274,7 +274,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25177012c1da37a4e98196674dd27e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotType: 2
   displayName: Iron
   clubType: 0
   swingRadius: 1.5
@@ -2919,7 +2918,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25177012c1da37a4e98196674dd27e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotType: 3
   displayName: Driver
   clubType: 0
   swingRadius: 1.9
@@ -3105,7 +3103,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25177012c1da37a4e98196674dd27e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotType: 1
   displayName: Putter
   clubType: 0
   swingRadius: 1.5
@@ -3167,7 +3164,7 @@ MonoBehaviour:
   map: {fileID: 727528124966509562}
   lagacy: {fileID: 8113071625720310632}
   input: {fileID: 5168848609361551485}
-  loadGameOnStart: 1
+  loadGameOnStart: 0
 --- !u!4 &4955216131874916913
 Transform:
   m_ObjectHideFlags: 0
@@ -5342,7 +5339,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25177012c1da37a4e98196674dd27e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotType: 0
   displayName: Fist
   clubType: 0
   swingRadius: 1.5

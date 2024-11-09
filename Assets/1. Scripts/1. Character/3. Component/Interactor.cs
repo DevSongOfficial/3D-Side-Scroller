@@ -179,7 +179,7 @@ public class Golfer
     {
         if (CurrentClub != null) UnequipClub();
 
-        CurrentClub = GameObject.Instantiate(newClub, itemHolder.GetSlotTransform(newClub.SlotType));
+        CurrentClub = GameObject.Instantiate(newClub, itemHolder.GetSlotTransform(newClub.ClubType));
         CurrentClub.gameObject.SetActive(true);
     }
     public void UnequipClub()
