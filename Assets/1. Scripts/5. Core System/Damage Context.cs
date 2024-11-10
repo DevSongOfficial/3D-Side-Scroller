@@ -38,6 +38,11 @@ public struct DamageEvent
         return new DamageEvent(senderType, damage, new Vector3((int)direction * knockBackVelocity.x, knockBackVelocity.y, knockBackVelocity.z));
     }
 
+    public DamageEvent ChangeSenderType(EventSenderType eventSenderType)
+    {
+        return new DamageEvent(eventSenderType, damage, knockBackVelocity);
+    }
+
     public bool CompareSenderTypeWith(EventSenderType eventSenderType)
     {
         return senderType == eventSenderType;
@@ -46,7 +51,7 @@ public struct DamageEvent
 
 public enum EventSenderType
 {
-    None, Default, Club, Obstacle, Item
+    None, Default, Club, Skill, Obstacle, Item
 }
 
 interface IDamageable

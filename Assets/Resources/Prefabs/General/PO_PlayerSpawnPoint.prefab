@@ -1382,6 +1382,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayName: Player Spawn Point
+  fixedZPosition: 0
+  isSingleton: 1
 --- !u!1 &3887778419107596387
 GameObject:
   m_ObjectHideFlags: 0

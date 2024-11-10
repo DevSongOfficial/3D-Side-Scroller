@@ -1,4 +1,4 @@
-public sealed class PlaceableSpawnPoint : PlaceableObjectBase
+public sealed class PlaceableSpawnPoint : PlaceableProb
 {
     protected override void OnLevelEditorToggled(bool isOn)
     {

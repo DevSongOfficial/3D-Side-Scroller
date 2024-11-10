@@ -5,9 +5,6 @@ using UnityEngine;
 
 public class System_SaveManager : MonoBehaviour
 {
-    public event Action OnSaveData;
-    public event Action OnLoadData;
-
     private const string prefix = "Data_";
     private int dataIndex = 0;
 
@@ -15,7 +12,6 @@ public class System_SaveManager : MonoBehaviour
     {
         if (WriteToFile(prefix + dataIndex, data))
         {
-            OnSaveData?.Invoke();
             Debug.Log("<color=cyan>Save Completed</color>");
         }
     }
@@ -25,7 +21,6 @@ public class System_SaveManager : MonoBehaviour
         string data = string.Empty;
         if (ReadFromFile(prefix + dataIndex, out data))
         {
-            OnLoadData?.Invoke();
             Debug.Log("<color=cyan>Load Completed</color>");
         }
         return data;

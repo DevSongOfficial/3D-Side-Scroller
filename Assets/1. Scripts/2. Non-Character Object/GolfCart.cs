@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static AnimationController;
 using static GameSystem;
 
 public class GolfCart : MonoBehaviour, IInteractable
@@ -45,6 +46,11 @@ public class GolfCart : MonoBehaviour, IInteractable
         animationController.SetSpeed(AnimationController.Speed.Pause);
     }
 
+    private void Update()
+    {
+        HandleKinematics();
+    }
+
     private void FixedUpdate()
     {
         HandleMovement();
@@ -55,13 +61,12 @@ public class GolfCart : MonoBehaviour, IInteractable
     {
         movementController.AlignToGround();
 
-        if (!IsTaken) return;
-
-        driver.AsDriver.InvokeEvent_OnDrive(transform.position, transform.eulerAngles);
-        
         // Set wheel rotation speed.
         float speedMultiplier = Mathf.Abs(movementController.Velocity.x);
         animationController.SetSpeed(0.5f * speedMultiplier);
+
+        // Move the driver.
+        if (IsTaken) driver.AsDriver.InvokeEvent_OnDrive(transform.position, transform.eulerAngles);
     }
 
     private void GetInTheCart(Interactor driver)
@@ -73,7 +78,6 @@ public class GolfCart : MonoBehaviour, IInteractable
         GameManager.Input_OnChangeDirection += OnChangeDirection;
 
         movementController.ToggleHorizontalMovement(true);
-        rigidBody.isKinematic = false;
     }
 
     private void GetOutOfTheCart()
@@ -84,7 +88,6 @@ public class GolfCart : MonoBehaviour, IInteractable
         driver.AsDriver.InvokeEvent_OnExitVehicle();
         driver = null;
 
-        rigidBody.isKinematic = true;
         movementController.ToggleHorizontalMovement(false);
         velocityMultiplier = 0;
     }
@@ -114,6 +117,12 @@ public class GolfCart : MonoBehaviour, IInteractable
     private void HandleMovement()
     {
         movementController.ApplyHorizontalVelocity(info.MovementSpeed * velocityMultiplier, info.Acceleration);
+    }
+
+    private void HandleKinematics()
+    {
+        if (LevelEditorManager.IsEditorActive) return;
+        rigidBody.isKinematic = movementController.IsGrounded && !IsTaken;
     }
 
     private void AttackOnCollide()

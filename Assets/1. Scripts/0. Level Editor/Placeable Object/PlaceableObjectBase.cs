@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 using static GameSystem;
 
@@ -30,41 +31,56 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     private int overlappedObjectsCount;
 
     // Events
-    public static event Action<PlaceableObjectBase> OnObjectSelectedForPlacing;
+    public static event Action<PlaceableObjectBase> OnObjectRegistered;
+    public static event Action<PlaceableObjectBase> OnObjectUnregistered;
+    public static event Action<PlaceableObjectBase> OnObjectCreatedFromButton;
 
     public static PlaceableObjectBase CurrentlySelected { get; private set; } // The object player's dealing with at the moment.
     public static PlaceableObjectBase PreviouslyPlaced { get; private set; }
     public static void SetCurrentObject(PlaceableObjectBase po) { CurrentlySelected = po; }
     public static void SetPreviouslyPlacedObject(PlaceableObjectBase po) {  PreviouslyPlaced = po; }
 
-    // This function is called only when player click a button in the level editor in order to create new object.
-    public void OnSelectObjectWhenPlacing()
+    // This function is called when player click a button in the level editor in order to create new object.
+    public void CreateIfSelectedPleaceableObject()
     {
         if (CurrentlySelected != null) return;
         
         var selectedObject = CreatePlaceableObject();
-
-        OnObjectSelectedForPlacing.Invoke(selectedObject);
         SetCurrentObject(selectedObject);
+        
         RegisterPlaceableObject(selectedObject);
+
+        OnObjectCreatedFromButton.Invoke(selectedObject);
+    }
+
+    public virtual PlaceableObjectBase CreatePlaceableObject()
+    {
+        var newObject = Instantiate(this);
+        newObject.SetType(Type);
+
+        return newObject;
     }
 
     #region Registration of Object Placement
     public static List<PlaceableObjectBase> PlaceableObjectsInTheScene;
-    public static void RegisterPlaceableObject(PlaceableObjectBase newPlaceableObject) 
+    public static void RegisterPlaceableObject(PlaceableObjectBase po) 
     {
-        PlaceableObjectsInTheScene.Add(newPlaceableObject);
-        GameManager.AttachToMap(newPlaceableObject.transform);
-        GameManager.AttachToMap(newPlaceableObject.ActualObject.transform);
+        PlaceableObjectsInTheScene.Add(po);
+        GameManager.AttachToMap(po.transform);
+        GameManager.AttachToMap(po.ActualObject.transform);
+
+        OnObjectRegistered.Invoke(po);
     }
 
-    public static void UnregisterPlaceableObject(PlaceableObjectBase newPlaceableObject)
+    public static void UnregisterPlaceableObject(PlaceableObjectBase po)
     {
-        if (!PlaceableObjectsInTheScene.Contains(newPlaceableObject)) return;
-            
-        PlaceableObjectsInTheScene.Remove(newPlaceableObject);
-        GameManager.MoveToLagacy(newPlaceableObject.transform);
-        GameManager.MoveToLagacy(newPlaceableObject.ActualObject.transform);
+        if (!PlaceableObjectsInTheScene.Contains(po)) return;
+
+        OnObjectUnregistered.Invoke(po);
+
+        PlaceableObjectsInTheScene.Remove(po);
+        GameManager.MoveToLagacy(po.transform);
+        GameManager.MoveToLagacy(po.ActualObject.transform);
     }
     #endregion
 
@@ -116,7 +132,6 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     protected virtual void OnLevelEditorToggled(bool isOn)
     {
         isEditorMode = isOn;
-        rigidBody.isKinematic = isOn;
 
         if (isOn)
         {
@@ -133,14 +148,6 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     {
         ActualObject.gameObject.SetActive(active);
         gameObject.SetActive(active);
-    }
-
-    private PlaceableObjectBase CreatePlaceableObject()
-    {
-        var newObject = Instantiate(this);
-        newObject.SetType(Type);
-
-        return newObject;
     }
 
     protected virtual void OnTriggerEnter(Collider other)

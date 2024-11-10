@@ -1,6 +1,7 @@
 using Cinemachine;
 using System;
 using System.IO;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static GameSystem;
@@ -19,7 +20,7 @@ public enum Layer
 
 public enum Tag
 {
-    Untagged, Player, Enemy, Prob
+    Untagged, Player, Enemy, Prob, HoleCup, Green
 }
 
 public class System_GameManager : MonoBehaviour
@@ -38,6 +39,7 @@ public class System_GameManager : MonoBehaviour
 
     [Header("Main Camera & Cinemachine")]
     [SerializeField] private CinemachineBrain cinemachineBrain;
+
     public void SetCameraUpdateMethod(CinemachineBrain.UpdateMethod method)
     {
         cinemachineBrain.m_UpdateMethod = method;
@@ -115,6 +117,9 @@ public class System_GameManager : MonoBehaviour
 
     [Header("Save & Load")]
     [SerializeField] private bool loadGameOnStart;
+    public event Action OnLoadStart;
+    public event Action OnLoadComplete;
+
     [ContextMenu("SAVE")]
     public void SaveGame()
     {
@@ -131,6 +136,8 @@ public class System_GameManager : MonoBehaviour
     [ContextMenu("LOAD")]
     public void LoadGame()
     {
+        OnLoadStart?.Invoke();
+
         var data = SaveManager.LoadData();
         if (String.IsNullOrEmpty(data)) return;
 
@@ -138,16 +145,33 @@ public class System_GameManager : MonoBehaviour
 
         LevelEditorManager.RemoveEveryRegisterdObject();
 
+
         foreach (var prefab in dataHandler.prefabDatas)
         {
-            var placeableObject = Instantiate(AssetManager.GetPrefab(prefab.type).GetComponent<PlaceableObjectBase>());
-            placeableObject.SetType(prefab.type);
+            var placeableObject = AssetManager.GetPrefab(prefab.type).GetComponent<PlaceableObjectBase>().CreatePlaceableObject();            
             placeableObject.transform.position = prefab.position.GetValue();
             placeableObject.transform.eulerAngles = prefab.eulerAngles.GetValue();
 
             PlaceableObjectBase.RegisterPlaceableObject(placeableObject);
-
-            LevelEditorManager.SetPlayMode(PlayMode.Editing);
         }
+        LevelEditorManager.SetPlayMode(PlayMode.Editing);
+
+        OnLoadComplete?.Invoke();
+    }
+
+    public event Action OnGreen;
+    public event Action OnExitGreen;
+    public event Action OnGameFinished;
+    public void BallInTheCup()
+    {
+        OnGameFinished?.Invoke();
+    }
+    public void BallOnTheGreen()
+    {
+        OnGreen?.Invoke();
+    }
+    public void BallOutTheGreen()
+    {
+        OnExitGreen?.Invoke();
     }
 }

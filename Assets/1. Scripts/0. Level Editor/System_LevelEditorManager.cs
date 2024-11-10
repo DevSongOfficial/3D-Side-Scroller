@@ -33,7 +33,7 @@ public class System_LevelEditorManager : MonoBehaviour
 
     private void Awake()
     {
-        PlaceableObjectBase.OnObjectSelectedForPlacing += delegate { SetPlayMode(PlayMode.Placing); };
+        PlaceableObjectBase.OnObjectCreatedFromButton += delegate { SetPlayMode(PlayMode.Placing); };
     }
 
     private void Start()
@@ -99,7 +99,7 @@ public class System_LevelEditorManager : MonoBehaviour
         if (Input.GetKey(placeInARow))
         {
             var po = AssetManager.GetPrefab(PlaceableObjectBase.PreviouslyPlaced.Type).GetComponent<PlaceableObjectBase>();
-            po.OnSelectObjectWhenPlacing();
+            po.CreateIfSelectedPleaceableObject();
         }
     }
 

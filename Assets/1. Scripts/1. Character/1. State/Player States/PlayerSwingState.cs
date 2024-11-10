@@ -29,6 +29,7 @@ public class PlayerSwingState : PlayerStateBase
     private const float powerMaximum = 2;
 
     private bool hasHit;
+    private bool isSkilledShot;
 
     public override void EnterState()
     {
@@ -42,6 +43,7 @@ public class PlayerSwingState : PlayerStateBase
         swingType = player.Interactor.AsGolfer.CurrentClub.ClubType;
         currentFrame = 0;
         powerCharged = powerDefault;
+
         hasHit = false;
 
         backSwingCoroutine = player.StartCoroutine(BackSwing());
@@ -123,6 +125,7 @@ public class PlayerSwingState : PlayerStateBase
         powerCharged++;
 
         UIManager.CloseUI(UIManager.GetUI.Image_SwingChargeIndicator);
+
         player.StopCoroutine(backSwingCoroutine);
         downSwingCoroutine = player.StartCoroutine(DownSwingRoutine());
     }
@@ -164,7 +167,8 @@ public class PlayerSwingState : PlayerStateBase
             var damageEvent = player.Interactor.AsGolfer.CurrentClub.DamageEvent.
                 ApplyDirection(player.MovementController.FacingDirection).
                 MultiplyVelocity(powerCharged).
-                MultiplyDamage(powerCharged > 2 ? 3 : 2);
+                MultiplyDamage(powerCharged > 2 ? 3 : 2).
+                ChangeSenderType(powerCharged > 2 ? EventSenderType.Skill : EventSenderType.Club);
 
             foreach (var damageable in damageables)
             {

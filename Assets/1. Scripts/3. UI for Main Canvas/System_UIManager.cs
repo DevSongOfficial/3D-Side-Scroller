@@ -17,7 +17,7 @@ public class System_UIManager : MonoBehaviour
     private UI instance_UI;
     public Canvas Canvas { get; private set; }
 
-    private List<TMP_Text> texts_MoveAndFadeOut = new List<TMP_Text>();
+    private List<MaskableGraphic> UIs_MoveAndFadeOut = new List<MaskableGraphic>();
 
     public Vector3 floatingPosition => Camera.main.WorldToScreenPoint(playerTransform.position);
     private Transform playerTransform;
@@ -41,12 +41,12 @@ public class System_UIManager : MonoBehaviour
 
     private void UpdateUIAlphaToBeZero()
     {
-        foreach (var text in texts_MoveAndFadeOut)
+        foreach (var ui in UIs_MoveAndFadeOut)
         {
-            text.color = new Color(text.color.r, text.color.g, text.color.b, text.color.a - 0.5f * Time.deltaTime);
-            text.rectTransform.localPosition += new Vector3(30 * Time.deltaTime, 90 * Time.deltaTime, 0);
+            ui.color = new Color(ui.color.r, ui.color.g, ui.color.b, ui.color.a - 0.5f * Time.deltaTime);
+            ui.rectTransform.localPosition += new Vector3(30 * Time.deltaTime, 90 * Time.deltaTime, 0);
 
-            if (text.color.a <= 0) CloseUI(text);
+            if (ui.color.a <= 0) CloseUI(ui);
         }
     }
 
@@ -60,17 +60,22 @@ public class System_UIManager : MonoBehaviour
         graphic.gameObject.SetActive(true);
     }
 
-    public void PopupUI(TMP_Text text, Vector3 position, PopupType popupType)
+    public void PopupUI(MaskableGraphic text, Vector3 position, PopupType popupType)
     {
         PopupUI(text);
         text.transform.position = position;
 
-        if(popupType == PopupType.MoveAndFadeOut) texts_MoveAndFadeOut.Add(text);
+        if(popupType == PopupType.MoveAndFadeOut) UIs_MoveAndFadeOut.Add(text);
     }
 
     public void CloseUI(MaskableGraphic graphic)
     {
         graphic.gameObject.SetActive(false);
+    }
+
+    public void SetText(TMP_Text text, string s)
+    {
+        text.text = s;
     }
 
     public void FillImage(Image image, float fillAmount /* 0 ~ 1 */)

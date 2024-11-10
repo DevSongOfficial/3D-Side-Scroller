@@ -61,7 +61,7 @@ public sealed class PlayerCharacter : CharacterBase
         Interactor.AsDriver.OnEnterVehicle += () => ChangeState(OnVehiclState);
         Interactor.AsDriver.OnExitVehicle  += () => ChangeState(MoveState);
 
-        SaveManager.OnLoadData += Reposition;
+        GameManager.OnLoadComplete += Reposition;
     }
 
     protected override void Start()
