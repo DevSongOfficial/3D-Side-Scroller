@@ -2317,7 +2317,6 @@ MonoBehaviour:
   itemHolder_1: {fileID: 5876074924353844186}
   itemHolder_2: {fileID: 7868302900229880787}
   clubOnStart: {fileID: 8757520309575424945}
-  auraEffect: {fileID: 4735442207092157247}
 --- !u!1 &3681462801380808014
 GameObject:
   m_ObjectHideFlags: 0
@@ -3069,48 +3068,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!23 &4735442207092157247
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6536790043039697642}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 60bf00649db404b47a29b4ec33336c8c, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!224 &4743405969462564553
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3459,9 +3416,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb8f0c8aa2d6fb5438f030605d049c8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cinemachineBrain: {fileID: 4782479680249010460}
-  greenCamera: {fileID: 0}
-  golfBallCamera: {fileID: 100532209}
   map: {fileID: 727528124966509562}
   lagacy: {fileID: 8113071625720310632}
   input: {fileID: 5168848609361551485}
@@ -3926,21 +3880,6 @@ MonoBehaviour:
   - {fileID: 3603063828955024880}
   - {fileID: 1910528555279808120}
   - {fileID: 150312927253562575}
---- !u!4 &5907745544779944016
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6536790043039697642}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.50000006, y: -0.49999997, z: -0.50000006, w: 0.49999997}
-  m_LocalPosition: {x: 0.01, y: 0.16, z: 0}
-  m_LocalScale: {x: 60, y: 99.999985, z: 103.381096}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6665498044467967607}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6014026923500449720
 GameObject:
   m_ObjectHideFlags: 0
@@ -3981,9 +3920,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6289760386618149417}
-  - component: {fileID: 449918034981532497}
-  - component: {fileID: 6289760386618149418}
   - component: {fileID: 4955018959917162178}
+  - component: {fileID: 6289760386618149419}
+  - component: {fileID: 6289760386618149418}
+  - component: {fileID: 449918034981532497}
   - component: {fileID: 5168848609361551485}
   m_Layer: 0
   m_Name: Game System
@@ -4066,6 +4006,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86ca4b3327701a94db2fd04c24e185cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6289760386618149419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6189021878019853439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11918d594d059e34ab6f7006b88f86ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cinemachineBrain: {fileID: 4782479680249010460}
+  camera_Green: {fileID: 565534782}
+  camera_GolfBall: {fileID: 100532209}
 --- !u!1 &6411534801059410933
 GameObject:
   m_ObjectHideFlags: 0
@@ -4173,24 +4128,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &6536790043039697642
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5907745544779944016}
-  - component: {fileID: 7373339067553832949}
-  - component: {fileID: 4735442207092157247}
-  m_Layer: 0
-  m_Name: Aura
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1 &6548512198711745092
 GameObject:
   m_ObjectHideFlags: 0
@@ -4253,7 +4190,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8753711268247811514}
-  - {fileID: 5907745544779944016}
   - {fileID: 5875329415744147959}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
@@ -4469,14 +4405,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!33 &7373339067553832949
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6536790043039697642}
-  m_Mesh: {fileID: 2534964839176971238, guid: e60a55445dfef9e49ae15b78ad606975, type: 3}
 --- !u!1 &7393890672684205101
 GameObject:
   m_ObjectHideFlags: 0

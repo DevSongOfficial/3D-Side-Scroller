@@ -219,8 +219,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 4.9252357, z: 1}
-  m_Center: {x: -0, y: 0, z: -0}
+  m_Size: {x: 4.267599, y: 1.021784, z: 5.004459}
+  m_Center: {x: -0.59618354, y: -0.0069376826, z: 1.366852e-15}
 --- !u!54 &3033295121925380399
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -589,7 +589,7 @@ GameObject:
   m_Component:
   - component: {fileID: 486401216747083795}
   - component: {fileID: 1330739777136199631}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Blocks
   m_TagString: Untagged
   m_Icon: {fileID: 0}

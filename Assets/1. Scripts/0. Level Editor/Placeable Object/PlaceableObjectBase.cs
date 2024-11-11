@@ -153,6 +153,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     protected virtual void OnTriggerEnter(Collider other)
     {
         if (!other.CompareLayer(Layer.Placeable)) return;
+
         overlappedObjectsCount++;
     }
 

@@ -25,14 +25,6 @@ public sealed class PlayerCharacter : CharacterBase
     public bool IsCarryingObject => currentlyCarriedObject != null;
     private IPickupable currentlyCarriedObject;
 
-    // Effect
-    [Header("Effect")]
-    [SerializeField] private Renderer auraEffect;
-    public void SetAuraAlpha(float alphaMultiplier)
-    {
-        auraEffect.sharedMaterial.SetFloat("_AlphaMultiplier", alphaMultiplier);
-    }
-
     protected override void Awake()
     {
         base.Awake();

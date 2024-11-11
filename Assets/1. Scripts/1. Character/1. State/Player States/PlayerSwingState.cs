@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.VFX;
 using static GameSystem;
 
 
@@ -29,7 +30,6 @@ public class PlayerSwingState : PlayerStateBase
     private const float powerMaximum = 2;
 
     private bool hasHit;
-    private bool isSkilledShot;
 
     public override void EnterState()
     {
@@ -67,7 +67,7 @@ public class PlayerSwingState : PlayerStateBase
         Cursor.lockState = CursorLockMode.None;
         player.AnimationController.SetSpeed(AnimationController.Speed.Normal);
 
-        player.SetAuraAlpha(0);
+        player.AuraVFX.SmoothDecreaseFloat(target: 0, speed: 3);
 
         if (downSwingCoroutine != null)
         {
@@ -112,7 +112,7 @@ public class PlayerSwingState : PlayerStateBase
         while (alpha < 2)
         {
             alpha += Time.fixedDeltaTime;
-            player.SetAuraAlpha(alpha);
+            player.AuraVFX.SetFloat(alpha);
             yield return new WaitForFixedUpdate();
         }
     }
@@ -167,8 +167,7 @@ public class PlayerSwingState : PlayerStateBase
             var damageEvent = player.Interactor.AsGolfer.CurrentClub.DamageEvent.
                 ApplyDirection(player.MovementController.FacingDirection).
                 MultiplyVelocity(powerCharged).
-                MultiplyDamage(powerCharged > 2 ? 3 : 2).
-                ChangeSenderType(powerCharged > 2 ? EventSenderType.Skill : EventSenderType.Club);
+                MultiplyDamage(powerCharged > 2 ? 3 : 2);
 
             foreach (var damageable in damageables)
             {

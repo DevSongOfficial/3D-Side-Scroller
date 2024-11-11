@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using static GameSystem;
 
@@ -6,12 +7,19 @@ using static GameSystem;
 public sealed class GolfBall : MonoBehaviour, IDamageable
 {
     private Rigidbody rigidBody;
+    private bool isGrounded;
 
     private const float knockBackMultiplier = 35;
+    private const float torqueMultiplier = 100;
 
     private void Awake()
     {
         rigidBody = GetComponent<Rigidbody>();
+    }
+
+    private void Update()
+    {
+        HandleAngularDrag();
     }
 
     private void LateUpdate()
@@ -21,26 +29,41 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
 
     public void TakeDamage(DamageEvent damageEvent)
     {
-        if(damageEvent.CompareSenderTypeWith(EventSenderType.Club))
-            rigidBody.AddForce(damageEvent.knockBackVelocity * knockBackMultiplier);
-
-        if(damageEvent.CompareSenderTypeWith(EventSenderType.Skill))
-        {
-            rigidBody.AddForce(damageEvent.knockBackVelocity * knockBackMultiplier);
-            Debug.Log("Skilled Shot");
-        }
+        if (!damageEvent.CompareSenderTypeWith(EventSenderType.Club)) return;
+        
+        rigidBody.AddForce(damageEvent.knockBackVelocity * knockBackMultiplier);
+        rigidBody.AddTorque(Vector3.forward * torqueMultiplier, ForceMode.VelocityChange);
     }
 
+    private const float velocityThreshold = 0.025f;
+    private const float visibilityTimer = 1;
+    private float timeLeft;
     private void HandleProbCameraOutputUI()
     {
         // Handle height text.
-        UIManager.SetText(UIManager.GetUI.Text_ballHeight, $"{Mathf.Round(transform.position.y)}m");
+        UIManager.SetText(UIManager.GetUI.Text_ballHeight, $"{Math.Truncate(rigidBody.velocity.magnitude * 100) / 100}m/s");
 
-        // Handle render image.
-        if (rigidBody.velocity.magnitude > 0.1f)
+        // Handle render image visibility.
+        if (rigidBody.velocity.magnitude > velocityThreshold)
+        {
             UIManager.PopupUI(UIManager.GetUI.RawImage_ProbCameraOutput);
-        else
+            timeLeft = visibilityTimer;
+        }
+        else if(timeLeft <= 0)
+        {
             UIManager.CloseUI(UIManager.GetUI.RawImage_ProbCameraOutput);
+        }
+        else
+        {
+            timeLeft -= Time.fixedDeltaTime;
+        }
+    }
+
+    private const float angularDragOnGround = 0;
+    private const float angularDragOffGround = 2.9f;
+    private void HandleAngularDrag()
+    {
+        rigidBody.angularDrag = isGrounded ? angularDragOffGround : angularDragOnGround;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -51,10 +74,22 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
         if (other.CompareTag(Tag.Green))
             GameManager.BallOnTheGreen();
     }
-    
+
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag(Tag.Green))
             GameManager.BallOutTheGreen();
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.CompareLayer(Layer.Ground))
+            isGrounded = true;
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.CompareLayer(Layer.Ground))
+            isGrounded = false;
     }
 }

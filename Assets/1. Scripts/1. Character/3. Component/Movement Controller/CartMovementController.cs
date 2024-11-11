@@ -18,8 +18,8 @@ public sealed class CartMovementController : MovementController
             float rayRightDistance = wheelForward.bounds.extents.y + extraLength;
             float rayLeftDistance = wheelRear.bounds.extents.y + extraLength;
 
-            bool forward = Physics.Raycast(RaycastPosition_ForwardWheel, Vector3.down, rayRightDistance);
-            bool rear = Physics.Raycast(RaycastPosition_RealWheel, Vector3.down, rayLeftDistance);
+            bool forward = Physics.Raycast(RaycastPosition_ForwardWheel, Vector3.down, rayRightDistance, Layer.Ground.GetMask());
+            bool rear = Physics.Raycast(RaycastPosition_RealWheel, Vector3.down, rayLeftDistance, Layer.Ground.GetMask());
 
             return forward || rear;
         }

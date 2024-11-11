@@ -74,6 +74,11 @@ public static class ExtensionMethods
         return collider.gameObject.layer == (int)layerToCompare;
     }
 
+    public static bool CompareLayer(this Collision collision, Layer layerToCompare)
+    {
+        return collision.gameObject.layer == (int)layerToCompare;
+    }
+
     public static void SetTag(this GameObject go, Tag tag)
     {
         go.tag = tag.ToString();

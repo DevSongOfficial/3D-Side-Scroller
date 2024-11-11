@@ -1,12 +1,16 @@
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
-public class GameSystem : MonoBehaviour
+public sealed  class GameSystem : MonoBehaviour
 {
     public static System_GameManager GameManager => gameManager;
     private static System_GameManager gameManager;
 
     public static System_SaveManager SaveManager => saveManager;
     private static System_SaveManager saveManager;
+
+    public static System_FXManager FXManager => fxManager;
+    private static System_FXManager fxManager;
 
     public static System_UIManager UIManager => uiManager;
     private static System_UIManager uiManager;
@@ -18,6 +22,7 @@ public class GameSystem : MonoBehaviour
     {
         gameManager = FindObjectOfType<System_GameManager>();
         saveManager = FindObjectOfType<System_SaveManager>();
+        fxManager = FindObjectOfType<System_FXManager>();
         uiManager = FindObjectOfType<System_UIManager>();
 
         var levelEditorManagerPrefab = AssetManager.GetPrefab(Prefab.Debugger.System_LevelEditorManager);

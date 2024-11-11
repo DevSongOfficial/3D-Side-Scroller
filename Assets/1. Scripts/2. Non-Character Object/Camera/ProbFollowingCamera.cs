@@ -8,13 +8,13 @@ public class ProbFollowingCamera : MonoBehaviour
     [Header("Assign prefab here to follow its clone.")]
     [SerializeField] private GameObject probPrefab;
     private Prefab.General probType;
-    private PlaceableProb target;
+    protected PlaceableProb target;
     private bool hasTarget;
 
     [SerializeField] private AngleType angleType = AngleType.Horizontal;
     [SerializeField] private float distanceFromTarget;
 
-    public Camera Camera { get; private set; }
+    public Camera Camera { get; protected set; }
     [SerializeField] private int priorityOnStart;
 
     protected virtual void Awake()

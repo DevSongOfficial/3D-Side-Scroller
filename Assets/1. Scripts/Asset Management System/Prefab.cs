@@ -24,5 +24,8 @@ public struct Prefab {
 		DamageText,
 		SpawnButton_1,
 	}
+	public enum VFX {
+		Aura,
+	}
 }
 

@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
+using static AnimationController;
 using static GameSystem;
 
 [RequireComponent(typeof(CharacterOwnedDetector))]
@@ -34,6 +35,9 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
     [SerializeField] protected ObjectInfo info;
     public virtual ObjectInfo Info => info;
 
+    // VFX
+    public VFX AuraVFX { get; private set; }
+
     public virtual void ChangeState(StateBase newState)
     {
         CurrenState?.ExitState();
@@ -51,6 +55,8 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
         Interactor = new Interactor(this);
 
         AnimationController = new AnimationController(GetComponentInChildren<Animator>());
+
+        AuraVFX = FXManager.CreateEffect(Prefab.VFX.Aura, transform);
     }
 
     protected virtual void Start() { }

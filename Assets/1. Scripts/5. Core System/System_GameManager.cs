@@ -23,7 +23,7 @@ public enum Tag
     Untagged, Player, Enemy, Prob, HoleCup, Green
 }
 
-public class System_GameManager : MonoBehaviour
+public sealed class System_GameManager : MonoBehaviour
 {
 
     private void Awake()
@@ -35,14 +35,6 @@ public class System_GameManager : MonoBehaviour
     private void Start()
     {
         if (loadGameOnStart) LoadGame();
-    }
-
-    [Header("Main Camera & Cinemachine")]
-    [SerializeField] private CinemachineBrain cinemachineBrain;
-
-    public void SetCameraUpdateMethod(CinemachineBrain.UpdateMethod method)
-    {
-        cinemachineBrain.m_UpdateMethod = method;
     }
 
     [Header("Map Transform")]
@@ -59,6 +51,8 @@ public class System_GameManager : MonoBehaviour
     {
         objectToBeRemoved.SetParent(lagacy);
     }
+
+
 
 
     [Header("Input System")]
@@ -115,6 +109,8 @@ public class System_GameManager : MonoBehaviour
     #endregion
 
 
+
+
     [Header("Save & Load")]
     [SerializeField] private bool loadGameOnStart;
     public event Action OnLoadStart;
@@ -158,6 +154,9 @@ public class System_GameManager : MonoBehaviour
 
         OnLoadComplete?.Invoke();
     }
+
+
+
 
     public event Action OnGreen;
     public event Action OnExitGreen;
