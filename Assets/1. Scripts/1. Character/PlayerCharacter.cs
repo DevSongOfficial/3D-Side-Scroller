@@ -131,7 +131,7 @@ public sealed class PlayerCharacter : CharacterBase
             return;
         }
 
-        if (Interactor.Toggle_FindAndPickupWithinRange(info.InteractionRange))
+        if (Interactor.Toggle_FindAndPickupWithinRange(info.PickupRange))
         {
             var layer = Interactor.AsCarrier.IsCarryingItem ? AnimationController.UpperLayer.On : AnimationController.UpperLayer.Off;
             AnimationController.SetLayerWeight(AnimationController.Layer.UpperLayer, layer);

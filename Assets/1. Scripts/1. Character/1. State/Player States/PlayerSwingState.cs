@@ -190,7 +190,6 @@ public class PlayerSwingState : PlayerStateBase
     private void CalculateAnimationFrame()
     {
         var multiplier = GetProperMultiplierDependingOnTheFrame(currentFrame);
-        multiplier *= 50 * powerCharged;
 
         if (frameOnStartDownSwing < MaxFrameOnBackSwing)
         {
@@ -198,16 +197,18 @@ public class PlayerSwingState : PlayerStateBase
         }
         else
         {
-            currentFrame +=  2.5f * multiplier * Time.fixedDeltaTime;
+            currentFrame += multiplier * 0.5f * Time.fixedDeltaTime;
         }
     }
 
     private float GetProperMultiplierDependingOnTheFrame(float frame)
     {
-        if (player.Interactor.AsGolfer.CurrentClub.ClubType == ClubType.Putter) return 1;
-        if (frame > 80) return 4;
-        else if (frame > 60) return 2;
-        return 1;
+        float multiplier = 50 * powerCharged;
+
+        if (player.Interactor.AsGolfer.CurrentClub.ClubType == ClubType.Putter) return multiplier;
+        if (frame > 80) return 4 * multiplier;
+        else if (frame > 60) return 2 * multiplier;
+        return multiplier;
     }
 
     private void PlaySwingAnimation(float frame)

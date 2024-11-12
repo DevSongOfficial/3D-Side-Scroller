@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: PlayerCharacterInfo
   m_EditorClassIdentifier: 
   maxHealth: 100
-  interactionRange: 2
+  interactionRange: 0.89
+  pickupRange: 0.46
   movementSpeed: 4
   acceleration: 0.19
   jumpPower: 8

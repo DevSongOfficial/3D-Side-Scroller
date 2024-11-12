@@ -55,10 +55,10 @@ public sealed class ZombiePatrolState : ZombieStateBase
             return;
         }
 
-        // Detect wall and set direction.
+        // Detect wall or cliff to set direction.
         movementDirection = zombie.MovementController.FacingDirection;
-        if (zombie.Detector.DetectWithLayer(rayInfo.SetDistance(zombie.Info.WallDetectionDistance), Layer.Ground) 
-            && !zombie.MovementController.IsChangingDirection)
+        var wallOrCliffAhead = zombie.Detector.DetectWithLayer(rayInfo.SetDistance(zombie.Info.WallDetectionDistance), Layer.Ground) || zombie.Detector.DetectCliffAhead();
+        if (wallOrCliffAhead && !zombie.MovementController.IsChangingDirection)
         {
             movementDirection = movementDirection.GetFlippedDirection();
         }

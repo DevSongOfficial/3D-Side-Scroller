@@ -9,6 +9,7 @@ public class ObjectInfo : ScriptableObject
 
     [Header("Interaction")]
     [SerializeField] private float interactionRange = 2f;
+    [SerializeField] private float pickupRange = 0.75f;
 
     [Header("Movement")]
     [SerializeField] private int movementSpeed = 5;
@@ -20,6 +21,7 @@ public class ObjectInfo : ScriptableObject
     public float Acceleration => acceleration;
 
     public float InteractionRange => interactionRange;
+    public float PickupRange => pickupRange;
 
     public virtual PlayerInfo AsPlayerInfo()
     {

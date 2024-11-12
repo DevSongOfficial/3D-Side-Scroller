@@ -96,6 +96,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayName: Ground
+  fixedZPosition: 0
+  isSingleton: 0
+  disableRotation: 0
 --- !u!1 &6802241426489550962
 GameObject:
   m_ObjectHideFlags: 0
@@ -206,7 +209,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 126
+  m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!65 &1603669859333466855
 BoxCollider:

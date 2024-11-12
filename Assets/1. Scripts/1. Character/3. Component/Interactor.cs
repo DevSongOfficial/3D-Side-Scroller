@@ -30,7 +30,8 @@ public class Interactor
 
     public bool FindAndInteractWithinRange(float distance = 1.5f)
     {
-        var interactables = interactorCharacter.Detector.DetectComponents<IInteractable>(GetPosition(), distance, Layer.Interactable.GetMask(), putClosestInFirst: true);
+        var position = GetPosition() + interactorCharacter.MovementController.Direction.ConvertToVector3() * 0.5f;
+        var interactables = interactorCharacter.Detector.DetectComponents<IInteractable>(position, distance, Layer.Interactable.GetMask(), putClosestInFirst: true);
 
         if (interactables.Count == 0) return false;
         IInteractable interactable = interactables[0];
@@ -59,7 +60,7 @@ public class Interactor
         return true;
     }
 
-    public bool Toggle_FindAndPickupWithinRange(float distance = 1.5f)
+    public bool Toggle_FindAndPickupWithinRange(float radius)
     {
         if(AsCarrier == null) return false;
 
@@ -69,7 +70,8 @@ public class Interactor
             return true;
         }
 
-        var pickupables = interactorCharacter.Detector.DetectComponents<IPickupable>(GetPosition(), distance, Layer.Interactable.GetMask());
+        var position = GetPosition() + interactorCharacter.MovementController.Direction.ConvertToVector3() * 0.5f;
+        var pickupables = interactorCharacter.Detector.DetectComponents<IPickupable>(position, radius, Layer.Interactable.GetMask());
         foreach (var pickupable in pickupables)
         {
             AsCarrier.PickUp(pickupable);
@@ -104,6 +106,7 @@ public class Interactor
     {
         return interactorCharacter.Detector.ColliderCenter;
     }
+
     public float GetInteractionRange()
     {
         return interactorCharacter.Info.InteractionRange;

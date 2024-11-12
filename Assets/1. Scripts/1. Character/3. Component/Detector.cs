@@ -5,7 +5,7 @@ using static UnityEngine.UI.Image;
 
 public class Detector : MonoBehaviour
 {
-    private CharacterMovementController movementController;
+    protected CharacterMovementController movementController;
     [Tooltip("Collider for calculating precise position and bound.")]
     [SerializeField] protected new Collider collider;
 
@@ -200,7 +200,7 @@ public class Detector : MonoBehaviour
 
     #region Functions for debugging
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
-    private void Debug_DrawRay(Vector3 start, Vector3 dir, Color color)
+    protected void Debug_DrawRay(Vector3 start, Vector3 dir, Color color)
     {
         if (!Detection_Ray) return;
 
@@ -208,7 +208,7 @@ public class Detector : MonoBehaviour
     }
 
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
-    private void Debug_DrawSphere(Vector3 center, float radius, float duration = 0.1f)
+    protected void Debug_DrawSphere(Vector3 center, float radius, float duration = 0.1f)
     {
         if (!Detection_Sphere) return;
 
