@@ -129,7 +129,7 @@ public class System_LevelEditorManager : MonoBehaviour
     private void HandleObjectPlacement()
     {
         if (Mode != PlayMode.Placing) return;
-        if (UI.IsMouseCursorOnTheArea(UI.objectSelectionButtonsPanel.rectTransform)) return;
+        if (UI.IsMouseCursorOnTheArea(UI.ObjectSelectionGroup)) return;
         if (Input.GetKeyDown(placeObject))
         { 
             PlaceSelectedObject();

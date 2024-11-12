@@ -13,6 +13,8 @@ public struct Prefab {
 		PO_Ground_2,
 		PO_Ground_3,
 		PO_PlayerSpawnPoint,
+		PO_Sand,
+		PO_Sand_Edge,
 		PO_Uphill_1,
 		PO_Uphill_2,
 		PO_Uphill_3,

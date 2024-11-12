@@ -12,13 +12,14 @@ public class LevelEditorUI : MonoBehaviour
     [SerializeField] private Image[] mouseCursorDetectorImages;
 
     // Object Selection Button
-    public Image objectSelectionButtonsPanel;
-    private ObjectSelectionButton[] objectSelectionButtons; // Buttons in LevelEditorUI
-    [SerializeField] private GameObject objectSelectionGroup;
+    [SerializeField] private RectTransform contentsPanel;
+    private ObjectSelectionButton[] objectSelectionButtons; // Buttons in contentsPanel.
+    [SerializeField] private RectTransform objectSelectionGroup;
+    public RectTransform ObjectSelectionGroup => objectSelectionGroup;
 
     private void Awake()
     {
-        LevelEditorManager.OnEditorModeToggled += (bool isOn) => objectSelectionGroup.SetActive(isOn);
+        LevelEditorManager.OnEditorModeToggled += (bool isOn) => objectSelectionGroup.gameObject.SetActive(isOn);
 
         mouseCursorDetector.Add(MouseSectionType.Left, mouseCursorDetectorImages[0]);
         mouseCursorDetector.Add(MouseSectionType.Right, mouseCursorDetectorImages[1]);
@@ -32,7 +33,7 @@ public class LevelEditorUI : MonoBehaviour
         // Buttons Settings
         for (int i = 0; i < count; i++)
         {
-            var button = Instantiate(AssetManager.GetPrefab(Prefab.UI.SpawnButton_1), objectSelectionButtonsPanel.transform).
+            var button = Instantiate(AssetManager.GetPrefab(Prefab.UI.SpawnButton_1), contentsPanel.transform).
                 GetComponent<ObjectSelectionButton>();
 
             var prefab = AssetManager.GetPrefab((Prefab.General)i).GetComponent<PlaceableObjectBase>();
