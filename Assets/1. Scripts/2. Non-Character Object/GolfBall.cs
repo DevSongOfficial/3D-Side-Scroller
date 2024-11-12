@@ -40,6 +40,12 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
     private float timeLeft;
     private void HandleProbCameraOutputUI()
     {
+        if (FXManager.IsSlowMotioning)
+        {
+            UIManager.CloseUI(UIManager.GetUI.RawImage_ProbCameraOutput);
+            return;
+        }
+
         // Handle height text.
         UIManager.SetText(UIManager.GetUI.Text_ballHeight, $"{Math.Truncate(rigidBody.velocity.magnitude * 100) / 100}m/s");
 

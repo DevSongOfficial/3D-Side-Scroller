@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum ClubType { None, Putter, Iron, Driver }
+public enum ClubType { None, Putter, Iron, Driver, Stick }
 
 public class GolfClub : MonoBehaviour
 {

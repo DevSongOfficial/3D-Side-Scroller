@@ -30,6 +30,7 @@ public class PlayerSwingState : PlayerStateBase
     private const float powerMaximum = 2;
 
     private bool hasHit;
+    private bool isSkilledShot;
 
     public override void EnterState()
     {
@@ -45,6 +46,7 @@ public class PlayerSwingState : PlayerStateBase
         powerCharged = powerDefault;
 
         hasHit = false;
+        isSkilledShot = false;
 
         backSwingCoroutine = player.StartCoroutine(BackSwing());
     }
@@ -107,7 +109,9 @@ public class PlayerSwingState : PlayerStateBase
         }
 
         powerCharged = powerMaximum;
+        isSkilledShot = true;
 
+        // Start VFX
         float alpha = 0;
         while (alpha < 2)
         {
@@ -152,27 +156,34 @@ public class PlayerSwingState : PlayerStateBase
 
     private void TryHit()
     {
-        if (!hasHit && currentFrame >= HitFrame)
+        if (hasHit || currentFrame < HitFrame) return;
+
+        hasHit = true;
+
+        // Damage hits.
+        var swingPosition = player.transform.position + player.Info.LocalPosition_Swing;
+        var damageables = player.Detector.DetectComponents<IDamageable>(swingPosition, player.Interactor.AsGolfer.CurrentClub.SwingRadius, Utility.GetLayerMask(Layer.Character, Layer.Damageable), Tag.Player);
+        var damageEvent = player.Interactor.AsGolfer.CurrentClub.DamageEvent.
+            ApplyDirection(player.MovementController.FacingDirection).
+            MultiplyVelocity(powerCharged).
+            MultiplyDamage(powerCharged > 2 ? 3 : 2);
+
+        foreach (var damageable in damageables)
+            damageable.TakeDamage(damageEvent);
+
+        // Play skilled shot cinemachine.
+        if (isSkilledShot)
         {
-            hasHit = true;
-
-            var localSwingPosition = player.Info.LocalPosition_Swing;
-            {
-                localSwingPosition.x -= player.transform.rotation.x * 0.04f;
-                localSwingPosition.y -= player.transform.rotation.x * 0.01f;
-            }
-            var swingPosition = player.transform.position + player.Info.LocalPosition_Swing;
-            var damageables = player.Detector.DetectComponents<IDamageable>(swingPosition, player.Interactor.AsGolfer.CurrentClub.SwingRadius, Utility.GetLayerMask(Layer.Character, Layer.Damageable), Tag.Player);
-
-            var damageEvent = player.Interactor.AsGolfer.CurrentClub.DamageEvent.
-                ApplyDirection(player.MovementController.FacingDirection).
-                MultiplyVelocity(powerCharged).
-                MultiplyDamage(powerCharged > 2 ? 3 : 2);
-
-            foreach (var damageable in damageables)
-            {
-                damageable.TakeDamage(damageEvent);
-            }
+            FXManager.SetCameraFOB(15);
+            FXManager.SetCameraScreenX(0.3f);
+            FXManager.SetCameraScreenY(-0.3f);
+            
+            FXManager.StartSlowMotion(minTimeScale: 0.2f, slowMultiplier: 10, resetDelay: 1.2f, () => 
+            { 
+                FXManager.SetCameraFOB();
+                FXManager.SetCameraScreenX();
+                FXManager.SetCameraScreenY();
+            }) ;
         }
     }
 
