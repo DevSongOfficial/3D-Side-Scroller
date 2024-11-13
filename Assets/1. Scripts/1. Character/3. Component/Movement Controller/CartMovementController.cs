@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 
 [RequireComponent(typeof(Rigidbody))]
 public sealed class CartMovementController : MovementController
@@ -48,18 +47,17 @@ public sealed class CartMovementController : MovementController
         rigidBody.velocity = Velocity;
     }
 
+    // Cart basically has rigidbody so doesn't need to call this unless kinematic.
     public override Quaternion AlignToGround()
     {
         Physics.Raycast(RaycastPosition_ForwardWheel, Vector3.down, out RaycastHit hitForward, 2.7f, Layer.Ground.GetMask());
         Physics.Raycast(RaycastPosition_RealWheel, Vector3.down, out RaycastHit hitRear, 2.7f, Layer.Ground.GetMask());
-
-        if (hitForward.collider == null && hitRear.collider == null) return transform.rotation = Quaternion.Euler(0, FacingDirection.GetYRotationValue(), 0);
 
         Vector3 normalVector = Vector3.zero;
         normalVector.x = (hitRear.normal.x + hitForward.normal.x) * 0.5f;
         normalVector.y = (hitRear.normal.y + hitForward.normal.y) * 0.5f;
 
         Quaternion targetRotation = Quaternion.FromToRotation(transform.up, normalVector) * transform.rotation;
-        return transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        return transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime);
     }
 }

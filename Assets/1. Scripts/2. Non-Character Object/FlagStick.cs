@@ -19,7 +19,9 @@ public class FlagStick : MonoBehaviour, IPickupable
         this.carryPoint = carryPoint;
         transform.SetParent(carryPoint);
 
+        var offset = new Vector3(1, 0, -2.8f);
         transform.position = carryPoint.position;
+        transform.GetChild(0).localPosition = offset;
         transform.eulerAngles = carryPoint.eulerAngles;
 
         rigidBody.isKinematic = true;
@@ -31,6 +33,7 @@ public class FlagStick : MonoBehaviour, IPickupable
         GameManager.AttachToMap(transform);
 
         var position = carryPoint.transform.root.position;
+        position.y += 0.35f;
         position.z = fixedZPositionOnPlaced;
 
         transform.eulerAngles = Vector3.zero;

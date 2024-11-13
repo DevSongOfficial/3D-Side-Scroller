@@ -188,17 +188,23 @@ public abstract class MovementController : MonoBehaviour
     // ROTATION SECTION
     public virtual Quaternion AlignToGround()
     {
-        if (!Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 1.2f, Layer.Ground.GetMask()))
-            return Quaternion.identity;
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 1.2f, Layer.Ground.GetMask()))
+        {
+            Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
 
-        Quaternion targetRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
+            // Convert Quaternion to Euler for clamiping X rotation and then convert it back into Quaternion.
+            Vector3 targetEulerAngles = targetRotation.eulerAngles;
+            if (targetEulerAngles.x > 180) targetEulerAngles.x -= 360;
+            if (targetEulerAngles.x > 40 || targetEulerAngles.x < -40) targetEulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
+            targetRotation = Quaternion.Euler(targetEulerAngles);
 
-        // Convert Quaternion to Euler for clamiping X rotation and then convert it back into Quaternion.
-        Vector3 targetEulerAngles = targetRotation.eulerAngles;
-        if (targetEulerAngles.x > 180) targetEulerAngles.x -= 360;
-        if(targetEulerAngles.x > 40 || targetEulerAngles.x < -40) targetEulerAngles = new Vector3(0, transform.eulerAngles.y, 0);
-        targetRotation = Quaternion.Euler(targetEulerAngles);
-        return transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+            return transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
+        else // if there's no ground, lerp eulerAnlge X into 0;
+        {
+            var targetRotation = Quaternion.Euler(Vector3.up * Direction.GetYRotationValue());
+            return transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+        }
     }
 
     // LANDING SECTION

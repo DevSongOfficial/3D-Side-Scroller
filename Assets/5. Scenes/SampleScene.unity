@@ -3451,7 +3451,7 @@ MonoBehaviour:
   map: {fileID: 727528124966509562}
   lagacy: {fileID: 8113071625720310632}
   input: {fileID: 5168848609361551485}
-  loadGameOnStart: 0
+  loadGameOnStart: 1
 --- !u!4 &4955216131874916913
 Transform:
   m_ObjectHideFlags: 0

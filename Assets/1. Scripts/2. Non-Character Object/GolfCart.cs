@@ -41,14 +41,8 @@ public class GolfCart : MonoBehaviour, IInteractable
         movementController.ChangeMovementDirection(MovementDirection.Right, smoothRotation: false);
 
         // Initialize cart
-        rigidBody.isKinematic = true;
         movementController.ToggleHorizontalMovement(false);
         animationController.SetSpeed(AnimationController.Speed.Pause);
-    }
-
-    private void Update()
-    {
-        HandleKinematics();
     }
 
     private void FixedUpdate()
@@ -59,8 +53,6 @@ public class GolfCart : MonoBehaviour, IInteractable
 
     private void LateUpdate()
     {
-        movementController.AlignToGround();
-
         // Set wheel rotation speed.
         float speedMultiplier = Mathf.Abs(movementController.Velocity.x);
         animationController.SetSpeed(0.5f * speedMultiplier);
@@ -117,12 +109,6 @@ public class GolfCart : MonoBehaviour, IInteractable
     private void HandleMovement()
     {
         movementController.ApplyHorizontalVelocity(info.MovementSpeed * velocityMultiplier, info.Acceleration);
-    }
-
-    private void HandleKinematics()
-    {
-        if (LevelEditorManager.IsEditorActive) return;
-        rigidBody.isKinematic = movementController.IsGrounded && !IsTaken;
     }
 
     private void AttackOnCollide()

@@ -2905,6 +2905,7 @@ MonoBehaviour:
   collider: {fileID: 0}
   Detection_Ray: 0
   Detection_Sphere: 0
+  Detection_Box: 0
 --- !u!54 &7139389624929793314
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2928,7 +2929,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 0
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 104
   m_CollisionDetection: 0
@@ -4120,7 +4121,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayName: Golf Cart
-  wishZPosition: 0
+  fixedZPosition: 0
+  isSingleton: 0
 --- !u!54 &802571964902566329
 Rigidbody:
   m_ObjectHideFlags: 0

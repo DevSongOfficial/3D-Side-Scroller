@@ -74,6 +74,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
 
         // Set main canvas activation.
         UIManager.gameObject.SetActive(!IsEditorActive);
+        rawImage_verticalCamera.gameObject.SetActive(IsEditorActive);
 
         switch (Mode)
         {

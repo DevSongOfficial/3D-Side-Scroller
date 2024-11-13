@@ -49,7 +49,19 @@ public class ZombieStunnedState : ZombieStateBase
     {
         if (blackBoard.isDead) return;
         if (zombie.MovementController.IsStunned) return;
-        
+
+        // Get ray information.
+        RayInfo rayInfo = new RayInfo().
+                SetDirection(zombie.transform.forward.normalized * -1).
+                SetDistance(zombie.Info.DetectionDistance);
+
+        // Detect character.
+        if (zombie.Detector.DetectCharacter(rayInfo, out PlayerCharacter target))
+        {
+            var wishDirection = zombie.MovementController.FacingDirection.GetFlippedDirection();
+            zombie.MovementController.ChangeMovementDirection(wishDirection);
+        }
+
         zombie.ChangeState(zombie.PatrolState);
     }
 }
