@@ -9,6 +9,7 @@ using static GameSystem;
 public enum Layer
 {
     Default = 0,
+    Environment = 7,
     Character = 8,
     Ground = 9,
     Wall = 10,

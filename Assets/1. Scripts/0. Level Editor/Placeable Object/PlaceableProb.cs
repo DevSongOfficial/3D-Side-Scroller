@@ -3,7 +3,7 @@ using static GameSystem;
 
 public class PlaceableProb : PlaceableObjectBase
 {
-    [SerializeField] private float fixedZPosition = 0;
+    [SerializeField] protected float fixedZPosition = 0;
     [SerializeField] private bool isSingleton = false;
     private PlaceableObjectBase previousPO;
 

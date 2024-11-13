@@ -1,6 +1,7 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using static GameSystem;
 
 public enum PlayMode
 {
@@ -9,21 +10,25 @@ public enum PlayMode
     Placing,
 }
 
-public class System_LevelEditorManager : MonoBehaviour
+public sealed class System_LevelEditorManager : MonoBehaviour
 {
+    public LevelEditorUI UI => levelEditorUI;
+    [SerializeField] private LevelEditorUI levelEditorUI;
+
     [Header("Key Binding")]
-    [SerializeField] private KeyCode switchMode = KeyCode.P;
+    [SerializeField] private KeyCode switchMode = KeyCode.Tab;
     [SerializeField] private KeyCode reverseRotation = KeyCode.R;
     [SerializeField] private KeyCode selectObject = KeyCode.Mouse0;
     [SerializeField] private KeyCode placeObject = KeyCode.Mouse0;
     [SerializeField] private KeyCode placeInARow = KeyCode.Space;
     [SerializeField] private KeyCode removeObject = KeyCode.Mouse1;
+    [SerializeField] private KeyCode toggleVerticalCamera = KeyCode.P;
 
-    public LevelEditorUI UI => levelEditorUI;
-    [SerializeField] private LevelEditorUI levelEditorUI;
-
-    public Camera Camera => levelEditorCamera;
+    [Header("Editor Camera")]
     [SerializeField] private Camera levelEditorCamera;
+    public Camera Camera => levelEditorCamera;
+    [SerializeField] private Camera levelEditorCamera_vertical;
+    [SerializeField] private RawImage rawImage_verticalCamera;
 
     // Current Editor Mode
     public PlayMode Mode { get; private set; }
@@ -44,7 +49,7 @@ public class System_LevelEditorManager : MonoBehaviour
     // Main routine for the Level Editor
     private void Update()
     {
-        SwitchMode();
+        HandleModeSwitch();
 
         if (Mode != PlayMode.Placing && Mode != PlayMode.Editing) return;
 
@@ -53,6 +58,7 @@ public class System_LevelEditorManager : MonoBehaviour
         HandleObjectSelection();
         HandleObjectPlacement();
         HandleObjectRemovement();
+        HandleVerticalCameraActivation();
 
         UI.MoveScreenDependingOnMousePosition(speed: 5);
     }
@@ -62,9 +68,12 @@ public class System_LevelEditorManager : MonoBehaviour
         Mode = editorMode;
         OnEditorModeToggled.Invoke(IsEditorActive);
 
-        // Switch Camera
+        // Switch camera.
         Camera.main.depth = IsEditorActive ? -1 : 0;
         Camera.gameObject.SetActive(IsEditorActive);
+
+        // Set main canvas activation.
+        UIManager.gameObject.SetActive(!IsEditorActive);
 
         switch (Mode)
         {
@@ -79,12 +88,21 @@ public class System_LevelEditorManager : MonoBehaviour
         }
     }    
 
-    private void SwitchMode()
+    private void HandleModeSwitch()
     {
         if (Input.GetKeyDown(switchMode))
         {
             if (Mode == PlayMode.Playing) SetPlayMode(PlayMode.Editing);
             else if (Mode == PlayMode.Editing) SetPlayMode(PlayMode.Playing);
+        }
+    }
+
+    private void HandleVerticalCameraActivation()
+    {
+        if (Input.GetKeyDown(toggleVerticalCamera))
+        {
+            levelEditorCamera_vertical.gameObject.SetActive(!levelEditorCamera_vertical.gameObject.activeSelf);
+            rawImage_verticalCamera.gameObject.SetActive(!rawImage_verticalCamera.gameObject.activeSelf);
         }
     }
 

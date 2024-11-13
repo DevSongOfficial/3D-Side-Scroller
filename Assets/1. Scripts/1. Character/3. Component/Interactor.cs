@@ -31,7 +31,7 @@ public class Interactor
     public bool FindAndInteractWithinRange(float distance = 1.5f)
     {
         var position = GetPosition() + interactorCharacter.MovementController.Direction.ConvertToVector3() * 0.5f;
-        var interactables = interactorCharacter.Detector.DetectComponents<IInteractable>(position, distance, Layer.Interactable.GetMask(), putClosestInFirst: true);
+        var interactables = interactorCharacter.Detector.DetectComponentsWithClosestInFirst<IInteractable>(position, distance, Layer.Interactable.GetMask());
 
         if (interactables.Count == 0) return false;
         IInteractable interactable = interactables[0];
@@ -47,7 +47,7 @@ public class Interactor
         {
             for(int i = 1; i < interactables.Count; i++)
             {
-                // Check each's priority.
+                // Check each's priority and take higher one.
                 if ((int)interactables[i].GetType() < (int)interactable.GetType())
                 {
                     interactable = interactables[i];
@@ -60,7 +60,7 @@ public class Interactor
         return true;
     }
 
-    public bool Toggle_FindAndPickupWithinRange(float radius)
+    public bool Toggle_FindAndPickupWithinRange(Vector3 range)
     {
         if(AsCarrier == null) return false;
 
@@ -70,8 +70,8 @@ public class Interactor
             return true;
         }
 
-        var position = GetPosition() + interactorCharacter.MovementController.Direction.ConvertToVector3() * 0.5f;
-        var pickupables = interactorCharacter.Detector.DetectComponents<IPickupable>(position, radius, Layer.Interactable.GetMask());
+        var position = GetPosition() + interactorCharacter.MovementController.Direction.ConvertToVector3() * interactorCharacter.Info.PickupRange.z * 0.5f;
+        var pickupables = interactorCharacter.Detector.DetectComponentsWithBox<IPickupable>(position, range, interactorCharacter.transform.rotation, Layer.Interactable.GetMask());
         foreach (var pickupable in pickupables)
         {
             AsCarrier.PickUp(pickupable);
@@ -87,7 +87,7 @@ public class Interactor
         if (AsCarrier == null || !AsCarrier.IsCarryingItem) return false;
 
         var position = GetPosition() + detectionDistance * interactorCharacter.MovementController.FacingDirection.ConvertToVector3();
-        var carts = interactorCharacter.Detector.DetectComponents<GolfCart>(position, radius, Layer.Interactable.GetMask());
+        var carts = interactorCharacter.Detector.DetectComponentsWithSphere<GolfCart>(position, radius, Layer.Interactable.GetMask());
         foreach(var cart in carts)
         {
             if (Vector3.Distance(cart.CarryPoint.position, position) > detectionDistance * 1.5f) continue;

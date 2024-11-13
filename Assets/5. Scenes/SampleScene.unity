@@ -730,7 +730,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1758958737
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3996,6 +3996,7 @@ MonoBehaviour:
   collider: {fileID: 4770669906910124982}
   Detection_Ray: 0
   Detection_Sphere: 0
+  Detection_Box: 0
 --- !u!4 &6257825438736914043
 Transform:
   m_ObjectHideFlags: 0

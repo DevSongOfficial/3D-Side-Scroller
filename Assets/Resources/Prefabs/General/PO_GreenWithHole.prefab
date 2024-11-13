@@ -757,18 +757,6 @@ PrefabInstance:
       value: Flag Stick
       objectReference: {fileID: 0}
     - target: {fileID: 7357327436825385595, guid: 206c20f38cf1bc240b3fc7628b18fbee, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.0018348627
-      objectReference: {fileID: 0}
-    - target: {fileID: 7357327436825385595, guid: 206c20f38cf1bc240b3fc7628b18fbee, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.07836407
-      objectReference: {fileID: 0}
-    - target: {fileID: 7357327436825385595, guid: 206c20f38cf1bc240b3fc7628b18fbee, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.0018348618
-      objectReference: {fileID: 0}
-    - target: {fileID: 7357327436825385595, guid: 206c20f38cf1bc240b3fc7628b18fbee, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}

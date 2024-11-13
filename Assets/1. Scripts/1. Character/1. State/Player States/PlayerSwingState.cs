@@ -162,7 +162,7 @@ public class PlayerSwingState : PlayerStateBase
 
         // Damage hits.
         var swingPosition = player.transform.position + player.Info.LocalPosition_Swing;
-        var damageables = player.Detector.DetectComponents<IDamageable>(swingPosition, player.Interactor.AsGolfer.CurrentClub.SwingRadius, Utility.GetLayerMask(Layer.Character, Layer.Damageable), Tag.Player);
+        var damageables = player.Detector.DetectComponentsWithSphere<IDamageable>(swingPosition, player.Interactor.AsGolfer.CurrentClub.SwingRadius, Utility.GetLayerMask(Layer.Character, Layer.Damageable), Tag.Player);
         var damageEvent = player.Interactor.AsGolfer.CurrentClub.DamageEvent.
             ApplyDirection(player.MovementController.FacingDirection).
             MultiplyVelocity(powerCharged).

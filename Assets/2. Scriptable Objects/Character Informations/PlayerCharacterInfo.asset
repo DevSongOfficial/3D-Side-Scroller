@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   interactionRange: 0.89
-  pickupRange: 0.46
+  pickupRange: {x: 3, y: 2, z: 1}
   movementSpeed: 4
   acceleration: 0.19
   jumpPower: 8

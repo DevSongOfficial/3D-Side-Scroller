@@ -30,6 +30,7 @@ public class Detector : MonoBehaviour
     [Header("Debug Detection Ray / Sphere (ONLY FOR DEBUGGING)")]
     [SerializeField] private bool Detection_Ray = false;
     [SerializeField] private bool Detection_Sphere = false;
+    [SerializeField] private bool Detection_Box = false;
 
     protected virtual void Awake()
     {
@@ -60,7 +61,7 @@ public class Detector : MonoBehaviour
         Debug_DrawSphere(center, radius);
 
         if (!Physics.CheckSphere(center, radius)) return false;
-
+        
         var colliders = Physics.OverlapSphere(center, radius);
         characters = new T[colliders.Length];
         for (int i = 0; i < colliders.Length; i++)
@@ -71,7 +72,7 @@ public class Detector : MonoBehaviour
         return true;
     }
 
-    public List<T> DetectComponents<T>(Vector3 center, float radius, int layerMask, bool putClosestInFirst)
+    public List<T> DetectComponentsWithClosestInFirst<T>(Vector3 center, float radius, int layerMask)
     {
         var colliders = Physics.OverlapSphere(center, radius, layerMask);
 
@@ -119,11 +120,11 @@ public class Detector : MonoBehaviour
     }
 
 
-    public List<T> DetectComponents<T>(Vector3 center, float radius, int layerMask)
+    public List<T> DetectComponentsWithBox<T>(Vector3 center, Vector3 range, Quaternion orientation, int layerMask, Tag ignoreTag = Tag.Untagged)
     {
-        var colliders = Physics.OverlapSphere(center, radius, layerMask);
+        var colliders = Physics.OverlapBox(center, range * 0.5f, orientation, layerMask);
 
-        Debug_DrawSphere(center, radius);
+        Debug_DrawBox(center, range, orientation);
 
         var components = new List<T>();
 
@@ -131,13 +132,15 @@ public class Detector : MonoBehaviour
         {
             var collider = colliders[i];
 
+            if (collider.CompareTag(ignoreTag)) continue;
+
             if (collider.TryGetComponent(out T component))
             {
                 components.Add(component);
             }
             else
             {
-                var componentInParent = collider.transform.GetComponentInParent<T>();
+                var componentInParent = collider.GetComponentInParent<T>();
                 if (componentInParent != null)
                 {
                     components.Add(componentInParent);
@@ -148,7 +151,7 @@ public class Detector : MonoBehaviour
         return components;
     }
 
-    public List<T> DetectComponents<T>(Vector3 center, float radius, int layerMask, Tag ignoreTag = Tag.Untagged)
+    public List<T> DetectComponentsWithSphere<T>(Vector3 center, float radius, int layerMask, Tag ignoreTag = Tag.Untagged)
     {
         var colliders = Physics.OverlapSphere(center, radius, layerMask);
 
@@ -216,6 +219,18 @@ public class Detector : MonoBehaviour
         sphere.transform.position = center;
         sphere.transform.localScale = Vector3.one * radius * 2;
         Destroy(sphere, duration);
+    }
+
+    [System.Diagnostics.Conditional("UNITY_EDITOR")]
+    protected void Debug_DrawBox(Vector3 center, Vector3 halfExtents, Quaternion orientation, float duration = 0.1f)
+    {
+        if (!Detection_Box) return;
+
+        var box = Instantiate(AssetManager.GetPrefab(Prefab.Debugger.Box_1));
+        box.transform.position = center;
+        box.transform.rotation = orientation;
+        box.transform.localScale = halfExtents;
+        Destroy(box, duration);
     }
     #endregion
 }
