@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using static GameSystem;
 
 public enum PlayMode
@@ -22,11 +23,14 @@ public sealed class System_LevelEditorManager : MonoBehaviour
     [SerializeField] private KeyCode placeObject = KeyCode.Mouse0;
     [SerializeField] private KeyCode placeInARow = KeyCode.Space;
     [SerializeField] private KeyCode removeObject = KeyCode.Mouse1;
+    [SerializeField] private KeyCode moveScreen = KeyCode.Mouse2;
+    [SerializeField] private KeyCode fastMove = KeyCode.LeftShift;
     [SerializeField] private KeyCode toggleVerticalCamera = KeyCode.P;
 
     [Header("Editor Camera")]
     [SerializeField] private Camera levelEditorCamera;
     public Camera Camera => levelEditorCamera;
+    [SerializeField] private TMP_Text text_levelEditorCameraCoordinates;
     [SerializeField] private Camera levelEditorCamera_vertical;
     [SerializeField] private RawImage rawImage_verticalCamera;
 
@@ -58,9 +62,14 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         HandleObjectSelection();
         HandleObjectPlacement();
         HandleObjectRemovement();
-        HandleVerticalCameraActivation();
 
-        UI.MoveScreenDependingOnMousePosition(speed: 5);
+        HandleScreenMovementDependingOnMousePosition(speed: 5, multiplier: 3);
+        HandleVerticalCameraActivation();
+    }
+
+    private void LateUpdate()
+    {
+        HandleScreenPositionText();
     }
 
     public void SetPlayMode(PlayMode editorMode)
@@ -227,5 +236,20 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         {
             PlaceableObjectBase.CurrentlySelected.InverseRotation();
         }
+    }
+
+    private void HandleScreenMovementDependingOnMousePosition(float speed, float multiplier = 1)
+    {
+        if (!Input.GetKey(moveScreen)) return;
+        if (Mode == PlayMode.Playing) return;
+
+        var delta = new Vector3(UI.GetMouseArea().x, UI.GetMouseArea().y, 0);
+        delta *= Input.GetKey(fastMove) ? speed * multiplier : speed;
+        Camera.transform.position += delta * Time.deltaTime;
+    }
+
+    private void HandleScreenPositionText()
+    {
+        text_levelEditorCameraCoordinates.text = $"({Mathf.Round(Camera.transform.position.x)}, {Mathf.Round(Camera.transform.position.y)})";
     }
 }

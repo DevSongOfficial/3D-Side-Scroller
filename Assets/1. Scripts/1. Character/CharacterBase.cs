@@ -36,7 +36,7 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
     public virtual ObjectInfo Info => info;
 
     // VFX
-    public VFX AuraVFX { get; private set; }
+    public ShaderFX AuraVFX { get; private set; }
 
     public virtual void ChangeState(StateBase newState)
     {
@@ -56,7 +56,7 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
 
         AnimationController = new AnimationController(GetComponentInChildren<Animator>());
 
-        AuraVFX = FXManager.CreateEffect(Prefab.VFX.Aura, transform);
+        AuraVFX = FXManager.CreateShaderFX(Prefab.VFX.Aura, transform);
     }
 
     protected virtual void Start() { }

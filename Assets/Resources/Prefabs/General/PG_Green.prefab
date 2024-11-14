@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7055885031893425955}
   m_Layer: 9
   m_Name: Extra Grass
-  m_TagString: Untagged
+  m_TagString: Grass
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -178,7 +178,7 @@ GameObject:
   - component: {fileID: 3033295121925380399}
   - component: {fileID: 744659497661727747}
   m_Layer: 20
-  m_Name: PO_GreenWithHole
+  m_Name: PG_Green
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -276,7 +276,7 @@ GameObject:
   - component: {fileID: 8758089097086744910}
   - component: {fileID: 5621610149462398993}
   - component: {fileID: 7180515006046365353}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: HoleCup
   m_TagString: HoleCup
   m_Icon: {fileID: 0}
@@ -489,7 +489,7 @@ GameObject:
   - component: {fileID: 5585213514155318510}
   m_Layer: 9
   m_Name: Extra Grass
-  m_TagString: Untagged
+  m_TagString: Grass
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -592,7 +592,7 @@ GameObject:
   - component: {fileID: 1330739777136199631}
   m_Layer: 0
   m_Name: Blocks
-  m_TagString: Untagged
+  m_TagString: Grass
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -653,7 +653,7 @@ GameObject:
   - component: {fileID: 3318289183424135538}
   m_Layer: 9
   m_Name: Extra Grass
-  m_TagString: Untagged
+  m_TagString: Grass
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -762,11 +762,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7357327436825385595, guid: 206c20f38cf1bc240b3fc7628b18fbee, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.0005
+      value: -0.0004999996
       objectReference: {fileID: 0}
     - target: {fileID: 7357327436825385595, guid: 206c20f38cf1bc240b3fc7628b18fbee, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.0708
+      value: 0.07080001
       objectReference: {fileID: 0}
     - target: {fileID: 7357327436825385595, guid: 206c20f38cf1bc240b3fc7628b18fbee, type: 3}
       propertyPath: m_LocalRotation.w
@@ -795,18 +795,6 @@ PrefabInstance:
     - target: {fileID: 7357327436825385595, guid: 206c20f38cf1bc240b3fc7628b18fbee, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: -90
-      objectReference: {fileID: 0}
-    - target: {fileID: 7711684747178922724, guid: 206c20f38cf1bc240b3fc7628b18fbee, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7711684747178922724, guid: 206c20f38cf1bc240b3fc7628b18fbee, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7711684747178922724, guid: 206c20f38cf1bc240b3fc7628b18fbee, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

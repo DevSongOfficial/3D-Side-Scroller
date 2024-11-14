@@ -1299,7 +1299,7 @@ GameObject:
   - component: {fileID: 6237842682089536678}
   - component: {fileID: 8343983905799111892}
   m_Layer: 20
-  m_Name: PO_PlayerSpawnPoint
+  m_Name: PC_PlayerSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2919511459458120687}
   - component: {fileID: 2700685307098000025}
   m_Layer: 0
-  m_Name: PO_GolfBall
+  m_Name: PP_GolfBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

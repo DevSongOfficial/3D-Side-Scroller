@@ -7,8 +7,7 @@ using static GameSystem;
 public class LevelEditorUI : MonoBehaviour
 {
     // Screen Movement with Mouse Cursor Position
-    public enum MouseSectionType { Middle, Left, Right, Up, Down }
-    private Dictionary<MouseSectionType, Image> mouseCursorDetector = new Dictionary<MouseSectionType, Image>(); // Assign this variable in inspector window 
+    private Dictionary<Vector2, Image> mouseAreas = new Dictionary<Vector2, Image>(); // Assign this variable in inspector window.
     [SerializeField] private Image[] mouseCursorDetectorImages;
 
     // Object Selection Button
@@ -16,15 +15,17 @@ public class LevelEditorUI : MonoBehaviour
     private ObjectSelectionButton[] objectSelectionButtons; // Buttons in contentsPanel.
     [SerializeField] private RectTransform objectSelectionGroup;
     public RectTransform ObjectSelectionGroup => objectSelectionGroup;
+    private void ToggleObjectSelectionGroup(bool inOn) => objectSelectionGroup.gameObject.SetActive(inOn);
 
     private void Awake()
     {
-        LevelEditorManager.OnEditorModeToggled += (bool isOn) => objectSelectionGroup.gameObject.SetActive(isOn);
+        LevelEditorManager.OnEditorModeToggled += ToggleObjectSelectionGroup;
 
-        mouseCursorDetector.Add(MouseSectionType.Left, mouseCursorDetectorImages[0]);
-        mouseCursorDetector.Add(MouseSectionType.Right, mouseCursorDetectorImages[1]);
-        mouseCursorDetector.Add(MouseSectionType.Up, mouseCursorDetectorImages[2]);
-        mouseCursorDetector.Add(MouseSectionType.Down, mouseCursorDetectorImages[3]);
+        // Initialize mouse cursor detector for screen movement.
+        mouseAreas.Add(Vector2.left, mouseCursorDetectorImages[0]);
+        mouseAreas.Add(Vector2.right, mouseCursorDetectorImages[1]);
+        mouseAreas.Add(Vector2.up, mouseCursorDetectorImages[2]);
+        mouseAreas.Add(Vector2.down, mouseCursorDetectorImages[3]);
 
         // Creates buttons as many as the number of general prefabs.
         #region Set up buttons
@@ -45,52 +46,16 @@ public class LevelEditorUI : MonoBehaviour
         #endregion
     }
 
-
-    public void MoveScreenDependingOnMousePosition(int speed)
-    {
-        if (LevelEditorManager.Mode == PlayMode.Playing) return;
-
-        switch (GetScreenMovementDirectionFromMousePosition())
-        {
-            case MouseSectionType.Left:
-                LevelEditorManager.Camera.transform.position += new Vector3(-speed * Time.deltaTime, 0, 0);
-                break;
-            case MouseSectionType.Right:
-                LevelEditorManager.Camera.transform.position += new Vector3(speed * Time.deltaTime, 0, 0);
-                break;
-            case MouseSectionType.Up:
-                LevelEditorManager.Camera.transform.position += new Vector3(0, speed * Time.deltaTime, 0);
-                break;
-            case MouseSectionType.Down:
-                LevelEditorManager.Camera.transform.position += new Vector3(0, -speed * Time.deltaTime, 0);
-                break;
-        }
-    }
-
-    // Get mouse position depending on the resolution of the screen
-    public Vector3 GetMousePositionFromTheCanvas()
-    {
-        Vector3 position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x,
-                Input.mousePosition.y, -Camera.main.transform.position.z));
-
-        return position;
-    }
-
     public bool IsMouseCursorOnTheArea(RectTransform area)
     {
         var cursorPosition = Input.mousePosition;
-        if (cursorPosition.x >= area.position.x - area.rect.width* 0.5f &&
-            cursorPosition.x <= area.position.x + area.rect.width* 0.5f &&
-            cursorPosition.y >= area.position.y - area.rect.height* 0.5f &&
-            cursorPosition.y <= area.position.y + area.rect.height* 0.5f)
-        {
-            return true;
-        }
-
-        return false;
+        return  cursorPosition.x >= area.position.x - area.rect.width  * 0.5f &&
+                cursorPosition.x <= area.position.x + area.rect.width  * 0.5f &&
+                cursorPosition.y >= area.position.y - area.rect.height * 0.5f &&
+                cursorPosition.y <= area.position.y + area.rect.height * 0.5f;
     }
 
-    public bool TryGetComponentFromMousePosition<T>(out T component, Layer layerMask /* For Optimization */, Camera cameraForRay = null) where T : Component
+    public bool TryGetComponentFromMousePosition<T>(out T component, Layer layerMask, Camera cameraForRay = null) where T : Component
     {
         component = null;
 
@@ -99,23 +64,6 @@ public class LevelEditorUI : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue, layerMask.GetMask()))
         {
             if(raycastHit.collider.TryGetComponent(out T _component))
-            {
-                component = _component;
-            }
-        }
-
-        return component != null;
-    }
-
-    public bool TryGetComponentFromMousePosition<T>(out T component, Camera cameraForRay = null) where T : Component
-    {
-        component = null;
-
-        var camera = cameraForRay ?? LevelEditorManager.Camera;
-        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit raycastHit, float.MaxValue))
-        {
-            if (raycastHit.collider.TryGetComponent(out T _component))
             {
                 component = _component;
             }
@@ -145,27 +93,16 @@ public class LevelEditorUI : MonoBehaviour
         return position;
     }
 
-    public MouseSectionType GetScreenMovementDirectionFromMousePosition()
+    public Vector2 GetMouseArea()
     {
-        var direction = MouseSectionType.Middle;
-        if (IsMouseCursorOnTheArea(mouseCursorDetector[MouseSectionType.Left].rectTransform))
+        Vector2 mouseArea = Vector2.zero;
+
+        foreach(var area in mouseAreas.Keys)
         {
-            return MouseSectionType.Left;
-        }
-        if (IsMouseCursorOnTheArea(mouseCursorDetector[MouseSectionType.Right].rectTransform))
-        {
-            return MouseSectionType.Right;
-        }
-        if (IsMouseCursorOnTheArea(mouseCursorDetector[MouseSectionType.Up].rectTransform))
-        {
-            return MouseSectionType.Up;
-        }
-        if (IsMouseCursorOnTheArea(mouseCursorDetector[MouseSectionType.Down].rectTransform))
-        {
-            return MouseSectionType.Down;
+            if (IsMouseCursorOnTheArea(mouseAreas[area].rectTransform))
+                mouseArea += area;
         }
 
-
-        return direction;
+        return mouseArea;
     }    
 }

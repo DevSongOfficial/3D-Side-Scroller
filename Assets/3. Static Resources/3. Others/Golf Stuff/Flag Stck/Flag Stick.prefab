@@ -178,7 +178,7 @@ GameObject:
   - component: {fileID: 6894609376509231889}
   - component: {fileID: 1573324227316121746}
   - component: {fileID: 4427497587095315455}
-  - component: {fileID: 2866659126323046222}
+  - component: {fileID: 8924441616909100457}
   m_Layer: 25
   m_Name: Flag Stick
   m_TagString: Prob
@@ -196,7 +196,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.85}
-  m_LocalScale: {x: 0.0018348627, y: 0.07836407, z: 0.0018348618}
+  m_LocalScale: {x: 0.0012232416, y: 0.07836407, z: 0.001223242}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7711684747178922724}
@@ -261,7 +261,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 122
   m_CollisionDetection: 1
---- !u!65 &2866659126323046222
+--- !u!65 &8924441616909100457
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -280,7 +280,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4, y: 2, z: 4}
+  m_Size: {x: 2, y: 2, z: 2}
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
 --- !u!1 &5690437163013539194
 GameObject:
@@ -293,7 +293,7 @@ GameObject:
   - component: {fileID: 7711684747178922724}
   - component: {fileID: 300473697242743569}
   - component: {fileID: 5218284496906168590}
-  m_Layer: 25
+  m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -309,7 +309,7 @@ Transform:
   m_GameObject: {fileID: 5690437163013539194}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1, y: -0.002, z: -2.8}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -395,8 +395,8 @@ Transform:
   m_GameObject: {fileID: 9136206631635537096}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.000000029802322, z: -0.000000014901161, w: 1}
-  m_LocalPosition: {x: 12.239998, y: 0.74799997, z: 0}
-  m_LocalScale: {x: 23.131205, y: 0.44217736, z: 1}
+  m_LocalPosition: {x: 16.82, y: 0.748, z: 0.39}
+  m_LocalScale: {x: 32.383686, y: 0.44217736, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7711684747178922724}

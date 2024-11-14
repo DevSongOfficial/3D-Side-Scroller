@@ -41,10 +41,18 @@ public sealed class System_FXManager : MonoBehaviour
 
 
     // VFX SECTION
-    public VFX CreateEffect(Prefab.VFX effectPrefab, Transform parent, bool isSharedMaterial = false)
+    public ShaderFX CreateShaderFX(Prefab.VFX effectPrefab, Transform parent, bool isSharedMaterial = false)
     {
-        var effect = Instantiate(AssetManager.GetPrefab(effectPrefab), parent).GetComponent<VFX>();
+        var effect = Instantiate(AssetManager.GetPrefab(effectPrefab), parent).GetComponent<ShaderFX>();
         effect.Initialize(isSharedMaterial);
+        
+        return effect;
+    }
+
+    public ParticleFX CreateParticleFX(Prefab.VFX effectPrefab, Transform parent, ParticleInfo info)
+    {
+        var effect = Instantiate(AssetManager.GetPrefab(effectPrefab), parent).GetComponent<ParticleFX>();
+        effect.Initialize(info);
 
         return effect;
     }

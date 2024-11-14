@@ -2,7 +2,7 @@ using System.Collections;
 using Unity.XR.OpenVR;
 using UnityEngine;
 
-public sealed class PlaceableGround : PlaceableProb
+public class PlaceableGround : PlaceableProb
 {
     [SerializeField] private bool disableRotation;
 

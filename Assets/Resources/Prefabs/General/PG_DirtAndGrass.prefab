@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5773580381485050700}
   - component: {fileID: 4286050005063934135}
   m_Layer: 20
-  m_Name: PO_Ground_2
+  m_Name: PG_DirtAndGrass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -96,6 +96,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayName: Ground w/ grass
+  fixedZPosition: 0
+  isSingleton: 0
+  disableRotation: 0
 --- !u!1 &3874831019120990602
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,7 +195,7 @@ GameObject:
   - component: {fileID: 179173378688094696}
   m_Layer: 9
   m_Name: Ground
-  m_TagString: Untagged
+  m_TagString: Grass
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

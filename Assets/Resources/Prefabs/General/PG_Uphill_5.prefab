@@ -72,9 +72,9 @@ GameObject:
   - component: {fileID: 2914822197810963403}
   - component: {fileID: 4386445819765412292}
   - component: {fileID: 2729267034221104868}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: HalfCube
-  m_TagString: Untagged
+  m_TagString: Grass
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -179,7 +179,7 @@ GameObject:
   - component: {fileID: 4399160171981022413}
   - component: {fileID: 7365985439276738887}
   m_Layer: 20
-  m_Name: PO_Uphill_5
+  m_Name: PG_Uphill_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -241,6 +241,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayName: Uphill 7.5
+  fixedZPosition: 0
+  isSingleton: 0
+  disableRotation: 0
 --- !u!65 &7365985439276738887
 BoxCollider:
   m_ObjectHideFlags: 0

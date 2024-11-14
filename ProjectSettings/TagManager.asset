@@ -8,6 +8,9 @@ TagManager:
   - Prob
   - Green
   - HoleCup
+  - Dirt
+  - Grass
+  - Sand
   layers:
   - Default
   - TransparentFX

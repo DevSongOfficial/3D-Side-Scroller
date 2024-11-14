@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Renderer))]
-public class VFX : MonoBehaviour
+public sealed class ShaderFX : MonoBehaviour
 {
     [SerializeField] private string referenceName;
 

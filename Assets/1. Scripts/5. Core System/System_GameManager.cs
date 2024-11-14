@@ -21,7 +21,7 @@ public enum Layer
 
 public enum Tag
 {
-    Untagged, Player, Enemy, Prob, HoleCup, Green
+    Untagged, Player, Enemy, Prob, HoleCup, Green, Dirt, Grass, Sand
 }
 
 public sealed class System_GameManager : MonoBehaviour

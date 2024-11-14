@@ -6,26 +6,28 @@ public struct Prefab {
 		System_LevelEditorManager,
 	}
 	public enum General {
+		PC_PlayerSpawnPoint,
+		PC_ZombieCharacter_1,
 		PE_Grass_1,
 		PE_Grass_2,
 		PE_Tree_1,
 		PE_Tree_2,
-		PO_GolfBag,
-		PO_GolfBall,
-		PO_GolfCart,
-		PO_GreenWithHole,
-		PO_Ground_1,
-		PO_Ground_2,
-		PO_Ground_3,
-		PO_PlayerSpawnPoint,
-		PO_Sand,
-		PO_Sand_Edge,
-		PO_Uphill_1,
-		PO_Uphill_2,
-		PO_Uphill_3,
-		PO_Uphill_4,
-		PO_Uphill_5,
-		PO_ZombieCharacter_1,
+		PG_Dirt,
+		PG_DirtAndGrass,
+		PG_Grass,
+		PG_Green,
+		PG_Invisible,
+		PG_Sand,
+		PG_Sand_Edge,
+		PG_Uphill_1,
+		PG_Uphill_2,
+		PG_Uphill_3,
+		PG_Uphill_4,
+		PG_Uphill_5,
+		PG_Water,
+		PP_GolfBag,
+		PP_GolfBall,
+		PP_GolfCart,
 	}
 	public enum UI {
 		DamageText,
@@ -33,6 +35,7 @@ public struct Prefab {
 	}
 	public enum VFX {
 		Aura,
+		Dirt,
 	}
 }
 
