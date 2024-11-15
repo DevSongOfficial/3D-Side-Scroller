@@ -91,8 +91,8 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
         ActualObject = transform.GetChild(0);
         actualObject_rigidBody = ActualObject.GetComponent<Rigidbody>();
-        if(actualObject_rigidBody != null) actualObject_IsKinematic = actualObject_rigidBody.isKinematic;
-        
+        if (actualObject_rigidBody != null) actualObject_IsKinematic = actualObject_rigidBody.isKinematic;
+
         collider.isTrigger = true;
         rigidBody.isKinematic = true;
     }
@@ -137,11 +137,15 @@ public abstract class PlaceableObjectBase : MonoBehaviour
         {
             transform.position = ActualObject.position;
             transform.eulerAngles = ActualObject.eulerAngles;
+
+            if (actualObject_rigidBody != null) actualObject_IsKinematic = actualObject_rigidBody.isKinematic;
         }
+        else
+        {
+            ActualObject.position = transform.position;
 
-        if (actualObject_rigidBody == null) return;
-
-        if (!actualObject_IsKinematic) actualObject_rigidBody.isKinematic = isOn;
+            if (actualObject_rigidBody != null) actualObject_rigidBody.isKinematic = actualObject_IsKinematic;
+        }
     }
 
     public void SetActive(bool active)

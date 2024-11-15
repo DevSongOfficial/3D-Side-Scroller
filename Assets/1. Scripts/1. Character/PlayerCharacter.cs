@@ -154,6 +154,7 @@ public sealed class PlayerCharacter : CharacterBase
 
         var newPosition = po.transform.position;
         MovementController.SetPosition(newPosition);
+        MovementController.ChangeMovementDirection(MovementDirection.Right);
     }
 
     public override PlayerCharacter AsPlayer()

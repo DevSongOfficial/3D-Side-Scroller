@@ -623,6 +623,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Golf Bag
   fixedZPosition: 0
+  isSingleton: 0
 --- !u!54 &6277276008617093645
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -759,7 +760,7 @@ MonoBehaviour:
   damageEvent:
     senderType: 2
     damage: 15
-    knockBackVelocity: {x: 4, y: 0.25, z: 0}
+    knockBackVelocity: {x: 3, y: 0.25, z: 0}
 --- !u!33 &5761479226917265198
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -916,7 +917,7 @@ MonoBehaviour:
   damageEvent:
     senderType: 2
     damage: 25
-    knockBackVelocity: {x: 3, y: 6, z: 0}
+    knockBackVelocity: {x: 3, y: 5, z: 0}
 --- !u!33 &1851723000710400606
 MeshFilter:
   m_ObjectHideFlags: 0

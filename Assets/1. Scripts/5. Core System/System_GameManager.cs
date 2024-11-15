@@ -13,6 +13,7 @@ public enum Layer
     Character = 8,
     Ground = 9,
     Wall = 10,
+    TriggerArea = 14,
     Placeable = 20,
     Damageable = 24,
     Interactable = 25,
@@ -152,11 +153,9 @@ public sealed class System_GameManager : MonoBehaviour
             PlaceableObjectBase.RegisterPlaceableObject(placeableObject);
         }
         LevelEditorManager.SetPlayMode(PlayMode.Editing);
-
+        
         OnLoadComplete?.Invoke();
     }
-
-
 
 
     public event Action OnGreen;

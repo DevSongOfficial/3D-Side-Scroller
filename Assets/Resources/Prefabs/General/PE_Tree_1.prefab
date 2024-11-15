@@ -128,7 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayName: ENV Tree 1
-  fixedZPosition: 1
+  fixedZPosition: 1.3
   isSingleton: 0
 --- !u!1 &7084640558109768984
 GameObject:

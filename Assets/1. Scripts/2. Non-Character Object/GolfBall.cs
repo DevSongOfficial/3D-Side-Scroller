@@ -4,6 +4,7 @@ using static GameSystem;
 
 [RequireComponent(typeof(SphereCollider))]
 [RequireComponent(typeof(Rigidbody))]
+// This class is singleton managed by PleaceableProb.
 public sealed class GolfBall : MonoBehaviour, IDamageable
 {
     // Physics
@@ -11,20 +12,24 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
     private new Collider collider;
     
     private const float knockBackMultiplier = 35;
-    private const float torqueMultiplier   = 100;
+    private const float torqueMultiplier    = 1000;
+
+    public static bool OnGreen { get; private set; }
 
     public struct Drag
     {
-        public static float OffGround   = 0.2f;
-        public static float OnGrass     = 0.3f;
-        public static float OnDirt      = 0.5f;
-        public static float OnSand      = 7.5f;
+        public static float OffGround   = 0f;
+        public static float OnGreen     = 0.1f;
+        public static float OnGrass     = 2.0f;
+        public static float OnDirt      = 3.5f;
+        public static float OnSand      = 9.5f;
     }
     public struct AngularDrag
     {
-        public static float OffGround   = 2.9f;
-        public static float OnGrass     = 1f;
-        public static float OnDirt      = 1.5f;
+        public static float OffGround   = 0f;
+        public static float OnGreen     = 0.1f;
+        public static float OnGrass     = 2.5f;
+        public static float OnDirt      = 3.5f;
         public static float OnSand      = 20f;
     }
 
@@ -39,7 +44,7 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
 
     private void FixedUpdate()
     {
-        SetBallAttributesBasedOnGroundType();
+        HandleBallAttributesBasedOnGroundType();
     }
 
     private void LateUpdate()
@@ -62,7 +67,7 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
 
     private const float velocityThreshold = 0.025f;
     private const float visibilityTimer = 1;
-    private float timeLeft;
+    private float visibilityTimeLeft;
     private void HandleProbCameraOutputUI()
     {
         if (FXManager.IsSlowMotioning)
@@ -78,15 +83,15 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
         if (rigidBody.velocity.magnitude > velocityThreshold)
         {
             UIManager.PopupUI(UIManager.GetUI.RawImage_ProbCameraOutput);
-            timeLeft = visibilityTimer;
+            visibilityTimeLeft = visibilityTimer;
         }
-        else if (timeLeft <= 0)
+        else if (visibilityTimeLeft <= 0)
         {
             UIManager.CloseUI(UIManager.GetUI.RawImage_ProbCameraOutput);
         }
         else
         {
-            timeLeft -= Time.fixedDeltaTime;
+            visibilityTimeLeft -= Time.fixedDeltaTime;
         }
     }    
 
@@ -96,16 +101,22 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
             GameManager.BallInTheCup();
 
         if (other.CompareTag(Tag.Green))
+        {
+            OnGreen = true;
             GameManager.BallOnTheGreen();
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag(Tag.Green))
+        {
+            OnGreen = false;
             GameManager.BallOutTheGreen();
+        }
     }
 
-    private void SetBallAttributesBasedOnGroundType()
+    private void HandleBallAttributesBasedOnGroundType()
     {
         if (!Physics.Raycast(collider.bounds.center, Vector3.down, out RaycastHit hit, collider.bounds.extents.y + 0.1f, Layer.Ground.GetMask()))
         {
@@ -120,11 +131,22 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
 
         if (hit.collider.CompareTag(Tag.Grass))
         {
-            particleInfo.color = new Vector4(0.5f, 0.4f, 0.25f, 0.8f); // Color: Grass Green
+            particleInfo.color = new Vector4(0.5f, 0.4f, 0.25f, 0.8f); // Color: Dirt/Grass Brown
             particleInfo.lifeTime = 0.15f;
 
             rigidBody.drag = Drag.OnGrass;
             rigidBody.angularDrag = AngularDrag.OnGrass;
+
+            return;
+        }
+
+        if (hit.collider.CompareTag(Tag.Green))
+        {
+            particleInfo.color = new Vector4(0.1f, 0.8f, 0.25f, 0.8f); // Color: Grass Green
+            particleInfo.lifeTime = 0.15f;
+
+            rigidBody.drag = Drag.OnGreen;
+            rigidBody.angularDrag = AngularDrag.OnGreen;
 
             return;
         }

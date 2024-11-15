@@ -5,6 +5,7 @@ public class FlagStick : MonoBehaviour, IPickupable
 {
     private Transform carryPoint;
     private Rigidbody rigidBody;
+    private new Collider collider;
 
     private const float fixedZPositionOnPlaced = 1;
 
@@ -12,6 +13,7 @@ public class FlagStick : MonoBehaviour, IPickupable
     private void Awake()
     {
         rigidBody = GetComponent<Rigidbody>();
+        collider = GetComponent<Collider>();
     }
 
     public void OnPickedUp(Transform carryPoint)
@@ -26,6 +28,7 @@ public class FlagStick : MonoBehaviour, IPickupable
 
         rigidBody.isKinematic = true;
         rigidBody.useGravity = false;
+        collider.isTrigger = true;
     }
 
     public void OnDropedOff()
@@ -41,5 +44,6 @@ public class FlagStick : MonoBehaviour, IPickupable
 
         rigidBody.isKinematic = false;
         rigidBody.useGravity = true;
+        collider.isTrigger = false;
     }
 }

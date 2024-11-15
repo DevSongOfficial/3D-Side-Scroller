@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7055885031893425955}
   m_Layer: 9
   m_Name: Extra Grass
-  m_TagString: Grass
+  m_TagString: Green
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -382,7 +382,7 @@ GameObject:
   - component: {fileID: 6860122724532057453}
   - component: {fileID: 3039533532780050720}
   - component: {fileID: 1434199599348848064}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Green
   m_TagString: Green
   m_Icon: {fileID: 0}
@@ -489,7 +489,7 @@ GameObject:
   - component: {fileID: 5585213514155318510}
   m_Layer: 9
   m_Name: Extra Grass
-  m_TagString: Grass
+  m_TagString: Green
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -592,7 +592,7 @@ GameObject:
   - component: {fileID: 1330739777136199631}
   m_Layer: 0
   m_Name: Blocks
-  m_TagString: Grass
+  m_TagString: Green
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -653,7 +653,7 @@ GameObject:
   - component: {fileID: 3318289183424135538}
   m_Layer: 9
   m_Name: Extra Grass
-  m_TagString: Grass
+  m_TagString: Green
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
