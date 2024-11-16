@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor.Rendering;
 using UnityEngine;
 using static GameSystem;
 
@@ -9,6 +8,8 @@ using static GameSystem;
 [RequireComponent(typeof(Rigidbody))]
 public abstract class PlaceableObjectBase : MonoBehaviour
 {
+    public static void ClearTile() => tile.Clear();
+    protected static Dictionary<Vector2Int, PlaceableGround> tile = new Dictionary<Vector2Int, PlaceableGround>();
     protected bool isEditorMode;
 
     [Tooltip("The name displayed in UI or editor for this object.")]
@@ -27,7 +28,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
     protected Rigidbody actualObject_rigidBody;
     protected bool actualObject_IsKinematic;
 
-    public bool CanBePlaced { get { return overlappedObjectsCount == 0; } }
+    public virtual bool NotOverlapped { get { return overlappedObjectsCount == 0; } }
     private int overlappedObjectsCount;
 
     // Events
@@ -120,13 +121,22 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
     protected virtual void LateUpdate()
     {
-        if (!isEditorMode) return;
-        ActualObject.position = transform.position;
+        if (isEditorMode)
+        {
+            ActualObject.position = transform.position;
+            ActualObject.rotation = transform.rotation;
+        }
+        else
+        {
+            transform.position    = ActualObject.position;
+            transform.eulerAngles = ActualObject.eulerAngles;
+        }
+
     }
 
     public virtual void InverseRotation()
     {
-        ActualObject.transform.Rotate(0, 180, 0);
+        transform.Rotate(0, 180, 0);
     }
 
     protected virtual void OnLevelEditorToggled(bool isOn)
@@ -135,9 +145,6 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
         if (isOn)
         {
-            transform.position = ActualObject.position;
-            transform.eulerAngles = ActualObject.eulerAngles;
-
             if (actualObject_rigidBody != null) actualObject_IsKinematic = actualObject_rigidBody.isKinematic;
         }
         else
@@ -166,5 +173,10 @@ public abstract class PlaceableObjectBase : MonoBehaviour
         if (!other.CompareLayer(Layer.Placeable)) return;
 
         overlappedObjectsCount--;
+    }
+
+    public virtual PlaceableGround AsGround()
+    {
+        return null;
     }
 }

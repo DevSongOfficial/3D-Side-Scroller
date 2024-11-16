@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using static GameSystem;
 
@@ -23,6 +24,7 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
         public static float OnGrass     = 2.0f;
         public static float OnDirt      = 3.5f;
         public static float OnSand      = 9.5f;
+        public static float UnderWater  = 4;    // Water area is way larger than sand area so drag should be less.
     }
     public struct AngularDrag
     {
@@ -31,6 +33,7 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
         public static float OnGrass     = 2.5f;
         public static float OnDirt      = 3.5f;
         public static float OnSand      = 20f;
+        public static float UnderWater  = 25;
     }
 
     // VFX
@@ -116,16 +119,17 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
         }
     }
 
+    private const float distance = 1;
     private void HandleBallAttributesBasedOnGroundType()
     {
-        if (!Physics.Raycast(collider.bounds.center, Vector3.down, out RaycastHit hit, collider.bounds.extents.y + 0.1f, Layer.Ground.GetMask()))
+        if (!Physics.Raycast(collider.bounds.center + Vector3.up * distance, Vector3.down, out RaycastHit hit, collider.bounds.extents.y + distance + 0.1f , Layer.Ground.GetMask()))
         {
             particleInfo.color = Vector4.zero;
             particleInfo.lifeTime = 0f;
 
             rigidBody.drag = Drag.OffGround;
             rigidBody.angularDrag = AngularDrag.OffGround;
-            
+
             return;
         }
 
@@ -169,6 +173,17 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
 
             rigidBody.drag = Drag.OnSand;
             rigidBody.angularDrag = AngularDrag.OnSand;
+
+            return;
+        }
+
+        if (hit.collider.CompareTag(Tag.Water))
+        {
+            particleInfo.color = new Vector4(0.2f, 0.2f, 0.9f, 0.9f); // Color: Water Blue
+            particleInfo.lifeTime = 1.2f;
+
+            rigidBody.drag = Drag.UnderWater;
+            rigidBody.angularDrag = AngularDrag.UnderWater;
 
             return;
         }

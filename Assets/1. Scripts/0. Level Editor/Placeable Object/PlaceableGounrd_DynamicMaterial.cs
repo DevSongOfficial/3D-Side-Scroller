@@ -3,8 +3,8 @@ using static GameSystem;
 
 public class PlaceableGounrd_DynamicMaterial : PlaceableGround
 {
-    [SerializeField] private Material materialOnEditing;
-    [SerializeField] private Material materialOnPlaying;
+    [SerializeField] protected Material materialOnEditing;
+    [SerializeField] protected Material materialOnPlaying;
 
     private new Renderer renderer;
 

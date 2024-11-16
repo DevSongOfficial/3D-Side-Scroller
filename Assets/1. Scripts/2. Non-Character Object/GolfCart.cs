@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using static AnimationController;
 using static GameSystem;
 
 public class GolfCart : MonoBehaviour, IInteractable

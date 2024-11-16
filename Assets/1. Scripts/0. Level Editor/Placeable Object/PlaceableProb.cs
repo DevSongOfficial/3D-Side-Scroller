@@ -11,8 +11,7 @@ public class PlaceableProb : PlaceableObjectBase
     {
         if(!isSingleton) return base.CreatePlaceableObject();
 
-        if (previousPO != null)
-            LevelEditorManager.RemovePlaceableObject(previousPO);
+        if (previousPO != null) LevelEditorManager.RemovePlaceableObject(previousPO);
         return previousPO = base.CreatePlaceableObject();
 
     }

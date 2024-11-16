@@ -264,6 +264,7 @@ MonoBehaviour:
   fixedZPosition: -0.85
   isSingleton: 1
   disableRotation: 1
+  size: {x: 5, y: 1}
 --- !u!1 &2819070054628436692
 GameObject:
   m_ObjectHideFlags: 0

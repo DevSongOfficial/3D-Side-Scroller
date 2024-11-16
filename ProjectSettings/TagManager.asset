@@ -11,6 +11,7 @@ TagManager:
   - Dirt
   - Grass
   - Sand
+  - Water
   layers:
   - Default
   - TransparentFX

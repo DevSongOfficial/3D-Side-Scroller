@@ -116,11 +116,15 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         }
     }
 
-    private void PlaceSelectedObject()
+    private bool PlaceSelectedObject()
     {
-        if (PlaceableObjectBase.CurrentlySelected is null) return;
-        if (!PlaceableObjectBase.CurrentlySelected.CanBePlaced) return;
+        if (PlaceableObjectBase.CurrentlySelected is null) return false;
+        if (!PlaceableObjectBase.CurrentlySelected.NotOverlapped) return false;
 
+        // Add the object to the Tile.
+        PlaceableObjectBase.CurrentlySelected.AsGround()?.AddToTile();
+
+        // Place the object.
         PlaceableObjectBase.SetPreviouslyPlacedObject(PlaceableObjectBase.CurrentlySelected);
         SetPlayMode(PlayMode.Editing);
 
@@ -129,6 +133,8 @@ public sealed class System_LevelEditorManager : MonoBehaviour
             var po = AssetManager.GetPrefab(PlaceableObjectBase.PreviouslyPlaced.Type).GetComponent<PlaceableObjectBase>();
             po.CreateIfSelectedPleaceableObject();
         }
+
+        return true;
     }
 
     private void RemoveSelectedObject()
@@ -159,10 +165,10 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         if (Mode != PlayMode.Placing) return;
         if (UI.IsMouseCursorOnTheArea(UI.ObjectSelectionGroup)) return;
         if (Input.GetKeyDown(placeObject))
-        { 
-            PlaceSelectedObject();
+        {
+            if (!PlaceSelectedObject()) return;
+
             movementOffset = Vector3.zero;
-            return;
         }
     }
 
@@ -179,28 +185,34 @@ public sealed class System_LevelEditorManager : MonoBehaviour
     private void HandleObjectSelection()
     {
         if (Mode != PlayMode.Editing) return;
+        if (!Input.GetKeyDown(selectObject)) return;
 
-        if (Input.GetKeyDown(selectObject))
+        // Place if holding an object.
+        if (PlaceableObjectBase.CurrentlySelected != null)
         {
-            if(PlaceableObjectBase.CurrentlySelected != null)
-            {
-                if (!PlaceableObjectBase.CurrentlySelected.CanBePlaced) return;
+            if (!PlaceableObjectBase.CurrentlySelected.NotOverlapped) return;
 
-                PlaceableObjectBase.SetCurrentObject(null);
-                movementOffset = Vector3.zero;
-                return;
-            }
+            // Add the object to the Tile.
+            PlaceableObjectBase.CurrentlySelected.AsGround()?.AddToTile();
 
-            if(!UI.TryGetComponentFromMousePosition(out PlaceableObjectBase selectedObject, Layer.Placeable))
-            {
-                 //Debug.Log("Detected Object: NOTHING");
-                 return;
-            }
-            else //.Log($"Detected Object: {selectedObject}");
+            PlaceableObjectBase.SetCurrentObject(null);
+            movementOffset = Vector3.zero;
 
-            PlaceableObjectBase.SetCurrentObject(selectedObject);
-            movementOffset = selectedObject.transform.position - UI.GetWorldPositionFromMousePosition(ignorePlaceableObjectLayer: false);
+            return;
         }
+
+        // If not, select the object on mouse cursor.
+        if (!UI.TryGetComponentFromMousePosition(out PlaceableObjectBase selectedObject, Layer.Placeable))
+        {
+            //Debug.Log("Detected Object: NOTHING");
+            return;
+        }
+        else //.Log($"Detected Object: {selectedObject}");
+
+        PlaceableObjectBase.SetCurrentObject(selectedObject);
+        movementOffset = selectedObject.transform.position - UI.GetWorldPositionFromMousePosition(ignorePlaceableObjectLayer: false);
+
+        selectedObject.AsGround()?.RemoveFromTile();
     }
 
     private Vector3 movementOffset;

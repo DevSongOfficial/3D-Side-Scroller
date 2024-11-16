@@ -93,9 +93,9 @@ public class SerializedVector3
 
     public SerializedVector3(Vector3 position)
     {
-        this.x = position.x;
-        this.y = position.y;
-        this.z = position.z;
+        x = position.x;
+        y = position.y;
+        z = position.z;
     }
 
     public Vector3 GetValue()

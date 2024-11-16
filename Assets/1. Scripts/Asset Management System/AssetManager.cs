@@ -25,11 +25,6 @@ public class AssetManager : MonoBehaviour
         ReadOnlySpan<char> result = span.Slice(nameof(Prefab).Length + 1);
         return GetPrefab(result.ToString(), prefabType.ToString());
     }
-
-    private void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
 }
 
 #if UNITY_EDITOR

@@ -138,6 +138,7 @@ MonoBehaviour:
   fixedZPosition: 0
   isSingleton: 0
   disableRotation: 0
+  size: {x: 1, y: 1}
 --- !u!65 &1618228168186309255
 BoxCollider:
   m_ObjectHideFlags: 0

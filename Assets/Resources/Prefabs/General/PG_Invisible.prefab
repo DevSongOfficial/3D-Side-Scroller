@@ -99,6 +99,7 @@ MonoBehaviour:
   fixedZPosition: 0
   isSingleton: 0
   disableRotation: 0
+  size: {x: 1, y: 1}
   materialOnEditing: {fileID: 2100000, guid: e5e1280fc60ec9d48816717a62192ed6, type: 2}
   materialOnPlaying: {fileID: 2100000, guid: dff8a57942489e242b62f896686b6573, type: 2}
 --- !u!1 &6802241426489550962

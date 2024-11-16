@@ -2,8 +2,11 @@ using Cinemachine;
 using System;
 using System.IO;
 using UnityEditor.Rendering;
+using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 using static GameSystem;
 
 public enum Layer
@@ -22,11 +25,21 @@ public enum Layer
 
 public enum Tag
 {
-    Untagged, Player, Enemy, Prob, HoleCup, Green, Dirt, Grass, Sand
+    Untagged, Player, Enemy, Prob, HoleCup, 
+
+    // Ground Types
+    Green, Dirt, Grass, Sand, Water
 }
 
 public sealed class System_GameManager : MonoBehaviour
 {
+    [ContextMenu("Reload")]
+    public void ReloadScnene()
+    {
+        SceneManager.LoadScene(0);
+
+    }
+
 
     private void Awake()
     {
@@ -118,6 +131,8 @@ public sealed class System_GameManager : MonoBehaviour
     public event Action OnLoadStart;
     public event Action OnLoadComplete;
 
+    private string[] datas = new string[100];
+
     [ContextMenu("SAVE")]
     public void SaveGame()
     {
@@ -143,12 +158,15 @@ public sealed class System_GameManager : MonoBehaviour
 
         LevelEditorManager.RemoveEveryRegisterdObject();
 
+        PlaceableObjectBase.ClearTile();
 
         foreach (var prefab in dataHandler.prefabDatas)
         {
             var placeableObject = AssetManager.GetPrefab(prefab.type).GetComponent<PlaceableObjectBase>().CreatePlaceableObject();            
             placeableObject.transform.position = prefab.position.GetValue();
             placeableObject.transform.eulerAngles = prefab.eulerAngles.GetValue();
+
+            placeableObject.AsGround()?.AddToTile();
 
             PlaceableObjectBase.RegisterPlaceableObject(placeableObject);
         }
