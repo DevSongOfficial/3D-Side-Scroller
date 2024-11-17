@@ -523,7 +523,7 @@ MonoBehaviour:
   damageEvent:
     senderType: 2
     damage: 45
-    knockBackVelocity: {x: 6, y: 2, z: 0}
+    knockBackVelocity: {x: 7, y: 3, z: 0}
 --- !u!33 &7375246429875214712
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -917,7 +917,7 @@ MonoBehaviour:
   damageEvent:
     senderType: 2
     damage: 25
-    knockBackVelocity: {x: 3, y: 5, z: 0}
+    knockBackVelocity: {x: 3, y: 5.5, z: 0}
 --- !u!33 &1851723000710400606
 MeshFilter:
   m_ObjectHideFlags: 0

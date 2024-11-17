@@ -107,6 +107,9 @@ public class GolfCart : MonoBehaviour, IInteractable
     private void HandleMovement()
     {
         movementController.ApplyHorizontalVelocity(info.MovementSpeed * velocityMultiplier, info.Acceleration);
+        
+        // Fix z postion that might be caused by other movements.
+        transform.position = new Vector3(transform.position.x, transform.position.y, 0);
     }
 
     private void AttackOnCollide()

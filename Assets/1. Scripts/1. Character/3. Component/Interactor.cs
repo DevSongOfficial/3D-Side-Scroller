@@ -156,7 +156,7 @@ public class Carrier
 
     public void DropOff()
     {
-        carryingItem.OnDropedOff();
+        carryingItem?.OnDropedOff();
         carryingItem = null;
     }
 }

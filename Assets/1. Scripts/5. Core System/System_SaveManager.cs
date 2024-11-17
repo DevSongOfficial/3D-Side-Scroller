@@ -5,21 +5,25 @@ using UnityEngine;
 
 public class System_SaveManager : MonoBehaviour
 {
-    private const string prefix = "Data_";
-    private int dataIndex = 0;
 
-    public void SaveData(string data)
+    #region Data Handling
+    public string[] SavedDatas = new string[100];
+    private const string prefix = "Data_";
+
+    public void SaveData(string data, int index)
     {
-        if (WriteToFile(prefix + dataIndex, data))
+        if (WriteToFile($"{prefix}{index}", data))
         {
             Debug.Log("<color=cyan>Save Completed</color>");
+
+            SavedDatas[index] = data;
         }
     }
 
-    public string LoadData()
+    public string LoadData(int index)
     {
         string data = string.Empty;
-        if (ReadFromFile(prefix + dataIndex, out data))
+        if (ReadFromFile($"{prefix}{index}", out data))
         {
             Debug.Log("<color=cyan>Load Completed</color>");
         }
@@ -58,6 +62,7 @@ public class System_SaveManager : MonoBehaviour
         }
         return false;
     }
+    #endregion
 }
 
 [Serializable]

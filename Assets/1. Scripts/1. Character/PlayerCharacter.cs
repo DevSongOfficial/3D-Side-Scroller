@@ -30,13 +30,14 @@ public sealed class PlayerCharacter : CharacterBase
         base.Awake();
 
         // Initialize Inputs
-        GameManager.Input_OnChangeDirection += OnChangeDirection;
-        GameManager.Input_OnJump            += OnJump;
-        GameManager.Input_OnClick           += OnClick;
-        GameManager.Input_OnDrag            += OnDrag;
-        GameManager.Input_OnInteract        += OnInteract;
-        GameManager.Input_OnSwitchClub      += OnSwitchClub;
-        GameManager.Input_OnTogglePickup    += OnTogglePickup;
+        GameManager.Input_OnChangeDirection     += OnChangeDirection;
+        GameManager.Input_OnChangeZDirection    += OnChangeZDirection;
+        GameManager.Input_OnJump                += OnJump;
+        GameManager.Input_OnClick               += OnClick;
+        GameManager.Input_OnDrag                += OnDrag;
+        GameManager.Input_OnInteract            += OnInteract;
+        GameManager.Input_OnSwitchClub          += OnSwitchClub;
+        GameManager.Input_OnTogglePickup        += OnTogglePickup;
 
         // Initialize behaviour states
         blackboard      = new PlayerBlackboard();
@@ -53,7 +54,7 @@ public sealed class PlayerCharacter : CharacterBase
         Interactor.AsDriver.OnEnterVehicle += () => ChangeState(OnVehiclState);
         Interactor.AsDriver.OnExitVehicle  += () => ChangeState(MoveState);
 
-        GameManager.OnLoadComplete += Reposition;
+        StageMaker.OnLoadComplete += Reposition;
     }
 
     protected override void Start()
@@ -89,6 +90,11 @@ public sealed class PlayerCharacter : CharacterBase
         blackboard.InputDirection = directionToMove;
     }
 
+    private void OnChangeZDirection(CharacterMovementController.ZAxisMovementDirection directionToMove)
+    {
+        blackboard.Input_ChangeZDirection?.Invoke(directionToMove);
+    }
+
     private void OnJump()
     {
         blackboard.Input_OnJump?.Invoke();
@@ -113,6 +119,8 @@ public sealed class PlayerCharacter : CharacterBase
     
     private void OnInteract() 
     {
+        if (MovementController.IsMovingOnZAxis) return;
+
         Interactor.FindAndInteractWithinRange(info.InteractionRange);
     }
 

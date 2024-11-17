@@ -3,7 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using static GameSystem;
 
-public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
+public class GolfBag : MonoBehaviour, IInteractable, IPickupable
 {
     // Golf clubs
     private GolfClub currentClub => clubs[clubIndex];
@@ -32,10 +32,9 @@ public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
     private void Update()
     {
         CheckDistance();
-        UpdateTimer();
     }
 
-    public void Interact(Interactor newInteractor)
+    public virtual void Interact(Interactor newInteractor)
     {
         if (newInteractor.AsGolfer == null) return;
 
@@ -52,36 +51,19 @@ public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
     public new InteractableType GetType() => InteractableType.Equipment;
 
 
-    private void OpenTheBag()
+    protected virtual void OpenTheBag()
     {
         interactor.AsGolfer.OnClubSwitched += SwitchToNextClub;
-
-        // Start timer
-        timeLeft = 0;
 
         UIManager.PopupUI(UIManager.GetUI.Panel_ClubSelection);
     }
 
-    private void CloseTheBag() 
+    protected virtual void CloseTheBag() 
     {
         interactor.AsGolfer.OnClubSwitched -= SwitchToNextClub;
         interactor = null;
 
         UIManager.CloseUI(UIManager.GetUI.Panel_ClubSelection);
-    }
-
-    private void UpdateTimer()
-    {
-        if (!IsOpen) return;
-
-        if (timeLeft < Duration)
-        {
-            timeLeft += Time.deltaTime;
-        }
-        else
-        {
-            CloseTheBag();
-        }
     }
 
     private void SwitchToNextClub()
@@ -104,7 +86,7 @@ public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
         }
     }
 
-    public void OnPickedUp(Transform carryPoint)
+    public virtual void OnPickedUp(Transform carryPoint)
     {
         transform.SetParent(carryPoint);
 
@@ -115,7 +97,7 @@ public sealed class GolfBag : MonoBehaviour, IInteractable, IPickupable
         bodyCollider.isTrigger = true;
     }
 
-    public void OnDropedOff()
+    public virtual void OnDropedOff()
     {
         GameManager.AttachToMap(transform);
 

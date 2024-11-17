@@ -83,6 +83,13 @@ public abstract class PlaceableObjectBase : MonoBehaviour
         GameManager.MoveToLagacy(po.transform);
         GameManager.MoveToLagacy(po.ActualObject.transform);
     }
+
+    public static void UnregisterEveryObject()
+    {
+        for (int i = PlaceableObjectsInTheScene.Count - 1; i >= 0; i--)
+            UnregisterPlaceableObject(PlaceableObjectsInTheScene[i]);
+    }
+
     #endregion
 
     protected virtual void Awake()

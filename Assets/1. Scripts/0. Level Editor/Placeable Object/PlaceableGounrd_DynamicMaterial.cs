@@ -20,4 +20,9 @@ public class PlaceableGounrd_DynamicMaterial : PlaceableGround
     {
         renderer.material = isOn ? materialOnEditing : materialOnPlaying;
     }
+
+    private void OnDestroy()
+    {
+        LevelEditorManager.OnEditorModeToggled -= ShiftMaterial;
+    }
 }

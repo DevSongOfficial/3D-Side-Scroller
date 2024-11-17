@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public enum MovementDirection { Left = -1, None = 0, Right = 1 }
 public abstract class MovementController : MonoBehaviour
@@ -22,7 +23,7 @@ public abstract class MovementController : MonoBehaviour
 
     // DIRECTION SECTION
     #region Direction
-    private readonly int RotationSpeed = 1500;
+    protected readonly int RotationSpeed = 1500;
     public static readonly int YAngle_Left = 270;
     public static readonly int YAngle_Right = 90;
 
@@ -55,7 +56,7 @@ public abstract class MovementController : MonoBehaviour
         ChangeMovementDirection(newDirection, Space.Self);
     }
 
-    public void ChangeMovementDirection(MovementDirection newDirection, Space space = Space.World, bool smoothRotation = true)
+    public virtual void ChangeMovementDirection(MovementDirection newDirection, Space space = Space.World, bool smoothRotation = true)
     {
         if (newDirection == MovementDirection.None) return;
         if (newDirection == Direction) return;
@@ -82,29 +83,16 @@ public abstract class MovementController : MonoBehaviour
     {
         while (wishDirection != MovementDirection.None)
         {
-            if (wishDirection == MovementDirection.Left)
+            float targetYRotation = wishDirection.GetYRotationValue();
+            float rotationSpeed = (wishDirection == MovementDirection.Left ? 1 : -1) * RotationSpeed * Time.fixedDeltaTime;
+
+            // Check if rotation's completed.
+            if (!IsRotationComplete(transform.eulerAngles.y, targetYRotation, wishDirection))
+                Rotate(rotationSpeed, space);
+            else
             {
-                if (transform.eulerAngles.y < wishDirection.GetYRotationValue())
-                {
-                    Rotate(RotationSpeed * Time.fixedDeltaTime, space);
-                }
-                else
-                {
-                    SetEulerAngleY(wishDirection.GetYRotationValue(), space);
-                    wishDirection = MovementDirection.None;
-                }
-            }
-            else if (wishDirection == MovementDirection.Right)
-            {
-                if (transform.eulerAngles.y > wishDirection.GetYRotationValue())
-                {
-                    Rotate(-RotationSpeed * Time.fixedDeltaTime, space);
-                }
-                else
-                {
-                    SetEulerAngleY(wishDirection.GetYRotationValue(), space);
-                    wishDirection = MovementDirection.None;
-                }
+                SetEulerAngleY(targetYRotation, space);
+                wishDirection = MovementDirection.None;
             }
 
             yield return new WaitForFixedUpdate();
@@ -113,7 +101,14 @@ public abstract class MovementController : MonoBehaviour
         directionChangeCoroutine = null;
     }
 
-    private void Rotate(float y, Space space = Space.World)
+    private bool IsRotationComplete(float currentY, float targetY, MovementDirection direction)
+    {
+        return direction == MovementDirection.Left
+            ? currentY >= targetY
+            : currentY <= targetY;
+    }
+
+    protected void Rotate(float y, Space space = Space.World)
     {
         SetEulerAngleY(transform.eulerAngles.y + y, space);
     }
@@ -126,7 +121,9 @@ public abstract class MovementController : MonoBehaviour
 
     public MovementDirection GetDirectionFrom<T>(T target) where T : CharacterBase
     {
-        return target.transform.position.x > transform.position.x ? MovementDirection.Right : MovementDirection.Left;
+        return target.transform.position.x > transform.position.x 
+            ? MovementDirection.Right 
+            : MovementDirection.Left;
     }
     #endregion
 
@@ -164,7 +161,9 @@ public abstract class MovementController : MonoBehaviour
     {
         if (!canMoveHorizontally) return Vector3.zero;
 
-        velocity.x = Math.Abs(velocity.x) < speed ? velocity.x + acceleration * (int)FacingDirection : speed * (int)FacingDirection;
+        velocity.x = Math.Abs(velocity.x) < speed 
+            ? velocity.x + acceleration * (int)FacingDirection 
+            : speed * (int)FacingDirection;
 
         return Velocity;
     }
@@ -225,5 +224,11 @@ public abstract class MovementController : MonoBehaviour
         OnLanded?.Invoke();
 
         velocity.y = DefaultYSpeed;
+    }
+
+    // EXTRA
+    public void WalkForward()
+    {
+        
     }
 }

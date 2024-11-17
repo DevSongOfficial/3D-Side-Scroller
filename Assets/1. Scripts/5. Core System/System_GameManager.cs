@@ -1,12 +1,7 @@
-using Cinemachine;
 using System;
-using System.IO;
-using UnityEditor.Rendering;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using UnityEngine.Tilemaps;
 using static GameSystem;
 
 public enum Layer
@@ -33,11 +28,11 @@ public enum Tag
 
 public sealed class System_GameManager : MonoBehaviour
 {
-    [ContextMenu("Reload")]
-    public void ReloadScnene()
+    [ContextMenu("Menu")]
+    public void GoToMainMenu()
     {
-        SceneManager.LoadScene(0);
-
+        PlaceableObjectBase.UnregisterEveryObject();
+        SceneManager.LoadScene(0); // Load main menu.
     }
 
 
@@ -45,11 +40,6 @@ public sealed class System_GameManager : MonoBehaviour
     {
         input = GetComponent<PlayerInput>();
         LevelEditorManager.OnEditorModeToggled += (bool enable) => ToggleInput(!enable);
-    }
-
-    private void Start()
-    {
-        if (loadGameOnStart) LoadGame();
     }
 
     [Header("Map Transform")]
@@ -69,12 +59,12 @@ public sealed class System_GameManager : MonoBehaviour
 
 
 
-
     [Header("Input System")]
     [SerializeField] private PlayerInput input;
     public void ToggleInput(bool enable) => input.enabled = enable;
     #region Inputs
     public event Action<MovementDirection> Input_OnChangeDirection;
+    public event Action<CharacterMovementController.ZAxisMovementDirection> Input_OnChangeZDirection;
     public event Action Input_OnJump;
     public event Action<bool> Input_OnClick;
     public event Action<Vector2> Input_OnDrag;
@@ -88,6 +78,15 @@ public sealed class System_GameManager : MonoBehaviour
         var valueConverted = (int)value.Get<float>();
         var directionToMove = (MovementDirection)valueConverted;
         Input_OnChangeDirection.Invoke(directionToMove);
+    }
+
+    private void OnZMove(InputValue value)
+    {
+        var valueConverted = (int)value.Get<float>();
+        if (valueConverted == 0) return;
+
+        var directionToMove = (CharacterMovementController.ZAxisMovementDirection)valueConverted;
+        Input_OnChangeZDirection?.Invoke(directionToMove);
     }
 
     private void OnJump() // [Space Bar] pressed
@@ -122,58 +121,6 @@ public sealed class System_GameManager : MonoBehaviour
         Input_OnTogglePickup.Invoke();
     }
     #endregion
-
-
-
-
-    [Header("Save & Load")]
-    [SerializeField] private bool loadGameOnStart;
-    public event Action OnLoadStart;
-    public event Action OnLoadComplete;
-
-    private string[] datas = new string[100];
-
-    [ContextMenu("SAVE")]
-    public void SaveGame()
-    {
-        SaveDataHandler dataHandler = new SaveDataHandler();
-        foreach(var placeableObject in PlaceableObjectBase.PlaceableObjectsInTheScene)
-        {
-            dataHandler.Add(placeableObject.Type, placeableObject.transform.position, placeableObject.transform.eulerAngles);
-        }
-        var data = JsonUtility.ToJson(dataHandler);
-        Debug.Log(data);
-        SaveManager.SaveData(data);
-    }
-
-    [ContextMenu("LOAD")]
-    public void LoadGame()
-    {
-        OnLoadStart?.Invoke();
-
-        var data = SaveManager.LoadData();
-        if (String.IsNullOrEmpty(data)) return;
-
-        SaveDataHandler dataHandler = JsonUtility.FromJson<SaveDataHandler>(data);
-
-        LevelEditorManager.RemoveEveryRegisterdObject();
-
-        PlaceableObjectBase.ClearTile();
-
-        foreach (var prefab in dataHandler.prefabDatas)
-        {
-            var placeableObject = AssetManager.GetPrefab(prefab.type).GetComponent<PlaceableObjectBase>().CreatePlaceableObject();            
-            placeableObject.transform.position = prefab.position.GetValue();
-            placeableObject.transform.eulerAngles = prefab.eulerAngles.GetValue();
-
-            placeableObject.AsGround()?.AddToTile();
-
-            PlaceableObjectBase.RegisterPlaceableObject(placeableObject);
-        }
-        LevelEditorManager.SetPlayMode(PlayMode.Editing);
-        
-        OnLoadComplete?.Invoke();
-    }
 
 
     public event Action OnGreen;

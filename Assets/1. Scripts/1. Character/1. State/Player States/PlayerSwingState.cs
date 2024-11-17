@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.VFX;
+using static CharacterMovementController;
 using static GameSystem;
 
 
@@ -39,7 +40,12 @@ public class PlayerSwingState : PlayerStateBase
         blackBoard.Input_MouseUp += StartDownSwing;
 
         player.AnimationController.ChangeState(player.Interactor.AsGolfer.CurrentClub.AnimationType, 0.01f);
-        player.MovementController.ChangeMovementDirection(MovementDirection.Right, Space.Self , smoothRotation: false);
+
+        // Set swing direction based on player's z position.
+        MovementDirection swingDirection = player.MovementController.CurrentZAxis == ZAxisMovementDirection.Down
+            ? MovementDirection.Left 
+            : MovementDirection.Right;
+        player.MovementController.ChangeMovementDirection(swingDirection, Space.Self , smoothRotation: false);
 
         swingType = player.Interactor.AsGolfer.CurrentClub.ClubType;
         currentFrame = 0;

@@ -122,9 +122,10 @@ public class Detector : MonoBehaviour
 
     public List<T> DetectComponentsWithBox<T>(Vector3 center, Vector3 range, Quaternion orientation, int layerMask, Tag ignoreTag = Tag.Untagged)
     {
-        var colliders = Physics.OverlapBox(center, range * 0.5f, orientation, layerMask);
+        var halfExtent = range * 0.5f;
+        var colliders = Physics.OverlapBox(center, halfExtent, orientation, layerMask);
 
-        Debug_DrawBox(center, range, orientation);
+        Debug_DrawBox(center, halfExtent, orientation);
 
         var components = new List<T>();
 

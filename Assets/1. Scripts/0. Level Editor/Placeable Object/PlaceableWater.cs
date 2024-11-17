@@ -27,7 +27,7 @@ public sealed class PlaceableWater : PlaceableGround
         int x = Position.x + (size - 1) / 2;
 
         ActualObject.transform.position = new Vector3(x, Position.y);
-        ActualObject.transform.localScale = new Vector3(3, 1, size);
+        ActualObject.transform.localScale = new Vector3(4, 1, size);
     }
 
     private void SplitAndShrinkWaterBlocksInARow()
@@ -41,7 +41,7 @@ public sealed class PlaceableWater : PlaceableGround
     private void Shrink(int size)
     {
         ActualObject.transform.position = new Vector3(Position.x, Position.y);
-        ActualObject.transform.localScale = new Vector3(3, 1, 1);
+        ActualObject.transform.localScale = new Vector3(4, 1, 1);
     }
 
     // Return: the number of water blocks.

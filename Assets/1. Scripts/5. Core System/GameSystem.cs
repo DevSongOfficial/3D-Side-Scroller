@@ -18,12 +18,16 @@ public sealed  class GameSystem : MonoBehaviour
     public static System_LevelEditorManager LevelEditorManager => levelEditorManager;
     private static System_LevelEditorManager levelEditorManager;
 
+    public static System_StageMaker StageMaker => stageMaker;
+    public static System_StageMaker stageMaker;
+
     private void Awake()
     {
         gameManager = FindObjectOfType<System_GameManager>();
         saveManager = FindObjectOfType<System_SaveManager>();
         fxManager = FindObjectOfType<System_FXManager>();
         uiManager = FindObjectOfType<System_UIManager>();
+        stageMaker = FindObjectOfType<System_StageMaker>();
 
         var levelEditorManagerPrefab = AssetManager.GetPrefab(Prefab.Debugger.System_LevelEditorManager);
         levelEditorManager = Instantiate(levelEditorManagerPrefab, transform).GetComponent<System_LevelEditorManager>();
