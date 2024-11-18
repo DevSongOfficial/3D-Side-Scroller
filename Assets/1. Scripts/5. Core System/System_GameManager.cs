@@ -64,7 +64,7 @@ public sealed class System_GameManager : MonoBehaviour
     public void ToggleInput(bool enable) => input.enabled = enable;
     #region Inputs
     public event Action<MovementDirection> Input_OnChangeDirection;
-    public event Action<CharacterMovementController.ZAxisMovementDirection> Input_OnChangeZDirection;
+    public event Action<ZAxisMovementDirection> Input_OnChangeZDirection;
     public event Action Input_OnJump;
     public event Action<bool> Input_OnClick;
     public event Action<Vector2> Input_OnDrag;
@@ -85,7 +85,7 @@ public sealed class System_GameManager : MonoBehaviour
         var valueConverted = (int)value.Get<float>();
         if (valueConverted == 0) return;
 
-        var directionToMove = (CharacterMovementController.ZAxisMovementDirection)valueConverted;
+        var directionToMove = (ZAxisMovementDirection)valueConverted;
         Input_OnChangeZDirection?.Invoke(directionToMove);
     }
 

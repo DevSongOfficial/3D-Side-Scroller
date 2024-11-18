@@ -6,9 +6,12 @@ public sealed class PlayerCharacter : CharacterBase
     // Player Info
     public new PlayerInfo Info => info.AsPlayerInfo();
 
+    public bool OnGreen { get; private set; }
+
     // States
     // Must excute the contructor in Awake() after declaring new state here.
     public StateBase MoveState      { get; private set; } // Player Walk & Jump & Idle.
+    public StateBase ZAxisMoveState { get; private set; } // Z axis movement only for special purpose.
     public StateBase JumpState      { get; private set; }
     public StateBase SwingState     { get; private set; } // Player golf swing which can be a normal swing or a powerful attack.
     public StateBase AttackState    { get; private set; } // Player basic attack.
@@ -42,6 +45,7 @@ public sealed class PlayerCharacter : CharacterBase
         // Initialize behaviour states
         blackboard      = new PlayerBlackboard();
         MoveState       = new PlayerMoveState(this, blackboard);
+        ZAxisMoveState  = new PlayerMoveOnZAxisState(this, blackboard);
         JumpState       = new PlayerJumpState(this, blackboard);
         SwingState      = new PlayerSwingState(this, blackboard);
         AttackState     = new PlayerAttackState(this, blackboard);
@@ -90,7 +94,7 @@ public sealed class PlayerCharacter : CharacterBase
         blackboard.InputDirection = directionToMove;
     }
 
-    private void OnChangeZDirection(CharacterMovementController.ZAxisMovementDirection directionToMove)
+    private void OnChangeZDirection(ZAxisMovementDirection directionToMove)
     {
         blackboard.Input_ChangeZDirection?.Invoke(directionToMove);
     }
@@ -119,8 +123,6 @@ public sealed class PlayerCharacter : CharacterBase
     
     private void OnInteract() 
     {
-        if (MovementController.IsMovingOnZAxis) return;
-
         Interactor.FindAndInteractWithinRange(info.InteractionRange);
     }
 
@@ -168,5 +170,24 @@ public sealed class PlayerCharacter : CharacterBase
     public override PlayerCharacter AsPlayer()
     {
         return this;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag(Tag.Green))
+        {
+            OnGreen = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag(Tag.Green))
+        {
+            OnGreen = false;
+
+            blackboard.InputZDirection = ZAxisMovementDirection.Up;
+            ChangeState(ZAxisMoveState);
+        }
     }
 }

@@ -13,7 +13,7 @@ public class PlayerMoveState : PlayerStateBase
 
         // Add listeners.
         blackBoard.Input_ChangeDirection += OnChangeDirection;
-        blackBoard.Input_ChangeZDirection += OnChangeZDirection;
+        blackBoard.Input_ChangeZDirection += SwitchToZAxisMovement;
         blackBoard.Input_OnJump += SwithToJumpState;
         blackBoard.Input_MouseDown += SwitchToAttackState;
         
@@ -46,7 +46,7 @@ public class PlayerMoveState : PlayerStateBase
 
         // Remove listeners.
         blackBoard.Input_ChangeDirection -= OnChangeDirection;
-        blackBoard.Input_ChangeZDirection -= OnChangeZDirection;
+        blackBoard.Input_ChangeZDirection -= SwitchToZAxisMovement;
         blackBoard.Input_OnJump -= SwithToJumpState;
         blackBoard.Input_MouseDown -= SwitchToAttackState;
     }
@@ -54,11 +54,6 @@ public class PlayerMoveState : PlayerStateBase
     private void OnChangeDirection(MovementDirection newDirection)
     {
         player.MovementController.StopAndChangeDirection(newDirection);
-    }
-
-    private void OnChangeZDirection(CharacterMovementController.ZAxisMovementDirection direction)
-    {
-        player.MovementController.MoveOnZAxis(direction);
     }
 
     private void HandleMovement()
@@ -79,14 +74,6 @@ public class PlayerMoveState : PlayerStateBase
     private void HandleAnimation()
     {
         var param_MoveSpeed = AnimationController.Parameter.MoveSpeed;
-
-        if(player.MovementController.IsMovingOnZAxis)
-        {
-            var speedZ = Math.Abs(player.MovementController.Velocity.z);
-            player.AnimationController.SetFloat(param_MoveSpeed, speedZ);
-            return;
-        }
-
         var speedX = Math.Abs(player.MovementController.Velocity.x);
         speedX = blackBoard.InputDirection == MovementDirection.None ? 0 : speedX;
         player.AnimationController.SetFloat(param_MoveSpeed, speedX);
@@ -95,15 +82,21 @@ public class PlayerMoveState : PlayerStateBase
     private void SwithToJumpState()
     {
         if (!player.MovementController.IsGrounded) return;
-        if (player.MovementController.IsMovingOnZAxis) return;
 
         player.ChangeState(player.JumpState);
     }
 
     private void SwitchToAttackState()
     {
-        if (player.MovementController.IsMovingOnZAxis) return;
-
         player.ChangeState(player.AttackState);
+    }
+
+    private void SwitchToZAxisMovement(ZAxisMovementDirection direction)
+    {
+        if (!player.OnGreen) return;
+        if (player.MovementController.FacingDirection == MovementDirection.None) return;
+        
+        blackBoard.InputZDirection = direction;
+        player.ChangeState(player.ZAxisMoveState);
     }
 }

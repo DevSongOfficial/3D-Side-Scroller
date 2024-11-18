@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using static AnimationController;
+
+public enum ZAxisMovementDirection { Down = -1 /* 180 */, Up = 1 /* 0 */ }
 
 // This class manages Characters' Velocity and Direction(Rotation).
 [RequireComponent(typeof(CharacterController))]
@@ -30,14 +33,13 @@ public sealed class CharacterMovementController : MovementController
     {
         controller.Move(Velocity * Time.fixedDeltaTime);
 
+        // Freeze z position.
         if (IsMovingOnZAxis) return;
         transform.position = new Vector3(transform.position.x, transform.position.y, CurrentZAxis.GetPositionZ());
     }
 
     public override void ChangeMovementDirection(MovementDirection newDirection, Space space = Space.World, bool smoothRotation = true)
     {
-        if (IsMovingOnZAxis) return;
-
         base.ChangeMovementDirection(newDirection, space, smoothRotation);
     }
 
@@ -92,14 +94,13 @@ public sealed class CharacterMovementController : MovementController
 
 
     // (Testing)
-    // Walking forward and backward.
-    public enum ZAxisMovementDirection { Down = -1 /* 180 */, Up = 1 /* 0 */ }
+    // Walking forward and backward on z-axis.
     public ZAxisMovementDirection CurrentZAxis { get; private set; } = ZAxisMovementDirection.Up;
+    public event Action OnZMovementEnded;
 
-    public void MoveOnZAxis(ZAxisMovementDirection newDirection, Space space = Space.World)
+    public bool MoveOnZAxis(ZAxisMovementDirection newDirection, Space space = Space.World)
     {
-        if (CurrentZAxis == newDirection) return;
-
+        if (CurrentZAxis == newDirection) return false;
         CurrentZAxis = newDirection;
 
         if (directionChangeCoroutine != null)
@@ -109,6 +110,7 @@ public sealed class CharacterMovementController : MovementController
         }
 
         directionChangeCoroutine = StartCoroutine(MoveOnZAxisRoutine(CurrentZAxis, space));
+        return true;
     }
 
     private Coroutine directionChangeCoroutine;
@@ -116,7 +118,7 @@ public sealed class CharacterMovementController : MovementController
     {
         IsMovingOnZAxis = true;
 
-        float tolerance = 20f;
+        float tolerance = 10f;
 
         // Change direction.
         while (true)
@@ -195,5 +197,6 @@ public sealed class CharacterMovementController : MovementController
         }
 
         directionChangeCoroutine = null;
+        OnZMovementEnded?.Invoke();
     }
 }
