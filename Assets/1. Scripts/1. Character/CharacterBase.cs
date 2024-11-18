@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Networking;
 using static AnimationController;
@@ -34,6 +36,11 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
     [Header("Character Information")]
     [SerializeField] protected ObjectInfo info;
     public virtual ObjectInfo Info => info;
+
+    // Character Location
+    public bool OnGreen { get; protected set; }
+    public bool InWater { get; protected set; }
+
 
     // VFX
     public ShaderFX AuraVFX { get; private set; }
@@ -94,6 +101,34 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
     {
         var distance = Vector3.Distance(transform.position, targetCharacter.transform.position);
         return distance <= range;
+    }
+
+    protected virtual void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag(Tag.Green))
+        {
+            OnGreen = true;
+        }
+
+        if (other.CompareTag(Tag.Water))
+        {
+            MovementController.SetVelocityMultiplier(0.6f);
+            InWater = true;
+        }
+    }
+
+    protected virtual void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag(Tag.Green))
+        {
+            OnGreen = false;
+        }
+
+        if (other.CompareTag(Tag.Water))
+        {
+            MovementController.SetVelocityMultiplier(1);
+            InWater = false;
+        }
     }
 
     // Downcast for CharacterBase-Derived objects that are being upcast

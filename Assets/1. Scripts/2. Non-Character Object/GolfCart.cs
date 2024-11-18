@@ -135,4 +135,20 @@ public class GolfCart : MonoBehaviour, IInteractable
         carryingItem = pickupable;
         carryingItem?.OnPickedUp(carryPoint);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag(Tag.Water))
+        {
+            movementController.SetVelocityMultiplier(0.6f);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag(Tag.Water))
+        {
+            movementController.SetVelocityMultiplier(1);
+        }
+    }
 }

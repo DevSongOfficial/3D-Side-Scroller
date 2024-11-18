@@ -6,8 +6,6 @@ public sealed class PlayerCharacter : CharacterBase
     // Player Info
     public new PlayerInfo Info => info.AsPlayerInfo();
 
-    public bool OnGreen { get; private set; }
-
     // States
     // Must excute the contructor in Awake() after declaring new state here.
     public StateBase MoveState      { get; private set; } // Player Walk & Jump & Idle.
@@ -172,20 +170,12 @@ public sealed class PlayerCharacter : CharacterBase
         return this;
     }
 
-    private void OnTriggerEnter(Collider other)
+    protected override void OnTriggerExit(Collider other)
     {
+        base.OnTriggerExit(other);
+
         if (other.CompareTag(Tag.Green))
         {
-            OnGreen = true;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag(Tag.Green))
-        {
-            OnGreen = false;
-
             blackboard.InputZDirection = ZAxisMovementDirection.Up;
             ChangeState(ZAxisMoveState);
         }

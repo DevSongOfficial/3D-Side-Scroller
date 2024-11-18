@@ -31,12 +31,14 @@ public sealed class CharacterMovementController : MovementController
 
     protected override void Move()
     {
-        controller.Move(Velocity * Time.fixedDeltaTime);
+        controller.Move(Velocity * VelocityMultiplier * Time.fixedDeltaTime);
 
         // Freeze z position.
         if (IsMovingOnZAxis) return;
         transform.position = new Vector3(transform.position.x, transform.position.y, CurrentZAxis.GetPositionZ());
     }
+
+
 
     public override void ChangeMovementDirection(MovementDirection newDirection, Space space = Space.World, bool smoothRotation = true)
     {

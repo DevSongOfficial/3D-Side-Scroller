@@ -18,7 +18,6 @@ public class PlayerInfo : ObjectInfo
     [Header("Swing")]
     [SerializeField] private Vector3 localPosition_Swing;
 
-
     public int JumpPower => jumpPower;
     public int Mass => mass;
 

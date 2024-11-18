@@ -8,6 +8,29 @@ public abstract class MovementController : MonoBehaviour
 {
     public Vector3 Velocity => velocity;
     protected Vector3 velocity;
+    
+    // todo: refactor these temporary codes. 
+    protected float VelocityMultiplier { get; private set; } = 1;
+    public void SetVelocityMultiplier(float multiplier)
+    {
+        if(velocityChangeCoroutine != null) StopCoroutine(velocityChangeCoroutine);
+        velocityChangeCoroutine = StartCoroutine(SmoothChangeToTargetMultiplier(multiplier));
+    }
+
+    private Coroutine velocityChangeCoroutine;
+    private IEnumerator SmoothChangeToTargetMultiplier(float targetMultiplier)
+    {
+        float changeRate = Time.fixedDeltaTime;
+
+        while (!Mathf.Approximately(VelocityMultiplier, targetMultiplier))
+        {
+            VelocityMultiplier = Mathf.MoveTowards(VelocityMultiplier, targetMultiplier, changeRate);
+            yield return new WaitForFixedUpdate();
+        }
+
+        VelocityMultiplier = targetMultiplier;
+        velocityChangeCoroutine = null;
+    }
 
     public abstract bool IsGrounded { get; }
 

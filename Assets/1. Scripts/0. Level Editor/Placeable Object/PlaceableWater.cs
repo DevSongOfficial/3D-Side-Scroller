@@ -5,6 +5,32 @@ using static GameSystem;
 
 public sealed class PlaceableWater : PlaceableGround
 {
+    // This is a 45-degree dirt half-block.
+    // Last water blocks at the border of other grounds have this as a child.
+    private GameObject edgeBlock;
+    private GameObject CreateEdgeBlock()
+    {
+        var prefab = AssetManager.GetPrefab(Prefab.General.PG_Uphill_1).transform.GetChild(0).gameObject;
+        return edgeBlock = Instantiate(prefab, transform);
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+
+        // This is going to be overlapped with other blocks so should be a bit smaller.
+        ActualObject.localScale = new Vector3(0.99f, 1, 0.99f);
+    }
+
+    protected override void LateUpdate()
+    {
+        if (isEditorMode)
+        {
+            ActualObject.position = transform.position;
+            ActualObject.rotation = transform.rotation;
+        }
+    }
+
     private void HandleWaterMerge(bool isOn)
     {
         if (isOn)   SplitAndShrinkWaterBlocksInARow();
@@ -22,26 +48,25 @@ public sealed class PlaceableWater : PlaceableGround
         Strech(blockCount);
     }
 
-    private void Strech(int size)
-    {
-        int x = Position.x + (size - 1) / 2;
-
-        ActualObject.transform.position = new Vector3(x, Position.y);
-        ActualObject.transform.localScale = new Vector3(4, 1, size);
-    }
-
     private void SplitAndShrinkWaterBlocksInARow()
     {
         if (!IsTheLeftmostWaterBlock()) return;
-
-        int blockCount = ToggleNextWaterBlockActivation(isOn: true);
-        Shrink(blockCount);
+        ToggleNextWaterBlockActivation(isOn: true);
+        Shrink();
     }
 
-    private void Shrink(int size)
+    private void Strech(int size)
+    {
+        float x = Position.x + (size - 1) * 0.5f;
+
+        ActualObject.transform.position = new Vector3(x, Position.y);
+        ActualObject.transform.localScale = new Vector3(3.99f, 1, size);
+    }
+
+    private void Shrink()
     {
         ActualObject.transform.position = new Vector3(Position.x, Position.y);
-        ActualObject.transform.localScale = new Vector3(4, 1, 1);
+        ActualObject.transform.localScale = new Vector3(3.99f, 1, 0.99f);
     }
 
     // Return: the number of water blocks.
@@ -62,11 +87,24 @@ public sealed class PlaceableWater : PlaceableGround
         return !isWaterOnTheLeft;
     }
 
+    int rotationCount = 0;
+    public override void InverseRotation()
+    {
+        if(edgeBlock == null) CreateEdgeBlock();
+
+        rotationCount++;
+        edgeBlock.SetActive(rotationCount < 3);
+        
+        if(rotationCount >= 3)
+            rotationCount = 0;
+
+        base.InverseRotation();
+    }
+
     public override PlaceableWater AsWater()
     {
         return this;
     }
-
 
     protected override void OnEnable()
     {
@@ -76,6 +114,7 @@ public sealed class PlaceableWater : PlaceableGround
 
     protected override void OnDisable()
     {
+        base.OnDisable();
         LevelEditorManager.OnEditorModeToggled -= HandleWaterMerge;
     }
 }

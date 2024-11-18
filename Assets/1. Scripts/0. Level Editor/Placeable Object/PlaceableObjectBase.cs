@@ -135,10 +135,9 @@ public abstract class PlaceableObjectBase : MonoBehaviour
         }
         else
         {
-            transform.position    = ActualObject.position;
+            transform.position = ActualObject.position;
             transform.eulerAngles = ActualObject.eulerAngles;
         }
-
     }
 
     public virtual void InverseRotation()
