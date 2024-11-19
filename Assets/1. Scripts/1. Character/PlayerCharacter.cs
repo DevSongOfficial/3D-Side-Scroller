@@ -6,6 +6,11 @@ public sealed class PlayerCharacter : CharacterBase
     // Player Info
     public new PlayerInfo Info => info.AsPlayerInfo();
 
+    // Golf Stroke
+    public byte StrokeCount { get; private set; } = 0;
+    public void IncrementStroke() => StrokeCount++;
+    public void IntializeStroke() => StrokeCount = 0;
+
     // States
     // Must excute the contructor in Awake() after declaring new state here.
     public StateBase MoveState      { get; private set; } // Player Walk & Jump & Idle.
@@ -30,7 +35,7 @@ public sealed class PlayerCharacter : CharacterBase
     {
         base.Awake();
 
-        // Initialize Inputs
+        // Initialize inputs.
         GameManager.Input_OnChangeDirection     += OnChangeDirection;
         GameManager.Input_OnChangeZDirection    += OnChangeZDirection;
         GameManager.Input_OnJump                += OnJump;
@@ -40,7 +45,7 @@ public sealed class PlayerCharacter : CharacterBase
         GameManager.Input_OnSwitchClub          += OnSwitchClub;
         GameManager.Input_OnTogglePickup        += OnTogglePickup;
 
-        // Initialize behaviour states
+        // Initialize behaviour states.
         blackboard      = new PlayerBlackboard();
         MoveState       = new PlayerMoveState(this, blackboard);
         ZAxisMoveState  = new PlayerMoveOnZAxisState(this, blackboard);
@@ -49,14 +54,17 @@ public sealed class PlayerCharacter : CharacterBase
         AttackState     = new PlayerAttackState(this, blackboard);
         OnVehiclState   = new PlayerOnVehicleState(this, blackboard);
 
-        // Initialize Interactor
+        // Initialize Interactor.
         Interactor.AddGolfer(itemHolder_1)
                   .AddCarrier(itemHolder_2)
                   .AddDriver();
         Interactor.AsDriver.OnEnterVehicle += () => ChangeState(OnVehiclState);
         Interactor.AsDriver.OnExitVehicle  += () => ChangeState(MoveState);
 
-        StageMaker.OnLoadComplete += Reposition;
+        // Initialize stroke count.
+        GameManager.OnGameStart     += IntializeStroke;
+        GameManager.OnGameStart     += Reposition;
+        StageMaker.OnLoadComplete   += Reposition;
     }
 
     protected override void Start()
@@ -157,12 +165,12 @@ public sealed class PlayerCharacter : CharacterBase
     // Transfer player to a spawnpoint.
     private void Reposition()
     {
-        var po = FindObjectOfType<PlaceableSpawnPoint>();
-        if (po == null) return;
+        if (GameManager.SpawnPoint == null) return;
 
-        var newPosition = po.transform.position;
+        var newPosition = GameManager.SpawnPoint.GetPosition();
         MovementController.SetPosition(newPosition);
         MovementController.ChangeMovementDirection(MovementDirection.Right);
+        MovementController.SetVelocityMultiplier(1);
     }
 
     public override PlayerCharacter AsPlayer()

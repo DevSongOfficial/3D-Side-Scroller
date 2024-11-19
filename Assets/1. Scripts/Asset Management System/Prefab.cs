@@ -25,9 +25,11 @@ public struct Prefab {
 		PG_Uphill_4,
 		PG_Uphill_5,
 		PG_Water,
+		PG_WaterEdge,
 		PP_GolfBag,
 		PP_GolfBall,
 		PP_GolfCart,
+		PP_Placard,
 	}
 	public enum UI {
 		DamageText,

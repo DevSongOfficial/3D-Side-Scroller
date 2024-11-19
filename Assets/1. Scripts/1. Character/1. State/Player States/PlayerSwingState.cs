@@ -105,8 +105,8 @@ public class PlayerSwingState : PlayerStateBase
             {
                 currentFrame = MaxFrameOnBackSwing;
                 powerCharged += player.Interactor.AsGolfer.CurrentClub.ChargeSpeed * Time.fixedDeltaTime;
-                UIManager.PopupUI(UIManager.GetUI.Image_SwingChargeIndicator);
-                UIManager.FillImage(UIManager.GetUI.Image_SwingChargeIndicator, powerCharged / powerMaximum);
+                UIManager.PopupUI(UIManager.UI.Image_SwingChargeIndicator);
+                UIManager.FillImage(UIManager.UI.Image_SwingChargeIndicator, powerCharged / powerMaximum);
             }
 
             PlaySwingAnimation(currentFrame);
@@ -134,7 +134,7 @@ public class PlayerSwingState : PlayerStateBase
 
         powerCharged++;
 
-        UIManager.CloseUI(UIManager.GetUI.Image_SwingChargeIndicator);
+        UIManager.CloseUI(UIManager.UI.Image_SwingChargeIndicator);
 
         player.StopCoroutine(backSwingCoroutine);
         downSwingCoroutine = player.StartCoroutine(DownSwingRoutine());

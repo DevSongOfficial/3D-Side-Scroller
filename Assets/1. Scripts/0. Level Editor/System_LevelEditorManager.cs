@@ -45,11 +45,6 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         PlaceableObjectBase.OnObjectCreatedFromButton += delegate { SetPlayMode(PlayMode.Placing); };
     }
 
-    private void Start()
-    {
-        SetPlayMode(PlayMode.Playing);
-    }
-
     // Main routine for the Level Editor
     private void Update()
     {
@@ -103,7 +98,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         if (Input.GetKeyDown(switchMode))
         {
             if (Mode == PlayMode.Playing) SetPlayMode(PlayMode.Editing);
-            else if (Mode == PlayMode.Editing) SetPlayMode(PlayMode.Playing);
+            else if (Mode == PlayMode.Editing) GameManager.GameStart();
         }
     }
 

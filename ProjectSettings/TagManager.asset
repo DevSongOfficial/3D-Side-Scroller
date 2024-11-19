@@ -12,6 +12,7 @@ TagManager:
   - Grass
   - Sand
   - Water
+  - EditorCamera
   layers:
   - Default
   - TransparentFX

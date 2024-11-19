@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using static GameSystem;
 
@@ -151,7 +152,7 @@ public abstract class PlaceableObjectBase : MonoBehaviour
 
         if (isOn)
         {
-            if (actualObject_rigidBody != null) actualObject_IsKinematic = actualObject_rigidBody.isKinematic;
+            if (actualObject_rigidBody != null) actualObject_rigidBody.isKinematic = true;
         }
         else
         {

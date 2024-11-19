@@ -1,9 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static GameSystem;
 
 public enum PopupType
 {
@@ -13,20 +12,18 @@ public enum PopupType
 [RequireComponent(typeof(UI))]
 public class System_UIManager : MonoBehaviour
 {
-    public UI GetUI => instance_UI;
+    public UI UI => instance_UI;
     private UI instance_UI;
     public Canvas Canvas { get; private set; }
 
     private List<MaskableGraphic> UIs_MoveAndFadeOut = new List<MaskableGraphic>();
 
-    public Vector3 floatingPosition => Camera.main.WorldToScreenPoint(playerTransform.position);
-    private Transform playerTransform;
+    public Vector3 floatingPosition => Camera.main.WorldToScreenPoint(GameManager.Player.transform.position);
 
     private void Awake()
     {
         Canvas = GetComponent<Canvas>();
         instance_UI = GetComponent<UI>();
-        playerTransform = FindObjectOfType<PlayerCharacter>().transform;
     }
 
     private void FixedUpdate()
@@ -52,7 +49,7 @@ public class System_UIManager : MonoBehaviour
 
     private void UpdateFloatingUIPositions()
     {
-        GetUI.Group_FloatingAbovePlayer.transform.position = floatingPosition;
+        UI.Group_FloatingAbovePlayer.transform.position = floatingPosition;
     }
 
     public void PopupUI(MaskableGraphic graphic)
@@ -77,6 +74,8 @@ public class System_UIManager : MonoBehaviour
     {
         text.text = s;
     }
+
+    public void SetText(Text text, string s) { text.text = s; }
 
     public void FillImage(Image image, float fillAmount /* 0 ~ 1 */)
     {

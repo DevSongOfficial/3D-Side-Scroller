@@ -69,10 +69,16 @@ public class System_SaveManager : MonoBehaviour
 public class SaveDataHandler
 {
     public List<SerializedPrefabData> prefabDatas = new List<SerializedPrefabData>();
+    public SerializedGameData gameData;
 
-    public void Add(Prefab.General type, Vector3 position, Vector3 eulerAngles)
+    public void AddPrefab(Prefab.General type, Vector3 position, Vector3 eulerAngles)
     {
         prefabDatas.Add(new SerializedPrefabData(type, position, eulerAngles));
+    }
+
+    public void AddGameData(byte par)
+    {
+        gameData = new SerializedGameData(par);
     }
 }
 
@@ -88,6 +94,17 @@ public class SerializedPrefabData
         this.type = type;
         this.position = new SerializedVector3(position);
         this.eulerAngles = new SerializedVector3(eulerAngles);
+    }
+}
+
+[Serializable]
+public class SerializedGameData
+{
+    public byte par;
+
+    public SerializedGameData(byte par)
+    {
+        this.par = par;
     }
 }
 

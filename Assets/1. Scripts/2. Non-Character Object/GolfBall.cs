@@ -15,7 +15,9 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
     private const float knockBackMultiplier = 35;
     private const float torqueMultiplier    = 1000;
 
-    public static bool OnGreen { get; private set; }
+    public event Action OnHit;
+
+    public bool OnGreen { get; private set; }
 
     public struct Drag
     {
@@ -66,6 +68,8 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
         if(damageEvent.knockBackVelocity.y < 1) particleInfo.lifeTime = 0;
         var effect = FXManager.CreateParticleFX(Prefab.VFX.Dirt, null, particleInfo);
         effect.transform.position = new Vector3(transform.position.x, collider.bounds.min.y, transform.position.z);
+
+        OnHit?.Invoke();
     }
 
     private const float velocityThreshold = 0.025f;
@@ -75,22 +79,22 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
     {
         if (FXManager.IsSlowMotioning)
         {
-            UIManager.CloseUI(UIManager.GetUI.RawImage_ProbCameraOutput);
+            UIManager.CloseUI(UIManager.UI.RawImage_ProbCameraOutput);
             return;
         }
 
         // Handle height text.
-        UIManager.SetText(UIManager.GetUI.Text_ballHeight, $"{Math.Truncate(rigidBody.velocity.magnitude * 100) / 100}m/s");
+        UIManager.SetText(UIManager.UI.Text_ballHeight, $"{Math.Truncate(rigidBody.velocity.magnitude * 100) / 100}m/s");
 
         // Handle rendered image visibility.
         if (rigidBody.velocity.magnitude > velocityThreshold)
         {
-            UIManager.PopupUI(UIManager.GetUI.RawImage_ProbCameraOutput);
+            UIManager.PopupUI(UIManager.UI.RawImage_ProbCameraOutput);
             visibilityTimeLeft = visibilityTimer;
         }
         else if (visibilityTimeLeft <= 0)
         {
-            UIManager.CloseUI(UIManager.GetUI.RawImage_ProbCameraOutput);
+            UIManager.CloseUI(UIManager.UI.RawImage_ProbCameraOutput);
         }
         else
         {

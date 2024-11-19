@@ -1,4 +1,4 @@
-using Firebase.Extensions;
+/*using Firebase.Extensions;
 using Firebase.Storage;
 using System.IO;
 using System.Threading.Tasks;
@@ -23,7 +23,7 @@ public class System_CloudManager : MonoBehaviour
         // File located on disk
         string localFile = Path.Combine(Application.persistentDataPath, nameInLocalRepository);
 
-        // Upload the file to the path "images/rivers.jpg"
+        // Upload the file to the path.
         storageRef.PutFileAsync(localFile)
             .ContinueWith((Task<StorageMetadata> task) => {
                 if (task.IsFaulted || task.IsCanceled)
@@ -58,3 +58,4 @@ public class System_CloudManager : MonoBehaviour
         });
     }
 }
+*/

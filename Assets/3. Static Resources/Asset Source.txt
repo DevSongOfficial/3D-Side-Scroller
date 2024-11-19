@@ -2,18 +2,20 @@ Mixamo
 모든 캐릭터 모델 및 애니메이션
 
 Sketchfab 
-https://skfb.ly/o9JsJ (CC) 골프 가방
-https://skfb.ly/o9C7G (CC) 골프채(퍼터)
-https://skfb.ly/6ARt8 (CC) 골프채(아이언)
 https://skfb.ly/oSFvv (Free Standard) 골프채(드라이버)
+"Golf Bag" (https://skfb.ly/o9JsJ) by mikethornley is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/)."Golf Clubs" (https://skfb.ly/o9C7G) by MrPuppet is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+"Golf Club And Ball" (https://skfb.ly/6ARt8) by Yanez Designs is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+"Stylized wood signs" (https://skfb.ly/o9uLn) by Pasindu.Anjana is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 
 Unity Asset Store
 Free HDR Sky by ProAssets
 Startfield Skybox by Pulsar Bytes
 Vegetation Stylized Pack By Lux Art Studios (저작권자 명시)
 
+
 Free 3D
 https://free3d.com/3d-model/golf-cart-12152.html 골프 카트 - storque12 (개인 사용 라이센스)
 
-눈누
-이서윤체.ttf
+Font
+이서윤체.ttf 
+Merienda Designed by Eduardo Tunni

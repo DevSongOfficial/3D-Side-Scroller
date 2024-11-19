@@ -55,7 +55,7 @@ public class GolfBag : MonoBehaviour, IInteractable, IPickupable
     {
         interactor.AsGolfer.OnClubSwitched += SwitchToNextClub;
 
-        UIManager.PopupUI(UIManager.GetUI.Panel_ClubSelection);
+        UIManager.PopupUI(UIManager.UI.Panel_ClubSelection);
     }
 
     protected virtual void CloseTheBag() 
@@ -63,7 +63,7 @@ public class GolfBag : MonoBehaviour, IInteractable, IPickupable
         interactor.AsGolfer.OnClubSwitched -= SwitchToNextClub;
         interactor = null;
 
-        UIManager.CloseUI(UIManager.GetUI.Panel_ClubSelection);
+        UIManager.CloseUI(UIManager.UI.Panel_ClubSelection);
     }
 
     private void SwitchToNextClub()

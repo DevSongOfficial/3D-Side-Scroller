@@ -6,15 +6,19 @@ using static GameSystem;
 
 public enum Layer
 {
-    Default = 0,
-    Environment = 7,
-    Character = 8,
-    Ground = 9,
-    Wall = 10,
-    TriggerArea = 14,
-    Placeable = 20,
-    Damageable = 24,
-    Interactable = 25,
+    Default         = 0,
+    
+    Environment     = 7,
+    Character       = 8,
+    Ground          = 9,
+    Wall            = 10,
+
+    TriggerArea     = 14,
+
+    Placeable       = 20,
+    Damageable      = 24,
+    Interactable    = 25,
+    
     RaycastBlockerForLevelEditor = 31,
 }
 
@@ -23,7 +27,32 @@ public enum Tag
     Untagged, Player, Enemy, Prob, HoleCup, 
 
     // Ground Types
-    Green, Dirt, Grass, Sand, Water
+    Green, Dirt, Grass, Sand, Water,
+
+    // Cameras
+    MainCamera, EditorCamera,
+}
+
+public enum ScoreType
+{
+    InComplete    = -99, // Player hasn't completed this stage.
+
+    HoleInOne    = -10,
+
+    Phoenix      = -6,
+    Ostritch     = -5,
+    Condor       = -4,
+    Albatross    = -3,
+    Eagle        = -2,
+    Birdie       = -1,
+    Par              = 0,
+    Bogey               = 1,
+    DoubleBogey         = 2,
+    TripleBogey         = 3,
+    QuadrupleBogey      = 4,
+    QuintupleBogey      = 5,
+    SextupleBogey       = 6,
+    SeptupleBogey       = 7,
 }
 
 public sealed class System_GameManager : MonoBehaviour
@@ -35,9 +64,9 @@ public sealed class System_GameManager : MonoBehaviour
         SceneManager.LoadScene(0); // Load main menu.
     }
 
-
     private void Awake()
     {
+        Player = FindObjectOfType<PlayerCharacter>();
         input = GetComponent<PlayerInput>();
         LevelEditorManager.OnEditorModeToggled += (bool enable) => ToggleInput(!enable);
     }
@@ -123,13 +152,46 @@ public sealed class System_GameManager : MonoBehaviour
     #endregion
 
 
-    public event Action OnGreen;
-    public event Action OnExitGreen;
+    // Singleton objects that must be required to start a stage.
+    public PlayerCharacter Player { get; private set; }
+    public GolfBall GolfBall { get; private set; }
+    public PlaceableSpawnPoint SpawnPoint { get; private set; }
+    private Placard placard;
+
+    public void SetPar(byte par) => Par = par;
+    public byte Par { get; private set; }
+
+    public event Action OnGameStart;
     public event Action OnGameFinished;
+    public void GameStart()
+    {
+        // Get reference to singleton objects.
+        GolfBall    = FindObjectOfType<GolfBall>();
+        SpawnPoint  = FindObjectOfType<PlaceableSpawnPoint>();
+        placard     = FindObjectOfType<Placard>();
+
+        if (GolfBall == null || SpawnPoint == null || placard == null) return;
+
+        GolfBall.OnHit += Player.IncrementStroke;
+
+        LevelEditorManager.SetPlayMode(PlayMode.Playing);
+
+        OnGameStart?.Invoke();
+    }
     public void BallInTheCup()
     {
         OnGameFinished?.Invoke();
+
+        // Calculate the round result of this stage.
+        int score = Player.StrokeCount - Par;
+        ScoreType scoreType = Player.StrokeCount == 1 ?  ScoreType.HoleInOne : (ScoreType)score;
+
+        UIManager.PopupUI(UIManager.UI.Panel_StageClear);
+        UIManager.SetText(UIManager.UI.Text_StageClear, scoreType.ToString());
     }
+
+    public event Action OnGreen;
+    public event Action OnExitGreen;
     public void BallOnTheGreen()
     {
         OnGreen?.Invoke();

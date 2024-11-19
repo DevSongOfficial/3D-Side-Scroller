@@ -5,15 +5,6 @@ using static GameSystem;
 
 public sealed class PlaceableWater : PlaceableGround
 {
-    // This is a 45-degree dirt half-block.
-    // Last water blocks at the border of other grounds have this as a child.
-    private GameObject edgeBlock;
-    private GameObject CreateEdgeBlock()
-    {
-        var prefab = AssetManager.GetPrefab(Prefab.General.PG_Uphill_1).transform.GetChild(0).gameObject;
-        return edgeBlock = Instantiate(prefab, transform);
-    }
-
     protected override void Start()
     {
         base.Start();
@@ -85,20 +76,6 @@ public sealed class PlaceableWater : PlaceableGround
         var leftPosition = new Vector2Int(Position.x + (int)MovementDirection.Left, Position.y);
         bool isWaterOnTheLeft = tile.ContainsKey(leftPosition) && tile[leftPosition].AsWater();
         return !isWaterOnTheLeft;
-    }
-
-    int rotationCount = 0;
-    public override void InverseRotation()
-    {
-        if(edgeBlock == null) CreateEdgeBlock();
-
-        rotationCount++;
-        edgeBlock.SetActive(rotationCount < 3);
-        
-        if(rotationCount >= 3)
-            rotationCount = 0;
-
-        base.InverseRotation();
     }
 
     public override PlaceableWater AsWater()

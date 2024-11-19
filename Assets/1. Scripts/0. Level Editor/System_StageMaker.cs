@@ -11,9 +11,14 @@ public class System_StageMaker : MonoBehaviour
     public void SaveStage(int indexToSave)
     {
         SaveDataHandler dataHandler = new SaveDataHandler();
+
+        // Handle game data.
+        dataHandler.AddGameData(par: GameManager.Par);
+
+        // Handle prefab datas.
         foreach (var placeableObject in PlaceableObjectBase.PlaceableObjectsInTheScene)
         {
-            dataHandler.Add(placeableObject.Type, placeableObject.transform.position, placeableObject.transform.eulerAngles);
+            dataHandler.AddPrefab(placeableObject.Type, placeableObject.transform.position, placeableObject.transform.eulerAngles);
         }
         var data = JsonUtility.ToJson(dataHandler);
         SaveManager.SaveData(data, indexToSave);
@@ -28,10 +33,12 @@ public class System_StageMaker : MonoBehaviour
 
         SaveDataHandler dataHandler = JsonUtility.FromJson<SaveDataHandler>(data);
 
+        // Handle game data.
+        GameManager.SetPar(dataHandler.gameData.par);
+
+        // Handle prefab datas.
         LevelEditorManager.RemoveEveryRegisterdObject();
-
         PlaceableObjectBase.ClearTile();
-
         foreach (var prefab in dataHandler.prefabDatas)
         {
             var placeableObject = AssetManager.GetPrefab(prefab.type).GetComponent<PlaceableObjectBase>().CreatePlaceableObject();
