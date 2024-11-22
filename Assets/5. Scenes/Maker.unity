@@ -518,7 +518,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &388989840
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4269,6 +4269,7 @@ GameObject:
   - component: {fileID: 6289760386618149419}
   - component: {fileID: 449918034981532497}
   - component: {fileID: 5168848609361551485}
+  - component: {fileID: 6289760386618149420}
   m_Layer: 0
   m_Name: Game System
   m_TagString: Untagged
@@ -4354,6 +4355,19 @@ MonoBehaviour:
   cinemachineBrain: {fileID: 4782479680249010460}
   camera_Green: {fileID: 565534782}
   camera_GolfBall: {fileID: 100532209}
+--- !u!114 &6289760386618149420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6189021878019853439}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5434b1d21edbaeb4c83056ae53e622bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlaceableObjectsInTheScene: []
 --- !u!1 &6411534801059410933
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,6 +19,6 @@ public class ObjectSelectionButton : MonoBehaviour
     {
         Prefab = prefab;
         text.text = Prefab.DisplayName;
-        Button.onClick.AddListener(Prefab.CreateIfSelectedPleaceableObject);
+        Button.onClick.AddListener(Prefab.OnCreatedFromButton);
     }
 }

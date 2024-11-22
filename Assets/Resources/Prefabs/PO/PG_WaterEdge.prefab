@@ -180,8 +180,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Water Edge
   fixedZPosition: 0
+  disableRotation: 1
   isSingleton: 0
-  disableRotation: 0
   size: {x: 1, y: 1}
 --- !u!1 &6802241426489550962
 GameObject:

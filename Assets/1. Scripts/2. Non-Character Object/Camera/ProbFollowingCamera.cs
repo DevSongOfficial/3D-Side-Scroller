@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using static GameSystem;
 
 [RequireComponent(typeof(Camera))]
 public class ProbFollowingCamera : MonoBehaviour
@@ -7,7 +9,7 @@ public class ProbFollowingCamera : MonoBehaviour
 
     [Header("Assign prefab here to follow its clone.")]
     [SerializeField] private GameObject probPrefab;
-    private Prefab.General probType;
+    private Prefab.PO probType;
     protected PlaceableProb target;
     private bool hasTarget;
 
@@ -20,15 +22,12 @@ public class ProbFollowingCamera : MonoBehaviour
     protected virtual void Awake()
     {
         Camera = GetComponent<Camera>();
-        probType = probPrefab.GetComponent<PlaceableProb>().Type;
-        
-        PlaceableObjectBase.OnObjectRegistered += SetTarget;
-        PlaceableObjectBase.OnObjectUnregistered += ClearTarget;
-    }
-
-    protected virtual void Start()
-    {
         Camera.depth = priorityOnStart;
+
+        probType = Enum.Parse<Prefab.PO>(probPrefab.name);
+
+        POFactory.OnPORegistered += SetTarget;
+        POFactory.OnPOUnregistered += ClearTarget;
     }
 
     protected virtual void LateUpdate()
@@ -39,7 +38,7 @@ public class ProbFollowingCamera : MonoBehaviour
     protected virtual void SetTarget(PlaceableObjectBase po)
     {
         if (po.Type != probType) return;
-
+ 
         transform.eulerAngles = Vector3.right * (int)angleType;
         target = po as PlaceableProb;
         hasTarget = true;
@@ -63,7 +62,7 @@ public class ProbFollowingCamera : MonoBehaviour
 
     protected virtual void OnDestroy()
     {
-        PlaceableObjectBase.OnObjectRegistered -= SetTarget;
-        PlaceableObjectBase.OnObjectUnregistered -= ClearTarget;
+        POFactory.OnPORegistered -= SetTarget;
+        POFactory.OnPOUnregistered -= ClearTarget;
     }
 }

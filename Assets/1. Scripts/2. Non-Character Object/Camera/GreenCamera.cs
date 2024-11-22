@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using UnityEngine.Rendering;
 using static GameSystem;
 public sealed class GreenCamera : ProbFollowingCamera
 {

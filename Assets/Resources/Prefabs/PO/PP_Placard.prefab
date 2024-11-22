@@ -237,6 +237,7 @@ GameObject:
   - component: {fileID: 1964205980520843488}
   - component: {fileID: 3852580610135667911}
   - component: {fileID: 2805134459347450200}
+  - component: {fileID: -1788779703292043960}
   m_Layer: 20
   m_Name: PP_Placard
   m_TagString: Untagged
@@ -274,7 +275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Placard
   fixedZPosition: 1
-  isSingleton: 1
+  disableRotation: 1
 --- !u!54 &3852580610135667911
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -323,6 +324,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.4875677, y: 1.0127411, z: 1}
   m_Center: {x: -1.252865, y: 1.4803402, z: 0}
+--- !u!114 &-1788779703292043960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4064117160150868708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ac1e203527d114aadfb618c39094b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4146425790247898163
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,7 +1,8 @@
 using System;
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using static GameSystem;
 
 public enum Layer
@@ -57,12 +58,18 @@ public enum ScoreType
 
 public sealed class System_GameManager : MonoBehaviour
 {
-    [ContextMenu("Menu")]
     public void GoToMainMenu()
     {
-        PlaceableObjectBase.UnregisterEveryObject();
-        SceneManager.LoadScene(0); // Load main menu.
+        LoadScene(Scene.Menu);
     }
+
+    public void GoToNextStage()
+    {
+        stageToStart++;
+        LoadScene(Scene.Main);
+    }
+
+    private static byte stageToStart = 3;
 
     private void Awake()
     {
@@ -70,6 +77,14 @@ public sealed class System_GameManager : MonoBehaviour
         input = GetComponent<PlayerInput>();
         LevelEditorManager.OnEditorModeToggled += (bool enable) => ToggleInput(!enable);
     }
+
+    private void Start()
+    {
+        // Load and start the stage.
+        if (IsMakerScene) return;
+        GameStart(stageToStart);
+    }
+
 
     [Header("Map Transform")]
     // Transform where every object being placed at runtime is going be here.
@@ -152,29 +167,55 @@ public sealed class System_GameManager : MonoBehaviour
     #endregion
 
 
-    // Singleton objects that must be required to start a stage.
     public PlayerCharacter Player { get; private set; }
+    
+    // Singleton objects that must be required to start a stage.
     public GolfBall GolfBall { get; private set; }
     public PlaceableSpawnPoint SpawnPoint { get; private set; }
     private Placard placard;
+
+    public void GetReferenceToSingletonObjects()
+    {
+        GolfBall = FindObjectOfType<GolfBall>();
+        SpawnPoint = FindObjectOfType<PlaceableSpawnPoint>();
+        placard = FindObjectOfType<Placard>();
+    }
 
     public void SetPar(byte par) => Par = par;
     public byte Par { get; private set; }
 
     public event Action OnGameStart;
     public event Action OnGameFinished;
-    public void GameStart()
+    public void GameStart(int stage)
+    {
+        StageMaker.LoadStage(stage);
+        StartCoroutine(GameStartRoutine());
+    }
+    private IEnumerator GameStartRoutine()
     {
         // Get reference to singleton objects.
-        GolfBall    = FindObjectOfType<GolfBall>();
-        SpawnPoint  = FindObjectOfType<PlaceableSpawnPoint>();
-        placard     = FindObjectOfType<Placard>();
+        GetReferenceToSingletonObjects();
 
-        if (GolfBall == null || SpawnPoint == null || placard == null) return;
+        if (GolfBall == null || SpawnPoint == null || placard == null)
+        {
+            // Reference error
+            LoadScene(Scene.Menu);
+            yield break;
+        }
 
         GolfBall.OnHit += Player.IncrementStroke;
 
+        // Wait for others to be prepared.
+        yield return new LateUpdate();
+
+        // Initialize objects placed by level editor manager. (No need for further use of level editor in the scene so deactivates it.)
         LevelEditorManager.SetPlayMode(PlayMode.Playing);
+        LevelEditorManager.gameObject.SetActive(false);
+
+        // Initilize UIs.
+        UIManager.CloseUI(UIManager.UI.Panel_StageClear);
+
+        ToggleInput(true);
 
         OnGameStart?.Invoke();
     }
@@ -182,12 +223,15 @@ public sealed class System_GameManager : MonoBehaviour
     {
         OnGameFinished?.Invoke();
 
+        ToggleInput(false);
+
         // Calculate the round result of this stage.
         int score = Player.StrokeCount - Par;
         ScoreType scoreType = Player.StrokeCount == 1 ?  ScoreType.HoleInOne : (ScoreType)score;
 
+        // Show UIs.
         UIManager.PopupUI(UIManager.UI.Panel_StageClear);
-        UIManager.SetText(UIManager.UI.Text_StageClear, scoreType.ToString());
+        UIManager.SetText(UIManager.UI.Text_StageClear, UIManager.AddSpaceBeforeUppercase(scoreType.ToString()));
     }
 
     public event Action OnGreen;

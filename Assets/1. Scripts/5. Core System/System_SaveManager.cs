@@ -71,7 +71,7 @@ public class SaveDataHandler
     public List<SerializedPrefabData> prefabDatas = new List<SerializedPrefabData>();
     public SerializedGameData gameData;
 
-    public void AddPrefab(Prefab.General type, Vector3 position, Vector3 eulerAngles)
+    public void AddPrefab(Prefab.PO type, Vector3 position, Vector3 eulerAngles)
     {
         prefabDatas.Add(new SerializedPrefabData(type, position, eulerAngles));
     }
@@ -85,11 +85,11 @@ public class SaveDataHandler
 [Serializable]
 public class SerializedPrefabData
 {
-    public Prefab.General type;
+    public Prefab.PO type;
     public SerializedVector3 position;
     public SerializedVector3 eulerAngles;
 
-    public SerializedPrefabData(Prefab.General type, Vector3 position, Vector3 eulerAngles)
+    public SerializedPrefabData(Prefab.PO type, Vector3 position, Vector3 eulerAngles)
     {
         this.type = type;
         this.position = new SerializedVector3(position);

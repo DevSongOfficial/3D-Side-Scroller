@@ -4123,6 +4123,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Golf Cart
   fixedZPosition: 0
+  disableRotation: 1
   isSingleton: 0
 --- !u!54 &802571964902566329
 Rigidbody:

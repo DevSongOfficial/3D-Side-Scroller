@@ -1,5 +1,7 @@
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public enum Scene { Menu = 0, Tutorial = 1, Main = 2, Maker = 3 };
 
 public sealed  class GameSystem : MonoBehaviour
 {
@@ -19,7 +21,10 @@ public sealed  class GameSystem : MonoBehaviour
     private static System_LevelEditorManager levelEditorManager;
 
     public static System_StageMaker StageMaker => stageMaker;
-    public static System_StageMaker stageMaker;
+    private static System_StageMaker stageMaker;
+
+    public static Factory_POFactory POFactory => poFactory;
+    private static Factory_POFactory poFactory;
 
     private void Awake()
     {
@@ -28,6 +33,7 @@ public sealed  class GameSystem : MonoBehaviour
         fxManager = FindObjectOfType<System_FXManager>();
         uiManager = FindObjectOfType<System_UIManager>();
         stageMaker = FindObjectOfType<System_StageMaker>();
+        poFactory = FindObjectOfType<Factory_POFactory>();
 
         var levelEditorManagerPrefab = AssetManager.GetPrefab(Prefab.Debugger.System_LevelEditorManager);
         levelEditorManager = Instantiate(levelEditorManagerPrefab, transform).GetComponent<System_LevelEditorManager>();
@@ -36,5 +42,15 @@ public sealed  class GameSystem : MonoBehaviour
     private void Start()
     {
         levelEditorManager.gameObject.SetActive(true);
+    }
+
+    public static Scene CurrentScene { get; private set; }
+    public static bool IsMakerScene => CurrentScene == Scene.Maker;
+    public static void LoadScene(Scene scene)
+    {
+        POFactory?.RemoveEveryRegisterdPO();
+
+        CurrentScene = scene;
+        SceneManager.LoadScene(CurrentScene.ToString());
     }
 }

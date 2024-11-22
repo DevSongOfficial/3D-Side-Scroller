@@ -4,18 +4,14 @@ using static GameSystem;
 public class PlaceableProb : PlaceableObjectBase
 {
     [SerializeField] protected float fixedZPosition = 0;
-    [SerializeField] private bool isSingleton = false;
-    private PlaceableObjectBase previousPO;
-
-    public override PlaceableObjectBase CreatePlaceableObject()
+    [SerializeField] protected bool disableRotation;
+ 
+    public override void InverseRotation()
     {
-        if(!isSingleton) return base.CreatePlaceableObject();
+        if (disableRotation) return;
 
-        if (previousPO != null) LevelEditorManager.RemovePlaceableObject(previousPO);
-        return previousPO = base.CreatePlaceableObject();
-
+        base.InverseRotation();
     }
 
     public float ZPostion => fixedZPosition;
-    public bool IsSingleton => isSingleton;
 }

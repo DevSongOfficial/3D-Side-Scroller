@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PlaceableGround : PlaceableProb
 {
-    [SerializeField] private bool disableRotation;
-
     // Size the ground takes up in Level Editor Coorninates.
     [SerializeField] protected Vector2Int size = Vector2Int.one;
 
@@ -65,13 +63,6 @@ public class PlaceableGround : PlaceableProb
         ActualObject.gameObject.SetLayer(Layer.Ground);
         try { ActualObject.GetChild(0).gameObject.SetLayer(Layer.Ground); }
         catch { }
-    }
-
-    public override void InverseRotation()
-    {
-        if (disableRotation) return;
-
-        base.InverseRotation();
     }
 
     protected override void OnLevelEditorToggled(bool isOn)

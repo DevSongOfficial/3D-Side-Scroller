@@ -62,9 +62,10 @@ public sealed class PlayerCharacter : CharacterBase
         Interactor.AsDriver.OnExitVehicle  += () => ChangeState(MoveState);
 
         // Initialize stroke count.
-        GameManager.OnGameStart     += IntializeStroke;
-        GameManager.OnGameStart     += Reposition;
-        StageMaker.OnLoadComplete   += Reposition;
+        GameManager.OnGameStart                 += IntializeStroke;
+        GameManager.OnGameStart                 += Reposition;
+        StageMaker.OnLoadComplete               += Reposition;
+        LevelEditorManager.OnEditorModeToggled  += SetActiveAndReposition;
     }
 
     protected override void Start()
@@ -160,6 +161,12 @@ public sealed class PlayerCharacter : CharacterBase
     {
         base.TakeDamage(damageEvent);
         MovementController.StunCharacter();
+    }
+
+    private void SetActiveAndReposition(bool active)
+    {
+        gameObject.SetActive(!active);
+        Reposition();
     }
 
     // Transfer player to a spawnpoint.

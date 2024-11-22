@@ -40,14 +40,18 @@ public sealed class System_LevelEditorManager : MonoBehaviour
 
     public event Action<bool> OnEditorModeToggled;
 
-    private void Awake()
+    private void Start()
     {
-        PlaceableObjectBase.OnObjectCreatedFromButton += delegate { SetPlayMode(PlayMode.Placing); };
+        if (!IsMakerScene) return;
+
+        SetPlayMode(PlayMode.Editing);
     }
 
     // Main routine for the Level Editor
     private void Update()
     {
+        if (!IsMakerScene) return;
+
         HandleModeSwitch();
 
         if (Mode != PlayMode.Placing && Mode != PlayMode.Editing) return;
@@ -80,6 +84,9 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         UIManager.gameObject.SetActive(!IsEditorActive);
         rawImage_verticalCamera.gameObject.SetActive(IsEditorActive);
 
+        GameManager.Player.gameObject.SetActive(!IsEditorActive);
+        GameManager.GetReferenceToSingletonObjects();
+
         switch (Mode)
         {
             case PlayMode.Playing:
@@ -98,7 +105,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         if (Input.GetKeyDown(switchMode))
         {
             if (Mode == PlayMode.Playing) SetPlayMode(PlayMode.Editing);
-            else if (Mode == PlayMode.Editing) GameManager.GameStart();
+            else if (Mode == PlayMode.Editing) SetPlayMode(PlayMode.Playing);
         }
     }
 
@@ -126,7 +133,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         if (Input.GetKey(placeInARow))
         {
             var po = AssetManager.GetPrefab(PlaceableObjectBase.PreviouslyPlaced.Type).GetComponent<PlaceableObjectBase>();
-            po.CreateIfSelectedPleaceableObject();
+            po.OnCreatedFromButton();
         }
 
         return true;
@@ -136,23 +143,9 @@ public sealed class System_LevelEditorManager : MonoBehaviour
     {
         if (PlaceableObjectBase.CurrentlySelected is null) return;
 
-        RemovePlaceableObject(PlaceableObjectBase.CurrentlySelected);
+        POFactory.RemovePO(PlaceableObjectBase.CurrentlySelected);
 
         SetPlayMode(PlayMode.Editing);
-    }
-
-    public void RemovePlaceableObject(PlaceableObjectBase po)
-    {
-        PlaceableObjectBase.UnregisterPlaceableObject(po);
-        po.SetActive(false);
-    }
-
-    public void RemoveEveryRegisterdObject()
-    {
-        for(int i = PlaceableObjectBase.PlaceableObjectsInTheScene.Count - 1; i >= 0; i--)
-        {
-            RemovePlaceableObject(PlaceableObjectBase.PlaceableObjectsInTheScene[i]);
-        }
     }
 
     private void HandleObjectPlacement()

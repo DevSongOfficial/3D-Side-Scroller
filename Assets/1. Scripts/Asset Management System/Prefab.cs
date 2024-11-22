@@ -5,7 +5,7 @@ public struct Prefab {
 		Sphere_1,
 		System_LevelEditorManager,
 	}
-	public enum General {
+	public enum PO {
 		PC_PlayerSpawnPoint,
 		PC_ZombieCharacter_1,
 		PE_Grass_1,

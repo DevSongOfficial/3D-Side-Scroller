@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5414895491642798549}
   - component: {fileID: 2919511459458120687}
   - component: {fileID: 2700685307098000025}
+  - component: {fileID: -7376085662920307952}
   m_Layer: 0
   m_Name: PP_GolfBall
   m_TagString: Untagged
@@ -97,7 +98,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Golf Ball
   fixedZPosition: -0.85
-  isSingleton: 1
+  disableRotation: 0
+--- !u!114 &-7376085662920307952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 209066232418378927}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ac1e203527d114aadfb618c39094b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5962190086412504176
 GameObject:
   m_ObjectHideFlags: 0

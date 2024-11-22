@@ -21,7 +21,8 @@ public class Placard : MonoBehaviour
 
     private void Start()
     {
-        canvas.worldCamera = GameObject.FindWithTag(Tag.EditorCamera.ToString()).GetComponent<Camera>();
+        if (IsMakerScene) canvas.worldCamera = GameObject.FindWithTag(Tag.EditorCamera.ToString()).GetComponent<Camera>();
+
     }
 
     private void OnEnable()

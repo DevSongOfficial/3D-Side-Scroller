@@ -49,7 +49,7 @@ public sealed class PlaceableCharacter : PlaceableObjectBase
 
     private void RemovePlaceableCharacter()
     {
-        LevelEditorManager.RemovePlaceableObject(this);
+        POFactory.RemovePO(this);
     }
 
     public override void InverseRotation()

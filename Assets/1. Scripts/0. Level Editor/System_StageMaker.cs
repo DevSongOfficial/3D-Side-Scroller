@@ -16,7 +16,7 @@ public class System_StageMaker : MonoBehaviour
         dataHandler.AddGameData(par: GameManager.Par);
 
         // Handle prefab datas.
-        foreach (var placeableObject in PlaceableObjectBase.PlaceableObjectsInTheScene)
+        foreach (var placeableObject in POFactory.RegistedPOs)
         {
             dataHandler.AddPrefab(placeableObject.Type, placeableObject.transform.position, placeableObject.transform.eulerAngles);
         }
@@ -37,17 +37,15 @@ public class System_StageMaker : MonoBehaviour
         GameManager.SetPar(dataHandler.gameData.par);
 
         // Handle prefab datas.
-        LevelEditorManager.RemoveEveryRegisterdObject();
+        POFactory.RemoveEveryRegisterdPO();
         PlaceableObjectBase.ClearTile();
         foreach (var prefab in dataHandler.prefabDatas)
         {
-            var placeableObject = AssetManager.GetPrefab(prefab.type).GetComponent<PlaceableObjectBase>().CreatePlaceableObject();
-            placeableObject.transform.position = prefab.position.GetValue();
-            placeableObject.transform.eulerAngles = prefab.eulerAngles.GetValue();
+            var po = POFactory.CreatePO(prefab.type);
+            po.transform.position = prefab.position.GetValue();
+            po.transform.eulerAngles = prefab.eulerAngles.GetValue();
 
-            placeableObject.AsGround()?.AddToTile();
-
-            PlaceableObjectBase.RegisterPlaceableObject(placeableObject);
+            po.AsGround()?.AddToTile();
         }
         LevelEditorManager.SetPlayMode(PlayMode.Editing);
 

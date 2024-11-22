@@ -623,6 +623,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Golf Bag
   fixedZPosition: 0
+  disableRotation: 1
   isSingleton: 0
 --- !u!54 &6277276008617093645
 Rigidbody:

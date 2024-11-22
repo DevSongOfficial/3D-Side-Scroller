@@ -29,7 +29,7 @@ public class LevelEditorUI : MonoBehaviour
 
         // Creates buttons as many as the number of general prefabs.
         #region Set up buttons
-        int count = Enum.GetValues(typeof(Prefab.General)).Length;
+        int count = Enum.GetValues(typeof(Prefab.PO)).Length;
         objectSelectionButtons = new ObjectSelectionButton[count];
         // Buttons Settings
         for (int i = 0; i < count; i++)
@@ -37,8 +37,8 @@ public class LevelEditorUI : MonoBehaviour
             var button = Instantiate(AssetManager.GetPrefab(Prefab.UI.SpawnButton_1), contentsPanel.transform).
                 GetComponent<ObjectSelectionButton>();
 
-            var prefab = AssetManager.GetPrefab((Prefab.General)i).GetComponent<PlaceableObjectBase>();
-            prefab.SetType((Prefab.General)i);
+            var prefab = AssetManager.GetPrefab((Prefab.PO)i).GetComponent<PlaceableObjectBase>();
+            prefab.SetType((Prefab.PO)i);
 
             button.Initialize(prefab);
             objectSelectionButtons[i] = button;

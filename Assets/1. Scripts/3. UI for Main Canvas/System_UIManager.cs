@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -76,6 +77,23 @@ public class System_UIManager : MonoBehaviour
     }
 
     public void SetText(Text text, string s) { text.text = s; }
+
+    public string AddSpaceBeforeUppercase(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return s;
+
+        StringBuilder formattedString = new StringBuilder();
+
+        for (int i = 0; i < s.Length; i++)
+        {
+            char currentChar = s[i];
+            if (char.IsUpper(currentChar) && i > 0)
+                formattedString.Append(' ');
+            formattedString.Append(currentChar);
+        }
+
+        return formattedString.ToString();
+    }
 
     public void FillImage(Image image, float fillAmount /* 0 ~ 1 */)
     {
