@@ -31,6 +31,10 @@ public struct Prefab {
 		PP_GolfCart,
 		PP_Placard,
 	}
+	public enum Prob {
+		Camera_GolfBall,
+		Camera_Green,
+	}
 	public enum UI {
 		DamageText,
 		SpawnButton_1,

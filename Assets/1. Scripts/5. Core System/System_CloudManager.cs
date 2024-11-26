@@ -1,5 +1,3 @@
-/*using Firebase.Extensions;
-using Firebase.Storage;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -8,14 +6,15 @@ using static GameSystem;
 
 public class System_CloudManager : MonoBehaviour
 {
-    private FirebaseStorage storage;
+    /*
+    private static FirebaseStorage storage;
 
     private void Start()
     {
         storage = FirebaseStorage.DefaultInstance; 
     }
 
-    private void UploadData(string nameInCloud, string nameInLocalRepository)
+    public static void UploadData(string nameInCloud, string nameInLocalRepository)
     {
         // Create a storage reference from our storage service
         StorageReference storageRef = storage.RootReference.Child(nameInCloud);
@@ -42,7 +41,7 @@ public class System_CloudManager : MonoBehaviour
             });
     }
 
-    private void DownloadData(string nameInCloud, string nameInLocalRepository)
+    public static void DownloadData(string nameInCloud, string nameInLocalRepository)
     {
         StorageReference pathRef = storage.GetReference(nameInCloud);
 
@@ -56,6 +55,5 @@ public class System_CloudManager : MonoBehaviour
                 Debug.Log("File downloaded.");
             }
         });
-    }
+    }*/
 }
-*/

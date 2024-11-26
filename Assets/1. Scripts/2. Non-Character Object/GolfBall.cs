@@ -18,6 +18,8 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
     public event Action OnHit;
 
     public bool OnGreen { get; private set; }
+    public event Action OnEnterGreen;
+    public event Action OnExitGreen;
 
     public struct Drag
     {
@@ -110,7 +112,7 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
         if (other.CompareTag(Tag.Green))
         {
             OnGreen = true;
-            GameManager.BallOnTheGreen();
+            OnEnterGreen?.Invoke();
         }
     }
 
@@ -119,7 +121,7 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
         if (other.CompareTag(Tag.Green))
         {
             OnGreen = false;
-            GameManager.BallOutTheGreen();
+            OnExitGreen?.Invoke();
         }
     }
 

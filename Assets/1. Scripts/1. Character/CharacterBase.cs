@@ -25,7 +25,7 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
     public AnimationController AnimationController { get; private set; }
 
     // Health System
-    public HealthSystem HealthSystem { get; protected set; }
+    protected HealthSystem HealthSystem;
     public Action OnDestroy;
 
     // State (Each character runs as a single state machine)

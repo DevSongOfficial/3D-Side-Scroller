@@ -10,7 +10,7 @@ public class AssetManager : MonoBehaviour
    public static GameObject GetPrefab(string folderName, string prefabName)
     {
         var prefab = Resources.Load<GameObject>($"Prefabs/{folderName}/{prefabName}");
-        if (prefab is null)
+        if (prefab == null)
         {
             Debug.LogWarning($"Invalid name or path: Prefabs/{folderName}/{prefabName}");
             return null;
@@ -100,7 +100,7 @@ public class PrefabScriptEditor : Editor
             Debug.Log("<color=yellow>Saving..</color>");
 
             var newScript = GenerateNewScript();
-            if (newScript is null) return;
+            if (newScript == null) return;
             
             previousSources.Push(newScript);
         }

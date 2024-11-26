@@ -1,22 +1,19 @@
-using System.Diagnostics;
-using UnityEngine.Rendering;
 using static GameSystem;
 public sealed class GreenCamera : ProbFollowingCamera
 {
-    protected override void Awake()
+    private void Start()
     {
-        base.Awake();
-
-        GameManager.OnGreen += GameManager_OnGreen;
-        GameManager.OnExitGreen += GameManager_OnExitGreen;
+        var golfBall = POFactory.GetRegisteredSingletonPO<GolfBall>();
+        golfBall.OnEnterGreen += RenderGreenCamera;
+        golfBall.OnExitGreen += HideGreenCamera;
     }
 
-    private void GameManager_OnExitGreen()
+    private void HideGreenCamera()
     {
         Camera.depth = -1;
     }
 
-    private void GameManager_OnGreen()
+    private void RenderGreenCamera()
     {
         Camera.depth = 1;
     }
@@ -25,7 +22,8 @@ public sealed class GreenCamera : ProbFollowingCamera
     {
         base.OnDestroy();
 
-        GameManager.OnGreen -= GameManager_OnGreen;
-        GameManager.OnExitGreen -= GameManager_OnExitGreen;
+        var golfBall = POFactory.GetRegisteredSingletonPO<GolfBall>();
+        golfBall.OnEnterGreen -= RenderGreenCamera;
+        golfBall.OnExitGreen -= HideGreenCamera;
     }
 }

@@ -33,7 +33,7 @@ public class FlagStick : MonoBehaviour, IPickupable
 
     public void OnDropedOff()
     {
-        GameManager.AttachToMap(transform);
+        POFactory.AttachToMap(transform);
 
         var position = carryPoint.transform.root.position;
         position.y += 0.35f;

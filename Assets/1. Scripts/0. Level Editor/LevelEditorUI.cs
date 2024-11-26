@@ -7,7 +7,7 @@ using static GameSystem;
 public class LevelEditorUI : MonoBehaviour
 {
     // Screen Movement with Mouse Cursor Position
-    private Dictionary<Vector2, Image> mouseAreas = new Dictionary<Vector2, Image>(); // Assign this variable in inspector window.
+    private Dictionary<Vector2, Image> mouseAreas = new Dictionary<Vector2, Image>();
     [SerializeField] private Image[] mouseCursorDetectorImages;
 
     // Object Selection Button
@@ -28,7 +28,7 @@ public class LevelEditorUI : MonoBehaviour
         mouseAreas.Add(Vector2.down, mouseCursorDetectorImages[3]);
 
         // Creates buttons as many as the number of general prefabs.
-        #region Set up buttons
+        #region Set up creation buttons
         int count = Enum.GetValues(typeof(Prefab.PO)).Length;
         objectSelectionButtons = new ObjectSelectionButton[count];
         // Buttons Settings

@@ -1,6 +1,3 @@
-using UnityEngine;
-using static AnimationController;
-
 public sealed class ZombieChaseState : ZombieStateBase
 {
     private ZombieMovementBase movement;

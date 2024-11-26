@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class System_SaveManager : MonoBehaviour
+public class SaveSystem
 {
 
     #region Data Handling

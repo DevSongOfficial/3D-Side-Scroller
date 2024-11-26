@@ -1,7 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.VFX;
-using static CharacterMovementController;
 using static GameSystem;
 
 

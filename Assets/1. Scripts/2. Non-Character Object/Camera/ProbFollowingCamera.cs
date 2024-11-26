@@ -7,12 +7,11 @@ public class ProbFollowingCamera : MonoBehaviour
 {
     private enum AngleType { Horizontal = 0, Vertical = 90 }
 
-    [Header("Assign prefab here to follow its clone.")]
-    [SerializeField] private GameObject probPrefab;
-    private Prefab.PO probType;
+    [Header("Prob to follow its clone")]
+    [SerializeField] private Prefab.PO targetType;
     protected PlaceableProb target;
     private bool hasTarget;
-
+    [Space]
     [SerializeField] private AngleType angleType = AngleType.Horizontal;
     [SerializeField] private float distanceFromTarget;
 
@@ -23,8 +22,6 @@ public class ProbFollowingCamera : MonoBehaviour
     {
         Camera = GetComponent<Camera>();
         Camera.depth = priorityOnStart;
-
-        probType = Enum.Parse<Prefab.PO>(probPrefab.name);
 
         POFactory.OnPORegistered += SetTarget;
         POFactory.OnPOUnregistered += ClearTarget;
@@ -37,7 +34,7 @@ public class ProbFollowingCamera : MonoBehaviour
 
     protected virtual void SetTarget(PlaceableObjectBase po)
     {
-        if (po.Type != probType) return;
+        if (po.Type != targetType) return;
  
         transform.eulerAngles = Vector3.right * (int)angleType;
         target = po as PlaceableProb;

@@ -36,14 +36,14 @@ public sealed class PlayerCharacter : CharacterBase
         base.Awake();
 
         // Initialize inputs.
-        GameManager.Input_OnChangeDirection     += OnChangeDirection;
-        GameManager.Input_OnChangeZDirection    += OnChangeZDirection;
-        GameManager.Input_OnJump                += OnJump;
-        GameManager.Input_OnClick               += OnClick;
-        GameManager.Input_OnDrag                += OnDrag;
-        GameManager.Input_OnInteract            += OnInteract;
-        GameManager.Input_OnSwitchClub          += OnSwitchClub;
-        GameManager.Input_OnTogglePickup        += OnTogglePickup;
+        InputManager.Input_OnChangeDirection     += OnChangeDirection;
+        InputManager.Input_OnChangeZDirection    += OnChangeZDirection;
+        InputManager.Input_OnJump                += OnJump;
+        InputManager.Input_OnClick               += OnClick;
+        InputManager.Input_OnDrag                += OnDrag;
+        InputManager.Input_OnInteract            += OnInteract;
+        InputManager.Input_OnSwitchClub          += OnSwitchClub;
+        InputManager.Input_OnTogglePickup        += OnTogglePickup;
 
         // Initialize behaviour states.
         blackboard      = new PlayerBlackboard();
@@ -64,7 +64,7 @@ public sealed class PlayerCharacter : CharacterBase
         // Initialize stroke count.
         GameManager.OnGameStart                 += IntializeStroke;
         GameManager.OnGameStart                 += Reposition;
-        StageMaker.OnLoadComplete               += Reposition;
+        SaveManager.OnLoadComplete               += Reposition;
         LevelEditorManager.OnEditorModeToggled  += SetActiveAndReposition;
     }
 
@@ -83,7 +83,7 @@ public sealed class PlayerCharacter : CharacterBase
     {
         base.Update();
 
-        if (Input.GetKeyDown(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             Reposition();
         }
@@ -172,9 +172,9 @@ public sealed class PlayerCharacter : CharacterBase
     // Transfer player to a spawnpoint.
     private void Reposition()
     {
-        if (GameManager.SpawnPoint == null) return;
+        if (!POFactory.HasRegisteredSingletonPO<PlaceableSpawnPoint>()) return;
 
-        var newPosition = GameManager.SpawnPoint.GetPosition();
+        var newPosition = POFactory.GetRegisteredSingletonPO<PlaceableSpawnPoint>().GetPosition();
         MovementController.SetPosition(newPosition);
         MovementController.ChangeMovementDirection(MovementDirection.Right);
         MovementController.SetVelocityMultiplier(1);

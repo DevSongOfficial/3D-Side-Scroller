@@ -14,8 +14,6 @@ public sealed class System_FXManager : MonoBehaviour
     // CAMERA SECTION
     [Header("Camera & Cinemachine")]
     [SerializeField] private CinemachineBrain cinemachineBrain;
-    [SerializeField] private ProbFollowingCamera camera_Green;
-    [SerializeField] private ProbFollowingCamera camera_GolfBall;
 
     private Camera Camera => Camera.main;
     private CinemachineVirtualCamera virtualCamera;

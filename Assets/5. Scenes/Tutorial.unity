@@ -352,7 +352,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 251038466}
-  - component: {fileID: 251038465}
   - component: {fileID: 251038467}
   m_Layer: 0
   m_Name: SaveSystem
@@ -361,119 +360,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &251038465
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 251038464}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 86ca4b3327701a94db2fd04c24e185cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SavedDatas:
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
 --- !u!4 &251038466
 Transform:
   m_ObjectHideFlags: 0
@@ -5952,6 +5838,8 @@ MonoBehaviour:
   panel_ClubSelection: {fileID: 3578691346473648767}
   group_FloatingAbovePlayer: {fileID: 7538765978471754550}
   image_SwingChargeIndicator: {fileID: 7892394289817615415}
+  text_StageClear: {fileID: 0}
+  panel_StageClear: {fileID: 0}
 --- !u!4 &8753711268247811514
 Transform:
   m_ObjectHideFlags: 0

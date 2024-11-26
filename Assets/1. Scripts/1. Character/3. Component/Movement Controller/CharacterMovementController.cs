@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-using static AnimationController;
 
 public enum ZAxisMovementDirection { Down = -1 /* 180 */, Up = 1 /* 0 */ }
 

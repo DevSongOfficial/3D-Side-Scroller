@@ -35,8 +35,8 @@ public sealed class PlaceableWater : PlaceableGround
         // 1) Combine by deactivating every water block on the right.
         int blockCount = ToggleNextWaterBlockActivation(isOn: false);
 
-        // 2) Strtch
-        Strech(blockCount);
+        // 2) Stretch
+        Stretch(blockCount);
     }
 
     private void SplitAndShrinkWaterBlocksInARow()
@@ -46,7 +46,7 @@ public sealed class PlaceableWater : PlaceableGround
         Shrink();
     }
 
-    private void Strech(int size)
+    private void Stretch(int size)
     {
         float x = Position.x + (size - 1) * 0.5f;
 
@@ -65,16 +65,16 @@ public sealed class PlaceableWater : PlaceableGround
     {
         var nextPosition = new Vector2Int(Position.x + (int)MovementDirection.Right, Position.y);
 
-        if (!tile.ContainsKey(nextPosition) || !tile[nextPosition].AsWater()) return 1;
+        if (!Tile.ContainsKey(nextPosition) || !Tile[nextPosition].AsWater()) return 1;
 
-        tile[nextPosition].ActualObject.gameObject.SetActive(isOn);
-        return tile[nextPosition].AsWater().ToggleNextWaterBlockActivation(isOn) + 1;
+        Tile[nextPosition].ActualObject.gameObject.SetActive(isOn);
+        return Tile[nextPosition].AsWater().ToggleNextWaterBlockActivation(isOn) + 1;
     }
  
     private bool IsTheLeftmostWaterBlock()
     {
         var leftPosition = new Vector2Int(Position.x + (int)MovementDirection.Left, Position.y);
-        bool isWaterOnTheLeft = tile.ContainsKey(leftPosition) && tile[leftPosition].AsWater();
+        bool isWaterOnTheLeft = Tile.ContainsKey(leftPosition) && Tile[leftPosition].AsWater();
         return !isWaterOnTheLeft;
     }
 

@@ -65,7 +65,7 @@ public class GolfCart : MonoBehaviour, IInteractable
         driver.AsDriver.InvokeEvent_OnEnterVehicle();
 
         FXManager.SetCameraUpdateMethod(Cinemachine.CinemachineBrain.UpdateMethod.FixedUpdate);
-        GameManager.Input_OnChangeDirection += OnChangeDirection;
+        InputManager.Input_OnChangeDirection += OnChangeDirection;
 
         movementController.ToggleHorizontalMovement(true);
     }
@@ -73,7 +73,7 @@ public class GolfCart : MonoBehaviour, IInteractable
     private void GetOutOfTheCart()
     {
         FXManager.SetCameraUpdateMethod(Cinemachine.CinemachineBrain.UpdateMethod.SmartUpdate);
-        GameManager.Input_OnChangeDirection -= OnChangeDirection;
+        InputManager.Input_OnChangeDirection -= OnChangeDirection;
 
         driver.AsDriver.InvokeEvent_OnExitVehicle();
         driver = null;

@@ -9,8 +9,6 @@ using static GameSystem;
 [RequireComponent(typeof(Rigidbody))]
 public abstract class PlaceableObjectBase : MonoBehaviour
 {
-    public static void ClearTile() => tile.Clear();
-    protected static Dictionary<Vector2Int, PlaceableGround> tile = new Dictionary<Vector2Int, PlaceableGround>();
     protected bool isEditorMode;
 
     [Tooltip("The name displayed in UI or editor for this object.")]

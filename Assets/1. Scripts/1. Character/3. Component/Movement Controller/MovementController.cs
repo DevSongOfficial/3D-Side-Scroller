@@ -248,10 +248,4 @@ public abstract class MovementController : MonoBehaviour
 
         velocity.y = DefaultYSpeed;
     }
-
-    // EXTRA
-    public void WalkForward()
-    {
-        
-    }
 }

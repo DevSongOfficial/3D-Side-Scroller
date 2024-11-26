@@ -99,7 +99,7 @@ public class GolfBag : MonoBehaviour, IInteractable, IPickupable
 
     public virtual void OnDropedOff()
     {
-        GameManager.AttachToMap(transform);
+        POFactory.AttachToMap(transform);
 
         transform.eulerAngles = Vector3.zero;
         transform.position = new Vector3(transform.position.x, transform.position.y, 0);

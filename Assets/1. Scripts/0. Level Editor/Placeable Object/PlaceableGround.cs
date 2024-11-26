@@ -1,9 +1,11 @@
-using System.Collections;
-using Unity.XR.OpenVR;
+using System.Collections.Generic;
 using UnityEngine;
+using static GameSystem;
 
 public class PlaceableGround : PlaceableProb
 {
+    protected static Dictionary<Vector2Int, PlaceableGround> Tile = new Dictionary<Vector2Int, PlaceableGround>();
+
     // Size the ground takes up in Level Editor Coorninates.
     [SerializeField] protected Vector2Int size = Vector2Int.one;
 
@@ -11,6 +13,11 @@ public class PlaceableGround : PlaceableProb
     private Vector2Int endPoint;
 
     public Vector2Int Position => new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
+
+    private void OnDestroy()
+    {
+        RemoveFromTile();
+    }
 
     public void AddToTile()
     {
@@ -20,7 +27,7 @@ public class PlaceableGround : PlaceableProb
         for (int x = startingPoint; x <= endPoint; x++)
         {
             var area = new Vector2Int(x, Position.y);
-            tile.Add(area, this);
+            Tile.Add(area, this);
         }
 
         this.startingPoint = new Vector2Int(startingPoint, Position.y);
@@ -33,7 +40,7 @@ public class PlaceableGround : PlaceableProb
 
         for(int x = startingPoint.x; x <= endPoint.x; x++)
         {
-            tile.Remove(new Vector2Int(x, y));
+            Tile.Remove(new Vector2Int(x, y));
         }
     }
 
@@ -47,7 +54,7 @@ public class PlaceableGround : PlaceableProb
         for (int x = startingPoint; x <= endPoint; x++)
         {
             var area = new Vector2Int(x, Position.y);
-            if (tile.ContainsKey(area)) return false;
+            if (Tile.ContainsKey(area)) return false;
         }
 
         return true;

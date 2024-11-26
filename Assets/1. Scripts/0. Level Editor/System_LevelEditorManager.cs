@@ -17,15 +17,15 @@ public sealed class System_LevelEditorManager : MonoBehaviour
     [SerializeField] private LevelEditorUI levelEditorUI;
 
     [Header("Key Binding")]
-    [SerializeField] private KeyCode switchMode = KeyCode.Tab;
-    [SerializeField] private KeyCode reverseRotation = KeyCode.R;
-    [SerializeField] private KeyCode selectObject = KeyCode.Mouse0;
-    [SerializeField] private KeyCode placeObject = KeyCode.Mouse0;
-    [SerializeField] private KeyCode placeInARow = KeyCode.Space;
-    [SerializeField] private KeyCode removeObject = KeyCode.Mouse1;
-    [SerializeField] private KeyCode moveScreen = KeyCode.Mouse2;
-    [SerializeField] private KeyCode fastMove = KeyCode.LeftShift;
-    [SerializeField] private KeyCode toggleVerticalCamera = KeyCode.P;
+    [SerializeField] private KeyCode switchMode             = KeyCode.Tab;
+    [SerializeField] private KeyCode reverseRotation        = KeyCode.R;
+    [SerializeField] private KeyCode selectObject           = KeyCode.Mouse0;
+    [SerializeField] private KeyCode placeObject            = KeyCode.Mouse0;
+    [SerializeField] private KeyCode placeInARow            = KeyCode.Space;
+    [SerializeField] private KeyCode removeObject           = KeyCode.Mouse1;
+    [SerializeField] private KeyCode moveScreen             = KeyCode.Mouse2;
+    [SerializeField] private KeyCode fastMove               = KeyCode.LeftShift;
+    [SerializeField] private KeyCode toggleVerticalCamera   = KeyCode.P;
 
     [Header("Editor Camera")]
     [SerializeField] private Camera levelEditorCamera;
@@ -85,7 +85,6 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         rawImage_verticalCamera.gameObject.SetActive(IsEditorActive);
 
         GameManager.Player.gameObject.SetActive(!IsEditorActive);
-        GameManager.GetReferenceToSingletonObjects();
 
         switch (Mode)
         {
@@ -120,7 +119,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
 
     private bool PlaceSelectedObject()
     {
-        if (PlaceableObjectBase.CurrentlySelected is null) return false;
+        if (PlaceableObjectBase.CurrentlySelected == null) return false;
         if (!PlaceableObjectBase.CurrentlySelected.NotOverlapped) return false;
 
         // Add the object to the Tile.
@@ -141,7 +140,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
 
     private void RemoveSelectedObject()
     {
-        if (PlaceableObjectBase.CurrentlySelected is null) return;
+        if (PlaceableObjectBase.CurrentlySelected == null) return;
 
         POFactory.RemovePO(PlaceableObjectBase.CurrentlySelected);
 
@@ -162,7 +161,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
 
     private void HandleObjectRemovement()
     {
-        if(PlaceableObjectBase.CurrentlySelected is null) return;
+        if(PlaceableObjectBase.CurrentlySelected == null) return;
 
         if (Input.GetKeyDown(removeObject))
         {
@@ -207,7 +206,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
     private void HandleObjectMovement()
     {
         var obj = PlaceableObjectBase.CurrentlySelected;
-        if (obj is null) return;
+        if (obj == null) return;
 
         var currentPosition = UI.GetWorldPositionFromMousePosition() + movementOffset;
 
@@ -229,7 +228,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
 
     private void HandleObjectRotation()
     {
-        if (PlaceableObjectBase.CurrentlySelected is null) return;
+        if (PlaceableObjectBase.CurrentlySelected == null) return;
         if (Mode != PlayMode.Placing && Mode != PlayMode.Editing) return;
 
         if (Input.GetKeyDown(reverseRotation))
