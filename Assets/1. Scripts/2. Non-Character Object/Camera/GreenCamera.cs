@@ -3,9 +3,14 @@ public sealed class GreenCamera : ProbFollowingCamera
 {
     private void Start()
     {
-        var golfBall = POFactory.GetRegisteredSingletonPO<GolfBall>();
-        golfBall.OnEnterGreen += RenderGreenCamera;
-        golfBall.OnExitGreen += HideGreenCamera;
+        SetUp();
+    }
+
+    protected override void OnEnable()
+    {
+        base.OnEnable();
+
+        SetUp();
     }
 
     private void HideGreenCamera()
@@ -18,9 +23,20 @@ public sealed class GreenCamera : ProbFollowingCamera
         Camera.depth = 1;
     }
 
-    protected override void OnDestroy()
+    private void SetUp()
     {
-        base.OnDestroy();
+        if (!POFactory.HasRegisteredSingletonPO<GolfBall>()) return;
+
+        var golfBall = POFactory.GetRegisteredSingletonPO<GolfBall>();
+        golfBall.OnEnterGreen += RenderGreenCamera;
+        golfBall.OnExitGreen += HideGreenCamera;
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+
+        if (!POFactory.HasRegisteredSingletonPO<GolfBall>()) return;
 
         var golfBall = POFactory.GetRegisteredSingletonPO<GolfBall>();
         golfBall.OnEnterGreen -= RenderGreenCamera;

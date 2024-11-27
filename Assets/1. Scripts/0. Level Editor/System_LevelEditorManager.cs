@@ -63,7 +63,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         HandleObjectRemovement();
 
         HandleScreenMovementDependingOnMousePosition(speed: 5, multiplier: 3);
-        HandleVerticalCameraActivation();
+        HandleVerticalCameraActive();
     }
 
     private void LateUpdate()
@@ -108,7 +108,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         }
     }
 
-    private void HandleVerticalCameraActivation()
+    private void HandleVerticalCameraActive()
     {
         if (Input.GetKeyDown(toggleVerticalCamera))
         {

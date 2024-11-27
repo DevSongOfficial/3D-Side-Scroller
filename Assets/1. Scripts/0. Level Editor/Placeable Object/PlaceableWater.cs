@@ -33,7 +33,7 @@ public sealed class PlaceableWater : PlaceableGround
         if (!IsTheLeftmostWaterBlock()) return;
 
         // 1) Combine by deactivating every water block on the right.
-        int blockCount = ToggleNextWaterBlockActivation(isOn: false);
+        int blockCount = ToggleNextWaterBlockActive(isOn: false);
 
         // 2) Stretch
         Stretch(blockCount);
@@ -42,7 +42,7 @@ public sealed class PlaceableWater : PlaceableGround
     private void SplitAndShrinkWaterBlocksInARow()
     {
         if (!IsTheLeftmostWaterBlock()) return;
-        ToggleNextWaterBlockActivation(isOn: true);
+        ToggleNextWaterBlockActive(isOn: true);
         Shrink();
     }
 
@@ -61,14 +61,14 @@ public sealed class PlaceableWater : PlaceableGround
     }
 
     // Return: the number of water blocks.
-    private int ToggleNextWaterBlockActivation(bool isOn)
+    private int ToggleNextWaterBlockActive(bool isOn)
     {
         var nextPosition = new Vector2Int(Position.x + (int)MovementDirection.Right, Position.y);
 
         if (!Tile.ContainsKey(nextPosition) || !Tile[nextPosition].AsWater()) return 1;
 
         Tile[nextPosition].ActualObject.gameObject.SetActive(isOn);
-        return Tile[nextPosition].AsWater().ToggleNextWaterBlockActivation(isOn) + 1;
+        return Tile[nextPosition].AsWater().ToggleNextWaterBlockActive(isOn) + 1;
     }
  
     private bool IsTheLeftmostWaterBlock()
