@@ -70,7 +70,7 @@ public class System_InputManager : MonoBehaviour
         Input_OnSwitchClub.Invoke();
     }
 
-    private void OnTogglePickup() // [R] pressed
+    private void OnTogglePickup() // [F] pressed
     {
         Input_OnTogglePickup.Invoke();
     }

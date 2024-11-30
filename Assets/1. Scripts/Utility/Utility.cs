@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public static class Utility
 {
@@ -120,6 +122,28 @@ public static class Utility
     public static int GetLayerMask(Layer layer1, Layer layer2, Layer layer3)
     {
         return 1 << (int)layer1 | 1 << (int)layer2 | 1 << (int)layer3;
+    }
+
+    public static IEnumerator FadeInRoutine(Image image, float speed = 1)
+    {
+        float alpha = 0;
+        while (alpha < 1)
+        {
+            alpha += speed * Time.fixedDeltaTime;
+            image.color = new Color(0, 0, 0, alpha);
+            yield return new WaitForFixedUpdate();
+        }
+    }
+
+    public static IEnumerator FadeOutRoutine(Image image, float speed = 1)
+    {
+        float alpha = 1;
+        while (alpha > 0)
+        {
+            alpha -= speed * Time.fixedDeltaTime;
+            image.color = new Color(0, 0, 0, alpha);
+            yield return new WaitForFixedUpdate();
+        }
     }
 
     public class Timer

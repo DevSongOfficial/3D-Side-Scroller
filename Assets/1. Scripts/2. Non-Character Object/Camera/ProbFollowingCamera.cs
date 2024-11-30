@@ -20,7 +20,7 @@ public class ProbFollowingCamera : MonoBehaviour
 
     private void Awake()
     {
-        if (IsMakerScene)
+        if (SceneLoader.IsMakerScene)
         {
             LevelEditorManager.OnEditorModeToggled += SetActive;
             SetActive(false);

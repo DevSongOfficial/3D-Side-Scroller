@@ -42,7 +42,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
 
     private void Start()
     {
-        if (!IsMakerScene) return;
+        if (!SceneLoader.IsMakerScene) return;
 
         SetPlayMode(PlayMode.Editing);
     }
@@ -50,7 +50,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
     // Main routine for the Level Editor
     private void Update()
     {
-        if (!IsMakerScene) return;
+        if (!SceneLoader.IsMakerScene) return;
 
         HandleModeSwitch();
 
@@ -84,7 +84,8 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         UIManager.gameObject.SetActive(!IsEditorActive);
         rawImage_verticalCamera.gameObject.SetActive(IsEditorActive);
 
-        GameManager.Player.gameObject.SetActive(!IsEditorActive);
+        if(SceneLoader.IsMakerScene)
+            GameManager.Player.gameObject.SetActive(!IsEditorActive);
 
         switch (Mode)
         {
@@ -120,6 +121,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
     private bool PlaceSelectedObject()
     {
         if (PlaceableObjectBase.CurrentlySelected == null) return false;
+        if (UI.IsMouseCursorOnTheArea(UI.ObjectSelectionGroup)) return false;
         if (!PlaceableObjectBase.CurrentlySelected.NotOverlapped) return false;
 
         // Add the object to the Tile.
@@ -172,6 +174,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
     private void HandleObjectSelection()
     {
         if (Mode != PlayMode.Editing) return;
+        if (UI.IsMouseCursorOnTheArea(UI.ObjectSelectionGroup)) return;
         if (!Input.GetKeyDown(selectObject)) return;
 
         // Place if holding an object.

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static GameSystem;
 
 
 // Interface for gameobjects that are interatcted by [Interactor] objects.
@@ -184,6 +185,12 @@ public class Golfer
 
         CurrentClub = GameObject.Instantiate(newClub, itemHolder.GetSlotTransform(newClub.ClubType));
         CurrentClub.gameObject.SetActive(true);
+        
+        // Add effect on selected club's image.
+        var images = UIManager.UI.Images_GolfClub;
+        foreach(var image in images)
+            image.color = Color.yellow;
+        images[(int)CurrentClub.ClubType].color = Color.green;
     }
     public void UnequipClub()
     {

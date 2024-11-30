@@ -6,47 +6,57 @@ using static GameSystem;
 
 public class System_SaveManager : MonoBehaviour
 { 
-    public event Action OnLoadStart;
-    public event Action OnLoadComplete;
+    public event Action OnStageLoadStart;
+    public event Action OnStageLoadComplete;
 
-    private SaveSystem saveSystem;
+    private SaveSystem saveSystem = new SaveSystem();
 
-    private void Awake()
+    public void SaveGameData(ScoreType[] clearedStages)
     {
-        saveSystem = new SaveSystem();
-    }
+        GameDataHandler dataHandler = new GameDataHandler();
 
-    public void SaveStage(int indexToSave)
-    {
-        SaveDataHandler dataHandler = new SaveDataHandler();
+        // Handel game data.
+        dataHandler.AddGameData(clearedStages);
 
-        // Handle game data.
-        dataHandler.AddGameData(par: GameManager.Par);
-
-        // Handle prefab datas.
-        foreach (var placeableObject in POFactory.RegistedPOs)
-        {
-            dataHandler.AddPrefab(placeableObject.Type, placeableObject.transform.position, placeableObject.transform.eulerAngles);
-        }
         var data = JsonUtility.ToJson(dataHandler);
-        saveSystem.SaveData(data, indexToSave);
+        saveSystem.SaveData(data, "GameData");
     }
 
-    public void LoadStage(int indexToLoad)
+    public bool LoadGameData()
     {
-        OnLoadStart?.Invoke();
+        var data = saveSystem.LoadData("GameData");
+        if (String.IsNullOrEmpty(data)) return false;
 
-        var data = saveSystem.LoadData(indexToLoad);
-        if (String.IsNullOrEmpty(data)) return;
+        GameDataHandler dataHandler = JsonUtility.FromJson<GameDataHandler>(data);
+        GameManager.SetClearedStages(dataHandler.scores.ToArray());
+        
+        return true;
+    }
 
-        SaveDataHandler dataHandler = JsonUtility.FromJson<SaveDataHandler>(data);
 
-        // Handle game data.
-        GameManager.SetPar(dataHandler.gameData.par);
+    public void SaveStageData(int indexToSave)
+    {
+        StageDataHandler dataHandler = new StageDataHandler();
+
+        // Handle stage data.
+        dataHandler.AddStageData(par: GameManager.Par, placeableObjects: POFactory.RegistedPOs);
+
+        var data = JsonUtility.ToJson(dataHandler);
+        saveSystem.SaveData(data, $"Stage_{indexToSave}");
+    }
+
+    public bool LoadStageData(int indexToLoad)
+    {
+        OnStageLoadStart?.Invoke();
+
+        var data = saveSystem.LoadData($"Stage_{indexToLoad}");
+        if (String.IsNullOrEmpty(data)) return false;
+
+        StageDataHandler dataHandler = JsonUtility.FromJson<StageDataHandler>(data);
 
         // Handle prefab datas.
         POFactory.RemoveEveryRegisterdPO();
-
+        PlaceableGround.ClearTile();
         foreach (var prefab in dataHandler.prefabDatas)
         {
             var po = POFactory.CreatePO(prefab.type);
@@ -55,30 +65,29 @@ public class System_SaveManager : MonoBehaviour
 
             po.AsGround()?.AddToTile();
         }
+        
+        // Handle game data.
+        GameManager.SetPar(dataHandler.par);
+
         LevelEditorManager.SetPlayMode(PlayMode.Editing);
 
-        OnLoadComplete?.Invoke();
+        OnStageLoadComplete?.Invoke();
+
+        return true;
     }
 
     // Function for users to upload their stages to the server.
     [ContextMenu("Upload the stage")]
-    public void UploadStage()
+    public void UploadStageData()
     {
         if (POFactory.RegisteredSingletonPOs.Count < 4) return;
 
-        SaveDataHandler dataHandler = new SaveDataHandler();
+        StageDataHandler dataHandler = new StageDataHandler();
 
-        // Handle game data.
-        dataHandler.AddGameData(par: GameManager.Par);
+        // Handle stage data.
+        dataHandler.AddStageData(par: GameManager.Par, POFactory.RegistedPOs);
 
-        // Handle prefab datas.
-        foreach (var placeableObject in POFactory.RegistedPOs)
-        {
-            dataHandler.AddPrefab(placeableObject.Type, placeableObject.transform.position, placeableObject.transform.eulerAngles);
-        }
         var data = JsonUtility.ToJson(dataHandler);
-
-        
     }
 }
 
@@ -100,7 +109,7 @@ public class SaveManagerEditor : Editor
         indexToSave = EditorGUILayout.TextField("Saved Data Index: ", indexToSave);
         if (GUILayout.Button("Save"))
         {
-            SaveManager.SaveStage(int.Parse(indexToSave));
+            SaveManager.SaveStageData(int.Parse(indexToSave));
         }
         GUILayout.EndHorizontal();
 
@@ -108,7 +117,7 @@ public class SaveManagerEditor : Editor
         indexToLoad = EditorGUILayout.TextField("Loaded Data Index: ", indexToLoad);
         if (GUILayout.Button("Load"))
         {
-            SaveManager.LoadStage(int.Parse(indexToLoad));
+            SaveManager.LoadStageData(int.Parse(indexToLoad));
         }
         GUILayout.EndHorizontal();
 

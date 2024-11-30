@@ -1,7 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-
-public enum Scene { Menu = 0, Tutorial = 1, Main = 2, Maker = 3 };
 
 public sealed class GameSystem : MonoBehaviour
 {
@@ -24,6 +21,9 @@ public sealed class GameSystem : MonoBehaviour
     public static System_SaveManager SaveManager => saveManager;
     private static System_SaveManager saveManager;
 
+    public static System_SceneLoader SceneLoader => sceneLoader;
+    private static System_SceneLoader sceneLoader;
+
     public static Factory_POFactory POFactory => poFactory;
     private static Factory_POFactory poFactory;
 
@@ -34,6 +34,7 @@ public sealed class GameSystem : MonoBehaviour
         fxManager       = FindObjectOfType<System_FXManager>();
         uiManager       = FindObjectOfType<System_UIManager>();
         saveManager     = FindObjectOfType<System_SaveManager>();
+        sceneLoader     = FindObjectOfType<System_SceneLoader>();
         poFactory       = FindObjectOfType<Factory_POFactory>();
 
         var levelEditorManagerPrefab = AssetManager.GetPrefab(Prefab.Debugger.System_LevelEditorManager);
@@ -42,17 +43,7 @@ public sealed class GameSystem : MonoBehaviour
 
     private void Start()
     {
-        levelEditorManager.gameObject.SetActive(true);
-    }
-
-    public static Scene CurrentScene { get; private set; }
-    public static bool IsMakerScene => CurrentScene == Scene.Maker;
-    public static bool IsMainScene => CurrentScene == Scene.Main;
-    public static void LoadScene(Scene scene)
-    {
-        POFactory?.RemoveEveryRegisterdPO();
-
-        CurrentScene = scene;
-        SceneManager.LoadScene(CurrentScene.ToString());
+        if(SceneLoader.IsMakerScene)
+            levelEditorManager.gameObject.SetActive(true);
     }
 }

@@ -5,6 +5,16 @@ using static GameSystem;
 public class PlaceableGround : PlaceableProb
 {
     protected static Dictionary<Vector2Int, PlaceableGround> Tile = new Dictionary<Vector2Int, PlaceableGround>();
+    public static void ClearTile() => Tile.Clear();
+    public static int GetTheLowestGroundPosition()
+    {
+        int lowest = int.MaxValue;
+        foreach(var position in Tile.Keys)
+            if (position.y < lowest) lowest = position.y;
+
+        return lowest;
+    } 
+
 
     // Size the ground takes up in Level Editor Coorninates.
     [SerializeField] protected Vector2Int size = Vector2Int.one;

@@ -1,29 +1,26 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class SaveSystem
 {
 
     #region Data Handling
-    public string[] SavedDatas = new string[100];
-    private const string prefix = "Data_";
-
-    public void SaveData(string data, int index)
+    public void SaveData(string data, string path)
     {
-        if (WriteToFile($"{prefix}{index}", data))
+        if (WriteToFile(path, data))
         {
             Debug.Log("<color=cyan>Save Completed</color>");
-
-            SavedDatas[index] = data;
         }
     }
 
-    public string LoadData(int index)
+    public string LoadData(string path)
     {
         string data = string.Empty;
-        if (ReadFromFile($"{prefix}{index}", out data))
+        if (ReadFromFile(path, out data))
         {
             Debug.Log("<color=cyan>Load Completed</color>");
         }
@@ -66,19 +63,31 @@ public class SaveSystem
 }
 
 [Serializable]
-public class SaveDataHandler
+public class StageDataHandler
 {
+    // Data for each stage to save and load.
+    public byte par;
     public List<SerializedPrefabData> prefabDatas = new List<SerializedPrefabData>();
-    public SerializedGameData gameData;
 
-    public void AddPrefab(Prefab.PO type, Vector3 position, Vector3 eulerAngles)
+    public void AddStageData(byte par, List<PlaceableObjectBase> placeableObjects)
     {
-        prefabDatas.Add(new SerializedPrefabData(type, position, eulerAngles));
+        this.par = par;
+
+        foreach (PlaceableObjectBase po in placeableObjects)
+            prefabDatas.Add(new SerializedPrefabData(po.Type, po.transform.position, po.transform.eulerAngles));
     }
+}
 
-    public void AddGameData(byte par)
+[Serializable]
+public class GameDataHandler
+{
+    // Data for the whole game
+    public List<ScoreType> scores = new List<ScoreType>();
+    
+    public void AddGameData(ScoreType[] scores)
     {
-        gameData = new SerializedGameData(par);
+        foreach(ScoreType score in scores)
+            this.scores.Add(score);
     }
 }
 
@@ -94,17 +103,6 @@ public class SerializedPrefabData
         this.type = type;
         this.position = new SerializedVector3(position);
         this.eulerAngles = new SerializedVector3(eulerAngles);
-    }
-}
-
-[Serializable]
-public class SerializedGameData
-{
-    public byte par;
-
-    public SerializedGameData(byte par)
-    {
-        this.par = par;
     }
 }
 

@@ -62,10 +62,10 @@ public sealed class PlayerCharacter : CharacterBase
         Interactor.AsDriver.OnExitVehicle  += () => ChangeState(MoveState);
 
         // Initialize stroke count.
-        GameManager.OnGameStart                 += IntializeStroke;
-        GameManager.OnGameStart                 += Reposition;
-        SaveManager.OnLoadComplete               += Reposition;
-        LevelEditorManager.OnEditorModeToggled  += SetActiveAndReposition;
+        GameManager.OnGameStart                     += IntializeStroke;
+        GameManager.OnGameStart                     += Reposition;
+        SaveManager.OnStageLoadComplete                  += Reposition;
+        LevelEditorManager.OnEditorModeToggled      += SetActiveAndReposition;
     }
 
     protected override void Start()
@@ -77,21 +77,6 @@ public sealed class PlayerCharacter : CharacterBase
         AnimationController.SetLayerWeight(AnimationController.Layer.UpperLayer, AnimationController.UpperLayer.Off);
 
         ChangeState(MoveState);
-    }
-
-    protected override void Update()
-    {
-        base.Update();
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            Reposition();
-        }
-    }
-
-    protected override void FixedUpdate()
-    {
-        base.FixedUpdate();
     }
 
     #region Input Actions
@@ -176,8 +161,8 @@ public sealed class PlayerCharacter : CharacterBase
 
         var newPosition = POFactory.GetRegisteredSingletonPO<PlaceableSpawnPoint>().GetPosition();
         MovementController.SetPosition(newPosition);
-        MovementController.ChangeMovementDirection(MovementDirection.Right);
-        MovementController.SetVelocityMultiplier(1);
+        MovementController.ChangeMovementDirection(MovementDirection.Right, smoothRotation: false);
+        MovementController.SetVelocityMultiplier(1, smoothTransition: false);
     }
 
     public override PlayerCharacter AsPlayer()
@@ -191,6 +176,7 @@ public sealed class PlayerCharacter : CharacterBase
 
         if (other.CompareTag(Tag.Green))
         {
+            if (MovementController.CurrentZAxis == ZAxisMovementDirection.Up) return;
             blackboard.InputZDirection = ZAxisMovementDirection.Up;
             ChangeState(ZAxisMoveState);
         }

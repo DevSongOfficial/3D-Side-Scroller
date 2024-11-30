@@ -11,10 +11,17 @@ public abstract class MovementController : MonoBehaviour
     
     // todo: refactor these temporary codes. 
     protected float VelocityMultiplier { get; private set; } = 1;
-    public void SetVelocityMultiplier(float multiplier)
+    public void SetVelocityMultiplier(float multiplier, bool smoothTransition = true)
     {
-        if(velocityChangeCoroutine != null) StopCoroutine(velocityChangeCoroutine);
-        velocityChangeCoroutine = StartCoroutine(SmoothChangeToTargetMultiplier(multiplier));
+        if(smoothTransition)
+        {
+            if(velocityChangeCoroutine != null) StopCoroutine(velocityChangeCoroutine);
+            velocityChangeCoroutine = StartCoroutine(SmoothChangeToTargetMultiplier(multiplier));
+        }
+        else
+        {
+            VelocityMultiplier = multiplier;
+        }
     }
 
     private Coroutine velocityChangeCoroutine;

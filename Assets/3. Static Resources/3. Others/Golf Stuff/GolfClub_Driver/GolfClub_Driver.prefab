@@ -47,12 +47,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   displayName: Driver
+  clubType: 0
   swingRadius: 1.9
   chargeSpeed: 2
   damageEvent:
     senderType: 2
     damage: 45
-    knockBackVector: {x: 250, y: 50, z: 0}
+    knockBackVelocity: {x: 0, y: 0, z: 0}
 --- !u!33 &6145911543744819739
 MeshFilter:
   m_ObjectHideFlags: 0

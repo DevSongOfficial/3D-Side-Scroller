@@ -1,11 +1,7 @@
 using System;
 using System.Collections;
-using System.Runtime.CompilerServices;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Networking;
-using static AnimationController;
 using static GameSystem;
 
 [RequireComponent(typeof(CharacterOwnedDetector))]

@@ -8,10 +8,10 @@ public struct Prefab {
 	public enum PO {
 		PC_PlayerSpawnPoint,
 		PC_ZombieCharacter_1,
-		PE_Grass_1,
-		PE_Grass_2,
 		PE_Tree_1,
 		PE_Tree_2,
+		PE_Tree_3,
+		PE_Tree_4,
 		PG_Dirt,
 		PG_DirtAndGrass,
 		PG_Grass,
@@ -36,6 +36,7 @@ public struct Prefab {
 		Camera_Green,
 	}
 	public enum UI {
+		CanvasGroup_BlackScreen,
 		DamageText,
 		SpawnButton_1,
 	}

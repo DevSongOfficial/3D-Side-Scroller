@@ -19,8 +19,6 @@ public class System_UIManager : MonoBehaviour
 
     private List<MaskableGraphic> UIs_MoveAndFadeOut = new List<MaskableGraphic>();
 
-    public Vector3 floatingPosition => Camera.main.WorldToScreenPoint(GameManager.Player.transform.position);
-
     private void Awake()
     {
         Canvas = GetComponent<Canvas>();
@@ -29,15 +27,29 @@ public class System_UIManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        UpdateUIAlphaToBeZero();
+        HandleUIs_MoveAndFadeOut();
     }
 
-    private void LateUpdate()
+
+    public void PopupUI(MaskableGraphic graphic)
     {
-        UpdateFloatingUIPositions();
+        graphic.gameObject.SetActive(true);
     }
 
-    private void UpdateUIAlphaToBeZero()
+    public void PopupUI(MaskableGraphic graphic, Vector3 position, PopupType popupType)
+    {
+        PopupUI(graphic);
+        graphic.transform.position = position;
+
+        switch (popupType)
+        {
+            case PopupType.MoveAndFadeOut:
+                UIs_MoveAndFadeOut.Add(graphic);
+                break;
+        }
+    }
+
+    private void HandleUIs_MoveAndFadeOut()
     {
         foreach (var ui in UIs_MoveAndFadeOut)
         {
@@ -46,24 +58,6 @@ public class System_UIManager : MonoBehaviour
 
             if (ui.color.a <= 0) CloseUI(ui);
         }
-    }
-
-    private void UpdateFloatingUIPositions()
-    {
-        UI.Group_FloatingAbovePlayer.transform.position = floatingPosition;
-    }
-
-    public void PopupUI(MaskableGraphic graphic)
-    {
-        graphic.gameObject.SetActive(true);
-    }
-
-    public void PopupUI(MaskableGraphic text, Vector3 position, PopupType popupType)
-    {
-        PopupUI(text);
-        text.transform.position = position;
-
-        if(popupType == PopupType.MoveAndFadeOut) UIs_MoveAndFadeOut.Add(text);
     }
 
     public void CloseUI(MaskableGraphic graphic)
@@ -76,7 +70,10 @@ public class System_UIManager : MonoBehaviour
         text.text = s;
     }
 
-    public void SetText(Text text, string s) { text.text = s; }
+    public void SetText(Text text, string s) 
+    { 
+        text.text = s; 
+    }
 
     public string AddSpaceBeforeUppercase(string s)
     {

@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -60,48 +62,83 @@ public sealed class System_GameManager : MonoBehaviour
 {
     private void Awake()
     {
-        Player = FindObjectOfType<PlayerCharacter>();
+        switch (SceneLoader.CurrentScene)
+        {
+            case Scene.Main: case Scene.Maker:
+                Player = FindObjectOfType<PlayerCharacter>();
+                break;
+
+            case Scene.Menu:
+                if (!SaveManager.LoadGameData())
+                    clearedStages = Enumerable.Repeat(ScoreType.InComplete, stageCount + 1).ToArray();
+                break;
+
+        }
     }
 
     private void Start()
     {
-        if (IsMakerScene) return;
-
         // Load and start the stage.
-        GameStart(stageToStart);
+        if (SceneLoader.IsMainScene) 
+            GameStart(stageToStart);
+    }
+
+    private void Update()
+    {
+        HandleEditorOnlyInput();
+
+        ReloadSceneWhenPlayerOrGolfBallOutOfBounds();
     }
 
     // Handle the stage to start.
-    private static byte stageToStart = 3;
+    public event Action<int> OnStageNumberChanged;
+    private static int stageToStart = 3;
+    public void SetStageNumber(int stageNumber)
+    {
+        if (stageNumber <= 0) return;
+
+        stageToStart = stageNumber;
+        OnStageNumberChanged?.Invoke(stageToStart);
+    }
+
+    private static int stageCount = 18;
+    private static ScoreType[] clearedStages = new ScoreType[stageCount + 1]; // Stages that have been completed by player.
+    public void SetClearedStages(ScoreType[] clearedStages) => System_GameManager.clearedStages = clearedStages;
+
+
+    public void IncreaseStageNumber() => SetStageNumber(stageToStart + 1);
+    public void DecreaaseStageNumber() => SetStageNumber(stageToStart - 1);
+    public int GetStageNumber() => stageToStart;
+
     public void GoToMainMenu()
     {
-        LoadScene(Scene.Menu);
+        SceneLoader.LoadScene(Scene.Menu, TransitionEffect.FadeToBlack);
     }
 
     public void GoToNextStage()
     {
-        stageToStart++;
-        LoadScene(Scene.Main);
+        IncreaseStageNumber();
+        SceneLoader.LoadScene(Scene.Main, TransitionEffect.FadeToBlack);
     }
 
     public PlayerCharacter Player { get; private set; }
-    
-    public void SetPar(byte par) => Par = par;
+
+    // Par: predetermined number of strokes.
     public byte Par { get; private set; }
-
-
+    public void SetPar(byte par) => Par = par;
 
     public event Action OnGameStart;
     public event Action OnGameFinished;
 
     public void GameStart(int stage)
     {
-        SaveManager.LoadStage(stage);
-        StartCoroutine(GameStartRoutine());
+        StartCoroutine(GameStartRoutine(stage));
     }
 
-    private IEnumerator GameStartRoutine()
+    private IEnumerator GameStartRoutine(int stage)
     {
+        SaveManager.LoadStageData(stage);
+
         var golfBall = POFactory.GetRegisteredSingletonPO<GolfBall>();
         golfBall.OnHit += Player.IncrementStroke;
 
@@ -133,5 +170,33 @@ public sealed class System_GameManager : MonoBehaviour
         // Show UIs.
         UIManager.PopupUI(UIManager.UI.Panel_StageClear);
         UIManager.SetText(UIManager.UI.Text_StageClear, UIManager.AddSpaceBeforeUppercase(scoreType.ToString()));
+
+        // Save clear data.
+        if (SceneLoader.IsMainScene)
+        {
+            clearedStages[GetStageNumber()] = scoreType;
+            SaveManager.SaveGameData(clearedStages);
+        }
+    }
+
+    private void ReloadSceneWhenPlayerOrGolfBallOutOfBounds()
+    {
+        if (SceneLoader.IsLoading) return;
+        if (!SceneLoader.IsMakerScene && !SceneLoader.IsMainScene) return;
+        if (LevelEditorManager.Mode != PlayMode.Playing) return;
+
+        int min = PlaceableGround.GetTheLowestGroundPosition() - 3;
+        if (Player.transform.position.y < min || POFactory.GetRegisteredSingletonPO<GolfBall>().transform.position.y < min)
+            SceneLoader.LoadScene(SceneLoader.CurrentScene, TransitionEffect.FadeToBlack);
+    }
+
+    [System.Diagnostics.Conditional("UNITY_EDITOR")]
+    private void HandleEditorOnlyInput()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+            SceneLoader.LoadScene(Scene.Main, TransitionEffect.FadeToBlack);
+
+        if(Input.GetKeyDown(KeyCode.Escape))
+            SceneLoader.LoadScene(Scene.Menu, TransitionEffect.FadeToBlack);
     }
 }

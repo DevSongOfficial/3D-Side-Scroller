@@ -21,20 +21,20 @@ public class Placard : MonoBehaviour
 
     private void Start()
     {
-        if (IsMakerScene) canvas.worldCamera = GameObject.FindWithTag(Tag.EditorCamera.ToString()).GetComponent<Camera>();
-
+        if (SceneLoader.IsMakerScene) 
+            canvas.worldCamera = GameObject.FindWithTag(Tag.EditorCamera.ToString()).GetComponent<Camera>();
     }
 
     private void OnEnable()
     {
-        SaveManager.OnLoadComplete += SetTextToPar;
+        SaveManager.OnStageLoadComplete += SetTextToPar;
         LevelEditorManager.OnEditorModeToggled += SetInputfieldActive;
         inputField.onValueChanged.AddListener(SetText);
     }
 
     private void OnDisable()
     {
-        SaveManager.OnLoadComplete -= SetTextToPar;
+        SaveManager.OnStageLoadComplete -= SetTextToPar;
         LevelEditorManager.OnEditorModeToggled -= SetInputfieldActive;
         inputField.onValueChanged.RemoveAllListeners();
     }
@@ -46,11 +46,12 @@ public class Placard : MonoBehaviour
         try 
         { 
             par = byte.Parse(inputField.text);
+            if (par > 7 || par < 3) throw new Exception();
             text_ParIndicator.text = text;
         }
         catch 
-        { 
-            par = (int)ScoreType.Par;
+        {
+            par = 3;
             text_ParIndicator.text = par.ToString();
         }
 
