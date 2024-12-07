@@ -20,6 +20,9 @@ public class ProbFollowingCamera : MonoBehaviour
 
     private void Awake()
     {
+        POFactory.OnPORegistered += SetTarget;
+        POFactory.OnPOUnregistered += ClearTarget;
+
         if (SceneLoader.IsMakerScene)
         {
             LevelEditorManager.OnEditorModeToggled += SetActive;
@@ -27,16 +30,12 @@ public class ProbFollowingCamera : MonoBehaviour
         }
     }
 
-
-    protected virtual void OnEnable()
+    protected virtual void Start()
     {
         Camera = GetComponent<Camera>();
         Camera.depth = priorityOnStart;
-
-        POFactory.OnPORegistered += SetTarget;
-        POFactory.OnPOUnregistered += ClearTarget;
     }
-    protected virtual void OnDisable()
+    protected virtual void OnDestroy()
     {
         POFactory.OnPORegistered -= SetTarget;
         POFactory.OnPOUnregistered -= ClearTarget;

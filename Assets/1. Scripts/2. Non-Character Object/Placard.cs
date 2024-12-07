@@ -27,14 +27,14 @@ public class Placard : MonoBehaviour
 
     private void OnEnable()
     {
-        SaveManager.OnStageLoadComplete += SetTextToPar;
+        GameManager.OnStageSetup += SetTextToPar;
         LevelEditorManager.OnEditorModeToggled += SetInputfieldActive;
         inputField.onValueChanged.AddListener(SetText);
     }
 
     private void OnDisable()
     {
-        SaveManager.OnStageLoadComplete -= SetTextToPar;
+        GameManager.OnStageSetup -= SetTextToPar;
         LevelEditorManager.OnEditorModeToggled -= SetInputfieldActive;
         inputField.onValueChanged.RemoveAllListeners();
     }

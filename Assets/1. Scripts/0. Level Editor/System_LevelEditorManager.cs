@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using static GameSystem;
+using System.IO;
 
 public enum PlayMode
 {
@@ -33,6 +34,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
     [SerializeField] private TMP_Text text_levelEditorCameraCoordinates;
     [SerializeField] private Camera levelEditorCamera_vertical;
     [SerializeField] private RawImage rawImage_verticalCamera;
+    [SerializeField] private Camera levelEditorCamera_ScreenShot;
 
     // Current Editor Mode
     public PlayMode Mode { get; private set; }
@@ -63,7 +65,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         HandleObjectRemovement();
 
         HandleScreenMovementDependingOnMousePosition(speed: 5, multiplier: 3);
-        HandleVerticalCameraActive();
+        HandleVerticalCameraActivation();
     }
 
     private void LateUpdate()
@@ -104,12 +106,15 @@ public sealed class System_LevelEditorManager : MonoBehaviour
     {
         if (Input.GetKeyDown(switchMode))
         {
+            var player = GameManager.Player;
+            if (!player.CurrenState.CompareState(player.MoveState)) return;
+
             if (Mode == PlayMode.Playing) SetPlayMode(PlayMode.Editing);
             else if (Mode == PlayMode.Editing) SetPlayMode(PlayMode.Playing);
         }
     }
 
-    private void HandleVerticalCameraActive()
+    private void HandleVerticalCameraActivation()
     {
         if (Input.GetKeyDown(toggleVerticalCamera))
         {
@@ -240,6 +245,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
         }
     }
 
+    private readonly Vector2Int worldSize = new Vector2Int(75, 30);
     private void HandleScreenMovementDependingOnMousePosition(float speed, float multiplier = 1)
     {
         if (!Input.GetKey(moveScreen)) return;
@@ -247,11 +253,38 @@ public sealed class System_LevelEditorManager : MonoBehaviour
 
         var delta = new Vector3(UI.GetMouseArea().x, UI.GetMouseArea().y, 0);
         delta *= Input.GetKey(fastMove) ? speed * multiplier : speed;
-        Camera.transform.position += delta * Time.deltaTime;
+
+        var position = Camera.transform.position + delta * Time.deltaTime;
+        if (Mathf.Abs(position.x) <= worldSize.x && Mathf.Abs(position.y) <= worldSize.y) 
+            Camera.transform.position = position;
     }
 
     private void HandleScreenPositionText()
     {
         text_levelEditorCameraCoordinates.text = $"({Mathf.Round(Camera.transform.position.x)}, {Mathf.Round(Camera.transform.position.y)})";
+    }
+
+    [ContextMenu("Capture")]
+    void TakeAScreenShot()
+    {
+        var fullPath = Path.Combine(Application.persistentDataPath, "ScreenShot");
+
+        ScreenCapture.CaptureScreenshot(fullPath, 1);
+    }
+
+    public void OpenUploadPanel()
+    {
+        if (POFactory.RegisteredSingletonPOs.Count < 4)
+        {
+            return;
+        }
+
+        UI.Panel_Upload.gameObject.SetActive(true);
+    }
+
+    public async void TestUpload()
+    {
+
+        await SaveManager.UploadStageDataAync(UI.InputField_Title.text, UI.InputField_Description.text);
     }
 }

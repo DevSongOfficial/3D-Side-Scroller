@@ -10,12 +10,24 @@ public class LevelEditorUI : MonoBehaviour
     private Dictionary<Vector2, Image> mouseAreas = new Dictionary<Vector2, Image>();
     [SerializeField] private Image[] mouseCursorDetectorImages;
 
+    [Space]
     // Object Selection Button
     [SerializeField] private RectTransform contentsPanel;
     private ObjectSelectionButton[] objectSelectionButtons; // Buttons in contentsPanel.
     [SerializeField] private RectTransform objectSelectionGroup;
     public RectTransform ObjectSelectionGroup => objectSelectionGroup;
     private void ToggleObjectSelectionGroup(bool inOn) => objectSelectionGroup.gameObject.SetActive(inOn);
+
+    [Space]
+    // Upload and download data.
+    [SerializeField] private InputField inputField_Title;
+    [SerializeField] private InputField inputField_Description;
+    [SerializeField] private Button button_OpenUploadPanel;
+    [SerializeField] private Image panel_Upload;
+    public InputField InputField_Title => inputField_Title;
+    public InputField InputField_Description => inputField_Description;
+    public Button Button_OpenUploadPanel => button_OpenUploadPanel;
+    public Image Panel_Upload => panel_Upload;
 
     private void Awake()
     {

@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 using static GameSystem;
 
 public class System_SaveManager : MonoBehaviour
 { 
-    public event Action OnStageLoadStart;
-    public event Action OnStageLoadComplete;
-
     private SaveSystem saveSystem = new SaveSystem();
 
     public void SaveGameData(ScoreType[] clearedStages)
@@ -34,7 +32,8 @@ public class System_SaveManager : MonoBehaviour
     }
 
 
-    public void SaveStageData(int indexToSave)
+    public string prefix = "Stage_";
+    public void SaveStageDataWithStageNumber(int stageNumber)
     {
         StageDataHandler dataHandler = new StageDataHandler();
 
@@ -42,55 +41,52 @@ public class System_SaveManager : MonoBehaviour
         dataHandler.AddStageData(par: GameManager.Par, placeableObjects: POFactory.RegistedPOs);
 
         var data = JsonUtility.ToJson(dataHandler);
-        saveSystem.SaveData(data, $"Stage_{indexToSave}");
+        saveSystem.SaveData(data, $"{prefix}{stageNumber}");
     }
 
-    public bool LoadStageData(int indexToLoad)
+    public StageDataHandler LoadStageData(int stageNumber)
     {
-        OnStageLoadStart?.Invoke();
-
-        var data = saveSystem.LoadData($"Stage_{indexToLoad}");
-        if (String.IsNullOrEmpty(data)) return false;
-
-        StageDataHandler dataHandler = JsonUtility.FromJson<StageDataHandler>(data);
-
-        // Handle prefab datas.
-        POFactory.RemoveEveryRegisterdPO();
-        PlaceableGround.ClearTile();
-        foreach (var prefab in dataHandler.prefabDatas)
-        {
-            var po = POFactory.CreatePO(prefab.type);
-            po.transform.position = prefab.position.GetValue();
-            po.transform.eulerAngles = prefab.eulerAngles.GetValue();
-
-            po.AsGround()?.AddToTile();
-        }
-        
-        // Handle game data.
-        GameManager.SetPar(dataHandler.par);
-
-        LevelEditorManager.SetPlayMode(PlayMode.Editing);
-
-        OnStageLoadComplete?.Invoke();
-
-        return true;
+        return LoadStageData<StageDataHandler>($"{prefix}{stageNumber}");
     }
 
-    // Function for users to upload their stages to the server.
-    [ContextMenu("Upload the stage")]
-    public void UploadStageData()
+    public StageDataHandler LoadStageData(string title)
+    {
+        var data = saveSystem.LoadData($"{prefix}{title}");
+        if (String.IsNullOrEmpty(data)) return null;
+
+        return JsonUtility.FromJson<StageDataHandler>(data);
+    }
+
+    private T LoadStageData<T>(string name) where T : class
+    {
+        var data = saveSystem.LoadData(name);
+        if (String.IsNullOrEmpty(data)) return null;
+
+        return JsonUtility.FromJson<T>(data);
+    }
+
+    // Function for users to upload their custom stages to the server.
+    public async Task UploadStageDataAync(string title, string description)
     {
         if (POFactory.RegisteredSingletonPOs.Count < 4) return;
 
-        StageDataHandler dataHandler = new StageDataHandler();
-
         // Handle stage data.
-        dataHandler.AddStageData(par: GameManager.Par, POFactory.RegistedPOs);
+        StageDataHandler dataHandler = new StageDataHandler();
+        dataHandler.AddStageData(par: GameManager.Par, placeableObjects: POFactory.RegistedPOs);
 
+        // Save it.
         var data = JsonUtility.ToJson(dataHandler);
+        saveSystem.SaveData(data, $"{prefix}{title}");
+
+        // Upload it.(The file name is the same with the title.)
+        await CloudManager.UploadStageDataAsync(GameManager.GetUserID(), title, description);
+    }
+
+    public async Task<string> DownloadStageDataAsync()
+    {
+        return await CloudManager.DownloadRandomStageDataAsync();
     }
 }
-
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(System_SaveManager))]
@@ -109,7 +105,7 @@ public class SaveManagerEditor : Editor
         indexToSave = EditorGUILayout.TextField("Saved Data Index: ", indexToSave);
         if (GUILayout.Button("Save"))
         {
-            SaveManager.SaveStageData(int.Parse(indexToSave));
+            SaveManager.SaveStageDataWithStageNumber(int.Parse(indexToSave));
         }
         GUILayout.EndHorizontal();
 
@@ -117,7 +113,8 @@ public class SaveManagerEditor : Editor
         indexToLoad = EditorGUILayout.TextField("Loaded Data Index: ", indexToLoad);
         if (GUILayout.Button("Load"))
         {
-            SaveManager.LoadStageData(int.Parse(indexToLoad));
+            var data = SaveManager.LoadStageData(int.Parse(indexToLoad));
+            GameManager.SetupStage(data);
         }
         GUILayout.EndHorizontal();
 

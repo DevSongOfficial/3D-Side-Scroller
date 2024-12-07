@@ -28,6 +28,7 @@ public class Factory_POFactory : MonoBehaviour
     public void RemovePO(PlaceableObjectBase po)
     {
         POFactory.UnregisterPO(po);
+        po.AsGround()?.RemoveFromTile();
         po.SetActive(false);
     }
 

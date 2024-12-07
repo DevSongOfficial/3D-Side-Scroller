@@ -24,6 +24,9 @@ public sealed class GameSystem : MonoBehaviour
     public static System_SceneLoader SceneLoader => sceneLoader;
     private static System_SceneLoader sceneLoader;
 
+    public static System_CloudManager CloudManager => cloudManager;
+    private static System_CloudManager cloudManager;
+
     public static Factory_POFactory POFactory => poFactory;
     private static Factory_POFactory poFactory;
 
@@ -35,6 +38,7 @@ public sealed class GameSystem : MonoBehaviour
         uiManager       = FindObjectOfType<System_UIManager>();
         saveManager     = FindObjectOfType<System_SaveManager>();
         sceneLoader     = FindObjectOfType<System_SceneLoader>();
+        cloudManager    = FindObjectOfType<System_CloudManager>();
         poFactory       = FindObjectOfType<Factory_POFactory>();
 
         var levelEditorManagerPrefab = AssetManager.GetPrefab(Prefab.Debugger.System_LevelEditorManager);

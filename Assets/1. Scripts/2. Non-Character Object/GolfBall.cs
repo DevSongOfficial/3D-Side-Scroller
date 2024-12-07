@@ -49,6 +49,16 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
         collider = GetComponent<Collider>();
     }
 
+    private void OnEnable()
+    {
+        OnHit += GameManager.Player.IncrementStroke;
+    }
+
+    private void OnDisable()
+    {
+        OnHit -= GameManager.Player.IncrementStroke;
+    }
+
     private void FixedUpdate()
     {
         HandleBallAttributesBasedOnGroundType();

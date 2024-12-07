@@ -34,10 +34,13 @@ public struct Prefab {
 	public enum Prob {
 		Camera_GolfBall,
 		Camera_Green,
+		PlayerCharacter,
 	}
 	public enum UI {
 		CanvasGroup_BlackScreen,
+		Canvas_LoadingText,
 		DamageText,
+		DefaultText,
 		SpawnButton_1,
 	}
 	public enum VFX {

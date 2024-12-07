@@ -27,6 +27,7 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
     // State (Each character runs as a single state machine)
     public StateBase CurrenState { get; private set; }
     public StateBase PreviousState { get; private set; }
+    public event Action<StateBase> OnStateChanged;
 
     // Character Information
     [Header("Character Information")]
@@ -47,6 +48,8 @@ public abstract class CharacterBase : MonoBehaviour, IDamageable
         PreviousState = CurrenState;
         CurrenState = newState;
         CurrenState.EnterState();
+
+        OnStateChanged?.Invoke(newState);
     }
 
     protected virtual void Awake()

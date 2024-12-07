@@ -64,7 +64,7 @@ public sealed class PlayerCharacter : CharacterBase
         // Initialize stroke count.
         GameManager.OnGameStart                     += IntializeStroke;
         GameManager.OnGameStart                     += Reposition;
-        SaveManager.OnStageLoadComplete                  += Reposition;
+        GameManager.OnStageSetup                    += Reposition;
         LevelEditorManager.OnEditorModeToggled      += SetActiveAndReposition;
     }
 

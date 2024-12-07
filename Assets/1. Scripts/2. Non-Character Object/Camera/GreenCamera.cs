@@ -1,14 +1,9 @@
 using static GameSystem;
 public sealed class GreenCamera : ProbFollowingCamera
 {
-    private void Start()
+    protected override void Start()
     {
-        SetUp();
-    }
-
-    protected override void OnEnable()
-    {
-        base.OnEnable();
+        base.Start();
 
         SetUp();
     }
@@ -32,9 +27,9 @@ public sealed class GreenCamera : ProbFollowingCamera
         golfBall.OnExitGreen += HideGreenCamera;
     }
 
-    protected override void OnDisable()
+    protected override void OnDestroy()
     {
-        base.OnDisable();
+        base.OnDestroy();
 
         if (!POFactory.HasRegisteredSingletonPO<GolfBall>()) return;
 

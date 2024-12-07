@@ -1,59 +1,65 @@
-using System.IO;
-using System.Threading.Tasks;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
+using UnityEngine.Networking;
+using Firebase.Firestore;
+using Firebase.Extensions;
+using System.Threading.Tasks;
 using static GameSystem;
 
 public class System_CloudManager : MonoBehaviour
 {
-    /*
-    private static FirebaseStorage storage;
-
-    private void Start()
+    private FirebaseFirestore db;
+    
+    private void Awake()
     {
-        storage = FirebaseStorage.DefaultInstance; 
+        DontDestroyOnLoad(gameObject);
+
+        db = FirebaseFirestore.DefaultInstance; 
     }
-
-    public static void UploadData(string nameInCloud, string nameInLocalRepository)
+    
+    public async Task UploadStageDataAsync(string collectionName, string title, string description)
     {
-        // Create a storage reference from our storage service
-        StorageReference storageRef = storage.RootReference.Child(nameInCloud);
+        // Get map file from local disk.
+        var mapData = SaveManager.LoadStageData(title);
 
-        // File located on disk
-        string localFile = Path.Combine(Application.persistentDataPath, nameInLocalRepository);
+        // Upload the file to the path with title and description.
+        DocumentReference docRef = db.Collection(collectionName).Document($"{SaveManager.prefix}{title}");
+        Dictionary<string, object> stageData = new Dictionary<string, object>
+        {
+            { "Title", title },
+            { "Description", description},
+            { "Map", JsonUtility.ToJson(mapData) }
+        };
 
-        // Upload the file to the path.
-        storageRef.PutFileAsync(localFile)
-            .ContinueWith((Task<StorageMetadata> task) => {
-                if (task.IsFaulted || task.IsCanceled)
-                {
-                    Debug.Log(task.Exception.ToString());
-                    // Uh-oh, an error occurred!
-                }
-                else
-                {
-                    // Metadata contains file metadata such as size, content-type, and download URL.
-                    StorageMetadata metadata = task.Result;
-                    string md5Hash = metadata.Md5Hash;
-                    Debug.Log("Finished uploading...");
-                    Debug.Log("md5 hash = " + md5Hash);
-                }
-            });
-    }
-
-    public static void DownloadData(string nameInCloud, string nameInLocalRepository)
-    {
-        StorageReference pathRef = storage.GetReference(nameInCloud);
-
-        // Create local filesystem URL
-        string localFile = Path.Combine(Application.persistentDataPath, nameInLocalRepository);
-
-        // Download to the local filesystem
-        pathRef.GetFileAsync(localFile).ContinueWithOnMainThread(task => {
-            if (!task.IsFaulted && !task.IsCanceled)
-            {
-                Debug.Log("File downloaded.");
-            }
+        await docRef.SetAsync(stageData).ContinueWithOnMainThread(task => {
+            Debug.Log("<color=cyan>Upload Completed</color>");
         });
-    }*/
+
+    }
+
+    private string url_getRandomDocuments = "https://us-central1-golfer-a4ebb.cloudfunctions.net/getRandomDocument";
+    public async Task<string> DownloadRandomStageDataAsync()
+    {
+        using (UnityWebRequest request = UnityWebRequest.Get(url_getRandomDocuments))
+        {
+            await WaitForRequest(request);
+
+            if (request.result == UnityWebRequest.Result.Success)
+                return request.downloadHandler.text;
+        }
+
+        return null;
+    }
+
+    private Task WaitForRequest(UnityWebRequest request)
+    {
+        var tcs = new TaskCompletionSource<bool>();
+
+
+        request.SendWebRequest().completed += (op) => tcs.SetResult(true);
+
+        return tcs.Task;
+    }
 }

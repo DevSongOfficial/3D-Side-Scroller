@@ -1,10 +1,14 @@
+using Firebase.Functions;
+using Firebase;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Networking;
 using static GameSystem;
 
 public enum Layer
@@ -70,7 +74,7 @@ public sealed class System_GameManager : MonoBehaviour
 
             case Scene.Menu:
                 if (!SaveManager.LoadGameData())
-                    clearedStages = Enumerable.Repeat(ScoreType.InComplete, stageCount + 1).ToArray();
+                    ClearedStages = Enumerable.Repeat(ScoreType.InComplete, StageCount + 1).ToArray();
                 break;
 
         }
@@ -81,6 +85,7 @@ public sealed class System_GameManager : MonoBehaviour
         // Load and start the stage.
         if (SceneLoader.IsMainScene) 
             GameStart(stageToStart);
+
     }
 
     private void Update()
@@ -90,25 +95,55 @@ public sealed class System_GameManager : MonoBehaviour
         ReloadSceneWhenPlayerOrGolfBallOutOfBounds();
     }
 
+    // Handle player info.
+    public PlayerCharacter Player { get; private set; }
+    private static string id = "000000_ADMIN"; // YYMMDD_ + random alphbets.
+    public string GetUserID() => id;
+
+    // Hnadle user-made courses.
+    private static Dictionary<string, object> userStageData;
+    public Dictionary<string, object> GetUserStageData() => userStageData;
+    public void SetUserStageData(Dictionary<string, object> userStageData) => System_GameManager.userStageData = userStageData;
+    
+
     // Handle the stage to start.
     public event Action<int> OnStageNumberChanged;
-    private static int stageToStart = 3;
+    private static int stageToStart = 1;
+    public int GetStageNumber() => stageToStart;
     public void SetStageNumber(int stageNumber)
     {
-        if (stageNumber <= 0) return;
+        if (stageNumber <= 0 || stageNumber > StageCount) return;
 
         stageToStart = stageNumber;
         OnStageNumberChanged?.Invoke(stageToStart);
     }
+    // Check if player completed previous stage.
+    public bool CanStartTheStage(int stageNumber)
+    {
+        if (stageNumber == 1) return true;
 
-    private static int stageCount = 18;
-    private static ScoreType[] clearedStages = new ScoreType[stageCount + 1]; // Stages that have been completed by player.
-    public void SetClearedStages(ScoreType[] clearedStages) => System_GameManager.clearedStages = clearedStages;
+        return GetScoreOfStageByIndex(stageNumber - 1, out ScoreType score) && score != ScoreType.InComplete;
+    }
 
+    public readonly static int StageCount = 18;
+    private static ScoreType[] ClearedStages = new ScoreType[StageCount + 1]; // Stages that have been completed by player.
+    public void SetClearedStages(ScoreType[] clearedStages) => ClearedStages = clearedStages;
+    public bool GetScoreOfStageByIndex(int index, out ScoreType score)
+    {
+        if (index <= 0 || index > StageCount)
+        {
+            score = ScoreType.InComplete;
+            return false;
+        }
+        else
+        {
+            score = ClearedStages[index];
+            return true;
+        }
+    }
 
     public void IncreaseStageNumber() => SetStageNumber(stageToStart + 1);
     public void DecreaaseStageNumber() => SetStageNumber(stageToStart - 1);
-    public int GetStageNumber() => stageToStart;
 
     public void GoToMainMenu()
     {
@@ -121,7 +156,6 @@ public sealed class System_GameManager : MonoBehaviour
         SceneLoader.LoadScene(Scene.Main, TransitionEffect.FadeToBlack);
     }
 
-    public PlayerCharacter Player { get; private set; }
 
     // Par: predetermined number of strokes.
     public byte Par { get; private set; }
@@ -137,10 +171,8 @@ public sealed class System_GameManager : MonoBehaviour
 
     private IEnumerator GameStartRoutine(int stage)
     {
-        SaveManager.LoadStageData(stage);
-
-        var golfBall = POFactory.GetRegisteredSingletonPO<GolfBall>();
-        golfBall.OnHit += Player.IncrementStroke;
+        var dataHandler = SaveManager.LoadStageData(stage);
+        SetupStage(dataHandler);
 
         // Wait for others to be prepared.
         yield return new LateUpdate();
@@ -155,6 +187,31 @@ public sealed class System_GameManager : MonoBehaviour
         InputManager.ToggleInput(true);
 
         OnGameStart?.Invoke();
+    }
+
+    
+
+    public event Action OnStageSetup;
+    public void SetupStage(StageDataHandler dataHandler)
+    {
+        // Handle prefab datas.
+        POFactory.RemoveEveryRegisterdPO();
+        PlaceableGround.ClearTile();
+        foreach (var prefab in dataHandler.prefabDatas)
+        {
+            var po = POFactory.CreatePO(prefab.type);
+            po.transform.position = prefab.position.GetValue();
+            po.transform.eulerAngles = prefab.eulerAngles.GetValue();
+
+            po.AsGround()?.AddToTile();
+        }
+
+        // Handle game data.
+        GameManager.SetPar(dataHandler.par);
+
+        LevelEditorManager.SetPlayMode(PlayMode.Editing);
+
+        OnStageSetup?.Invoke();
     }
 
     public void BallInTheCup()
@@ -172,10 +229,10 @@ public sealed class System_GameManager : MonoBehaviour
         UIManager.SetText(UIManager.UI.Text_StageClear, UIManager.AddSpaceBeforeUppercase(scoreType.ToString()));
 
         // Save clear data.
-        if (SceneLoader.IsMainScene)
+        if (SceneLoader.IsMainScene && scoreType.BetterThan(ClearedStages[GetStageNumber()]))
         {
-            clearedStages[GetStageNumber()] = scoreType;
-            SaveManager.SaveGameData(clearedStages);
+            ClearedStages[GetStageNumber()] = scoreType;
+            SaveManager.SaveGameData(ClearedStages);
         }
     }
 
@@ -193,7 +250,7 @@ public sealed class System_GameManager : MonoBehaviour
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
     private void HandleEditorOnlyInput()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) && SceneLoader.IsMainScene)
             SceneLoader.LoadScene(Scene.Main, TransitionEffect.FadeToBlack);
 
         if(Input.GetKeyDown(KeyCode.Escape))
