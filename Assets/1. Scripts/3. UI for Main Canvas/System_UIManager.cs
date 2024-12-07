@@ -7,7 +7,7 @@ using static GameSystem;
 
 public enum PopupType
 {
-    Static, SlideUp, SlideHorizontal, MoveAndFadeOut
+    Static, FadeIn, SlideUp, SlideHorizontal, MoveAndFadeOut
 }
 
 [RequireComponent(typeof(UI))]
@@ -45,6 +45,9 @@ public class System_UIManager : MonoBehaviour
         {
             case PopupType.MoveAndFadeOut:
                 UIs_MoveAndFadeOut.Add(graphic);
+                break;
+            case PopupType.FadeIn:
+                
                 break;
         }
     }

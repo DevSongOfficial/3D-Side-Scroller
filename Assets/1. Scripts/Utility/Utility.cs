@@ -94,6 +94,12 @@ public static class Utility
         return collider.gameObject.CompareTag(tag.ToString());
     }
 
+    public static bool BetterThan(this ScoreType scoreType, ScoreType scoreToCompare)
+    {
+        if (scoreToCompare == ScoreType.InComplete) return false;
+        else return (int)scoreType < (int)scoreToCompare;
+    }
+
     public static bool IsWithinTolerance(float current, float target, float tolerance)
     {
         return Mathf.Abs(Mathf.DeltaAngle(current, target)) <= tolerance;
