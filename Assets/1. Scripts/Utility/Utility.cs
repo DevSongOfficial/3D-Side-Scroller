@@ -1,5 +1,8 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -108,6 +111,34 @@ public static class Utility
     public static T StringToEnum<T>(string e)
     {
         return (T)Enum.Parse(typeof(T), e);
+    }
+
+    public static string FromBASE64(this string s)
+    {
+        var bytes = Convert.FromBase64String(s);
+        return Encoding.UTF8.GetString(bytes);
+    }
+
+    public static string ToBASE64(this string s)
+    {
+        var bytes = Encoding.UTF8.GetBytes(s);
+        return Convert.ToBase64String(bytes);
+    }
+
+    public static Dictionary<string, object> ToStageData(this string rawData)
+    {
+        var convertedData = JsonConvert.DeserializeObject<Dictionary<string, object>>(rawData);
+        var stageData = JsonConvert.DeserializeObject<Dictionary<string, object>>(convertedData["data"].ToString());
+        return stageData;
+    }
+
+    public static Dictionary<string, object> ToStagesData(this string rawData)
+    {
+        if (string.IsNullOrEmpty(rawData)) return null; 
+
+        var convertedData = JsonConvert.DeserializeObject<Dictionary<string, object>>(rawData);
+        var stageData = JsonConvert.DeserializeObject<Dictionary<string, object>>(convertedData["documents"].ToString());
+        return stageData;
     }
 
     public static int GetCloserNumber(float number , int num1, int num2)

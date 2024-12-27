@@ -31,7 +31,7 @@ public class FlagStick : MonoBehaviour, IPickupable
         collider.isTrigger = true;
     }
 
-    public void OnDropedOff()
+    public void OnDroppedOff()
     {
         POFactory.AttachToMap(transform);
 

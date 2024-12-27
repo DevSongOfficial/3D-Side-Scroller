@@ -9,6 +9,7 @@ using static GameSystem;
 public class Placard : MonoBehaviour
 {
     private byte par;
+    private byte par_Default = 3;
     [SerializeField] private Text text_ParIndicator;
     [SerializeField] private InputField inputField;
 
@@ -21,8 +22,11 @@ public class Placard : MonoBehaviour
 
     private void Start()
     {
-        if (SceneLoader.IsMakerScene) 
+        if (SceneLoader.IsMakerScene)
+        {
+            par = par_Default;
             canvas.worldCamera = GameObject.FindWithTag(Tag.EditorCamera.ToString()).GetComponent<Camera>();
+        }
     }
 
     private void OnEnable()
@@ -51,7 +55,7 @@ public class Placard : MonoBehaviour
         }
         catch 
         {
-            par = 3;
+            par = par_Default;
             text_ParIndicator.text = par.ToString();
         }
 

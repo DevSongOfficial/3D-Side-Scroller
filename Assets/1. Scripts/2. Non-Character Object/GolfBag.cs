@@ -97,7 +97,7 @@ public class GolfBag : MonoBehaviour, IInteractable, IPickupable
         bodyCollider.isTrigger = true;
     }
 
-    public virtual void OnDropedOff()
+    public virtual void OnDroppedOff()
     {
         POFactory.AttachToMap(transform);
 

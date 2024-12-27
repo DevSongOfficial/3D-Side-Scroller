@@ -119,23 +119,24 @@ public class MainMenu : MonoBehaviour
 
         UIManager.PopupUI(panel_CoursePanelBackground);
         var loadingText = Instantiate(AssetManager.GetPrefab(Prefab.UI.Canvas_LoadingText));
-        
+
 
         // Load data async.
-        var rawData = await SaveManager.DownloadStageDataAsync();
+        //var rawData = await SaveManager.DownloadStageDataAsync();
+        //var rawData = await SaveManager.DownloadStageDataAsync();
+        var rawData = await SaveManager.DownloadStageDataAsync("000000_ADMIN", "ABC");
 
         // After scene load
         loadingText.SetActive(false);
         UIManager.PopupUI(panel_CoureInfo);
 
         // Convert data.
-        var stageData = JsonConvert.DeserializeObject<Dictionary<string, object>>(rawData);
-        var _stageData = JsonConvert.DeserializeObject<Dictionary<string, object>>(stageData["data"].ToString());
+        var stageData = rawData.ToStageData();
 
-        var title = _stageData["Title"];
-        var description = _stageData["Description"];
+        var title = stageData["Title"];
+        var description = stageData["Description"];
         
-        var mapDataHandler = _stageData["Map"].ToString();
+        var mapDataHandler = stageData["Map"].ToString();
         var mapData = JsonUtility.FromJson<StageDataHandler>(mapDataHandler);
 
         var par = mapData.par;
@@ -147,7 +148,7 @@ public class MainMenu : MonoBehaviour
         text_Par.text = par.ToString();
 
         // Set stage to start.
-        GameManager.SetUserStageData(_stageData);
+        GameManager.SetUserStageData(stageData);
 
         Invoke("PlayUserStage", 3);
     }

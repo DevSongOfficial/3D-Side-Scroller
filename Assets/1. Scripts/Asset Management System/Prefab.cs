@@ -39,6 +39,7 @@ public struct Prefab {
 	public enum UI {
 		CanvasGroup_BlackScreen,
 		Canvas_LoadingText,
+		Content_CourseInfo,
 		DamageText,
 		DefaultText,
 		SpawnButton_1,

@@ -86,6 +86,18 @@ public class System_SaveManager : MonoBehaviour
     {
         return await CloudManager.DownloadRandomStageDataAsync();
     }
+
+    public async Task<string> DownloadStageDataAsync(string userID, string stageTitle)
+    {
+        return await CloudManager.DownloadStageDataAsnyc(userID, stageTitle);
+    }
+
+    public async Task<string> DownloadStageDataAsync(string stageTitle)
+    {
+        return await CloudManager.DownloadStageDataAsnyc(stageTitle);
+    }
+
+    
 }
 
 #if UNITY_EDITOR

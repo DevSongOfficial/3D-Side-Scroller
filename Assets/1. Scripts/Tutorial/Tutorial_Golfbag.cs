@@ -47,9 +47,9 @@ public class Tutorial_Golfbag : GolfBag
         text_guide.text = "Press R to drop it off";
     }
 
-    public override void OnDropedOff()
+    public override void OnDroppedOff()
     {
-        base.OnDropedOff();
+        base.OnDroppedOff();
 
         text_guide.text = "Now take your club and hit the ball";
         golfBall.gameObject.SetActive(true);

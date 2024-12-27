@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using static GameSystem;
 
@@ -14,56 +16,67 @@ public interface IInteractable
 public interface IPickupable 
 {
     void OnPickedUp(Transform parent);
-    void OnDropedOff();
+    void OnDroppedOff();
 }
 
 // Exposes only necessary [CharacterBase]'s interaction info.
 public class Interactor
 {
-    // General
-    private CharacterBase interactorCharacter;
+    private readonly CharacterBase interactorCharacter;
     private IInteractable currentlyInteractingObject;
 
-    public Interactor(CharacterBase interactor)
+    public Interactor(CharacterBase character)
     {
-         interactorCharacter = interactor;
+        interactorCharacter = character;
     }
 
-    public bool FindAndInteractWithinRange(float distance = 1.5f)
+    public bool TryInteract(float range = 1.5f)
     {
-        var position = GetPosition() + interactorCharacter.MovementController.Direction.ConvertToVector3() * 0.5f;
-        var interactables = interactorCharacter.Detector.DetectComponentsWithClosestInFirst<IInteractable>(position, distance, Layer.Interactable.GetMask());
-
-        if (interactables.Count == 0) return false;
-        IInteractable interactable = interactables[0];
-
-        if (AsCarrier.IsCarryingItem)
-        {
-            currentlyInteractingObject = interactable;
-            currentlyInteractingObject.Interact(this);
-            return true;
-        }
-
-        if (interactables.Count > 1)
-        {
-            for(int i = 1; i < interactables.Count; i++)
-            {
-                // Check each's priority and take higher one.
-                if ((int)interactables[i].GetType() < (int)interactable.GetType())
-                {
-                    interactable = interactables[i];
-                }
-            }
-        }
+        var interactable = FindHighestPriorityInteractable(range);
+        if (interactable == null) return false;
 
         currentlyInteractingObject = interactable;
         currentlyInteractingObject.Interact(this);
         return true;
     }
 
+    public bool TogglePickup(Vector3 range)
+    {
+        if (AsCarrier == null) return false;
+
+        if (AsCarrier.IsCarryingItem)
+        {
+            AsCarrier.DropOff();
+            return true;
+        }
+
+        var pickupable = FindClosestPickupable(range);
+        if (pickupable == null) return false;
+
+        AsCarrier.PickUp(pickupable);
+        return true;
+    }
+
+    public bool TryLoadToCart(float radius = 0.65f)
+    {
+        if (AsCarrier == null || !AsCarrier.IsCarryingItem) return false;
+
+        var cart = FindClosestCart(radius);
+        if (cart == null) return false;
+
+        cart.LoadTheTrunk(AsCarrier.DropOffItem());
+        return true;
+    }
+
+    /// <summary>
+    /// ////////////////////
+    /// </summary>
+    /// <param name="distance"></param>
+    /// <returns></returns>
+
     public bool Toggle_FindAndPickupWithinRange(Vector3 range)
     {
-        if(AsCarrier == null) return false;
+        if (AsCarrier == null) return false;
 
         if (AsCarrier.IsCarryingItem)
         {
@@ -82,27 +95,6 @@ public class Interactor
         return false;
     }
 
-    private const float detectionDistance = 0.85f;
-    public bool Toggle_FindAndLoadCart(float radius = 0.65f)
-    {
-        if (AsCarrier == null || !AsCarrier.IsCarryingItem) return false;
-
-        var position = GetPosition() + detectionDistance * interactorCharacter.MovementController.FacingDirection.ConvertToVector3();
-        var carts = interactorCharacter.Detector.DetectComponentsWithSphere<GolfCart>(position, radius, Layer.Interactable.GetMask());
-        foreach(var cart in carts)
-        {
-            if (Vector3.Distance(cart.CarryPoint.position, position) > detectionDistance * 1.5f) continue;
-
-            var item = AsCarrier.carryingItem;
-            AsCarrier.DropOff();
-            cart.LoadTheTrunk(item);
-
-            return true;
-        }
-
-        return false;
-    }
-
     public Vector3 GetPosition()
     {
         return interactorCharacter.Detector.ColliderCenter;
@@ -111,6 +103,31 @@ public class Interactor
     public float GetInteractionRange()
     {
         return interactorCharacter.Info.InteractionRange;
+    }
+
+    private IInteractable FindHighestPriorityInteractable(float range)
+    {
+        var position = GetAdjustedPosition(0.5f);
+        var interactables = interactorCharacter.Detector.DetectComponentsWithClosestInFirst<IInteractable>(position, range, Layer.Interactable.GetMask());
+        return interactables.OrderBy(x => (int)x.GetType()).FirstOrDefault();
+    }
+
+    private IPickupable FindClosestPickupable(Vector3 range)
+    {
+        var position = GetAdjustedPosition(interactorCharacter.Info.PickupRange.z * 0.5f);
+        return interactorCharacter.Detector.DetectComponentsWithBox<IPickupable>(position, range, interactorCharacter.transform.rotation, Layer.Interactable.GetMask()).FirstOrDefault();
+    }
+
+    private GolfCart FindClosestCart(float radius)
+    {
+        var position = GetAdjustedPosition(0.85f);
+        return interactorCharacter.Detector.DetectComponentsWithSphere<GolfCart>(position, radius, Layer.Interactable.GetMask())
+                                   .FirstOrDefault(cart => Vector3.Distance(cart.CarryPoint.position, position) <= 1.275f);
+    }
+
+    private Vector3 GetAdjustedPosition(float offset)
+    {
+        return interactorCharacter.Detector.ColliderCenter + interactorCharacter.MovementController.Direction.ConvertToVector3() * offset;
     }
 
     // Golfer
@@ -140,10 +157,10 @@ public class Interactor
 
 public class Carrier
 {
-    private Transform carryPoint;
-    public IPickupable carryingItem;
-    public bool IsCarryingItem => carryingItem != null;
-    
+    private readonly Transform carryPoint;
+    public IPickupable CarryingItem { get; private set; }
+    public bool IsCarryingItem => CarryingItem != null;
+
     public Carrier(Transform carryPoint)
     {
         this.carryPoint = carryPoint;
@@ -151,51 +168,63 @@ public class Carrier
 
     public void PickUp(IPickupable pickupable)
     {
-        carryingItem = pickupable;
-        carryingItem.OnPickedUp(carryPoint);
+        CarryingItem = pickupable;
+        CarryingItem.OnPickedUp(carryPoint);
+    }
+
+    public IPickupable DropOffItem()
+    {
+        var item = CarryingItem;
+        CarryingItem?.OnDroppedOff();
+        CarryingItem = null;
+        return item;
     }
 
     public void DropOff()
     {
-        carryingItem?.OnDropedOff();
-        carryingItem = null;
+        DropOffItem();
     }
 }
 public class Golfer
 {
-    private ItemHolder itemHolder;
-    public Golfer(ItemHolder itemHolder)
+    private readonly ItemHolder itemHolder;
+    public GolfClub CurrentClub { get; private set; }
+    public event Action OnClubSwitched;
+
+    public Golfer(ItemHolder holder)
     {
-        this.itemHolder = itemHolder;
+        itemHolder = holder;
     }
 
-    // Golf Club
-    public GolfClub CurrentClub { get; private set; }
-
-    // Events
-    public event Action OnClubSwitched;
     public void InvokeEvent_OnClubSwitched()
     {
-        OnClubSwitched?.Invoke(); 
+        OnClubSwitched?.Invoke();
     }
-    
+
     public void EquipClub(GolfClub newClub)
     {
-        if (CurrentClub != null) UnequipClub();
+        UnequipClub();
 
         CurrentClub = GameObject.Instantiate(newClub, itemHolder.GetSlotTransform(newClub.ClubType));
         CurrentClub.gameObject.SetActive(true);
-        
-        // Add effect on selected club's image.
-        var images = UIManager.UI.Images_GolfClub;
-        foreach(var image in images)
-            image.color = Color.yellow;
-        images[(int)CurrentClub.ClubType].color = Color.green;
+
+        UpdateClubUI();
     }
+
     public void UnequipClub()
     {
+        if (CurrentClub == null) return;
         CurrentClub.gameObject.SetActive(false);
         CurrentClub = null;
+    }
+
+    private void UpdateClubUI()
+    {
+        var images = UIManager.UI.Images_GolfClub;
+        foreach (var image in images)
+            image.color = Color.yellow;
+
+        images[(int)CurrentClub.ClubType].color = Color.green;
     }
 }
 

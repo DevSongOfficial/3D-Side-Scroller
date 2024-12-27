@@ -115,7 +115,7 @@ public sealed class PlayerCharacter : CharacterBase
     
     private void OnInteract() 
     {
-        Interactor.FindAndInteractWithinRange(info.InteractionRange);
+        Interactor.TryInteract(info.InteractionRange);
     }
 
     private void OnSwitchClub()
@@ -127,7 +127,7 @@ public sealed class PlayerCharacter : CharacterBase
     {
         if (!CurrenState.CompareState(MoveState)) return;
 
-        if (Interactor.Toggle_FindAndLoadCart())
+        if (Interactor.TryLoadToCart())
         {
             AnimationController.SetLayerWeight(AnimationController.Layer.UpperLayer, AnimationController.UpperLayer.Off);
             return;
