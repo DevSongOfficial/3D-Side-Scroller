@@ -40,11 +40,11 @@ public class ProbFollowingCamera : MonoBehaviour
         POFactory.OnPORegistered -= SetTarget;
         POFactory.OnPOUnregistered -= ClearTarget;
     }
-
     protected virtual void LateUpdate()
     {
         FollowTarget();
     }
+
 
     protected virtual void SetTarget(PlaceableObjectBase po)
     {

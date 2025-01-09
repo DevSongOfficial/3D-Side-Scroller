@@ -40,23 +40,6 @@ public class Interactor
         return true;
     }
 
-    public bool TogglePickup(Vector3 range)
-    {
-        if (AsCarrier == null) return false;
-
-        if (AsCarrier.IsCarryingItem)
-        {
-            AsCarrier.DropOff();
-            return true;
-        }
-
-        var pickupable = FindClosestPickupable(range);
-        if (pickupable == null) return false;
-
-        AsCarrier.PickUp(pickupable);
-        return true;
-    }
-
     public bool TryLoadToCart(float radius = 0.65f)
     {
         if (AsCarrier == null || !AsCarrier.IsCarryingItem) return false;
@@ -68,11 +51,6 @@ public class Interactor
         return true;
     }
 
-    /// <summary>
-    /// ////////////////////
-    /// </summary>
-    /// <param name="distance"></param>
-    /// <returns></returns>
 
     public bool Toggle_FindAndPickupWithinRange(Vector3 range)
     {
@@ -110,12 +88,6 @@ public class Interactor
         var position = GetAdjustedPosition(0.5f);
         var interactables = interactorCharacter.Detector.DetectComponentsWithClosestInFirst<IInteractable>(position, range, Layer.Interactable.GetMask());
         return interactables.OrderBy(x => (int)x.GetType()).FirstOrDefault();
-    }
-
-    private IPickupable FindClosestPickupable(Vector3 range)
-    {
-        var position = GetAdjustedPosition(interactorCharacter.Info.PickupRange.z * 0.5f);
-        return interactorCharacter.Detector.DetectComponentsWithBox<IPickupable>(position, range, interactorCharacter.transform.rotation, Layer.Interactable.GetMask()).FirstOrDefault();
     }
 
     private GolfCart FindClosestCart(float radius)

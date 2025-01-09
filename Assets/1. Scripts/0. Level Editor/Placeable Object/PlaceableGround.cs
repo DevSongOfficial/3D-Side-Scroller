@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using static GameSystem;
 
 public class PlaceableGround : PlaceableProb
 {
@@ -23,11 +22,7 @@ public class PlaceableGround : PlaceableProb
     private Vector2Int endPoint;
 
     public Vector2Int Position => new Vector2Int(Mathf.RoundToInt(transform.position.x), Mathf.RoundToInt(transform.position.y));
-
-    private void OnDestroy()
-    {
-        RemoveFromTile();
-    }
+    public override bool NotOverlapped => base.NotOverlapped && IsTileAreaEmpty();
 
     public void AddToTile()
     {
@@ -54,8 +49,6 @@ public class PlaceableGround : PlaceableProb
         }
     }
 
-    public override bool NotOverlapped => base.NotOverlapped && IsTileAreaEmpty();
-
     protected bool IsTileAreaEmpty()
     {
         int startingPoint = Position.x - ((size.x - 1) / 2);
@@ -80,6 +73,11 @@ public class PlaceableGround : PlaceableProb
         ActualObject.gameObject.SetLayer(Layer.Ground);
         try { ActualObject.GetChild(0).gameObject.SetLayer(Layer.Ground); }
         catch { }
+    }
+
+    private void OnDestroy()
+    {
+        RemoveFromTile();
     }
 
     protected override void OnLevelEditorToggled(bool isOn)

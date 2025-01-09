@@ -121,10 +121,8 @@ public class MainMenu : MonoBehaviour
         var loadingText = Instantiate(AssetManager.GetPrefab(Prefab.UI.Canvas_LoadingText));
 
 
-        // Load data async.
-        //var rawData = await SaveManager.DownloadStageDataAsync();
-        //var rawData = await SaveManager.DownloadStageDataAsync();
-        var rawData = await SaveManager.DownloadStageDataAsync("000000_ADMIN", "ABC");
+        // Load random data async.
+        var rawData = await SaveManager.DownloadStageDataAsync();
 
         // After scene load
         loadingText.SetActive(false);

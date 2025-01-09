@@ -96,7 +96,8 @@ public sealed class GolfBall : MonoBehaviour, IDamageable
         }
 
         // Handle height text.
-        UIManager.SetText(UIManager.UI.Text_ballHeight, $"{Math.Truncate(rigidBody.velocity.magnitude * 100) / 100}m/s");
+        double height = Math.Truncate(rigidBody.velocity.magnitude * 100) / 100;
+        UIManager.SetText(UIManager.UI.Text_ballHeight, $"{height}m/s");
 
         // Handle rendered image visibility.
         if (rigidBody.velocity.magnitude > velocityThreshold)

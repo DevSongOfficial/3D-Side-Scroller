@@ -154,10 +154,9 @@ public class System_CloudManager : MonoBehaviour
 
             return true;
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
-            // Log any errors from the callable function
-            Debug.LogError("Error calling Firebase Function: " + ex.Message);
+            Debug.LogError(ex.Message);
 
             return false;
         }

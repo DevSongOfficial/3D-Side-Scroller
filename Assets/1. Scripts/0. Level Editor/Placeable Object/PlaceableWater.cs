@@ -5,6 +5,9 @@ using static GameSystem;
 
 public sealed class PlaceableWater : PlaceableGround
 {
+    private readonly Vector3 DefaultScale = new Vector3(3.99f, 1, 0.99f);
+
+
     protected override void Start()
     {
         base.Start();
@@ -51,13 +54,13 @@ public sealed class PlaceableWater : PlaceableGround
         float x = Position.x + (size - 1) * 0.5f;
 
         ActualObject.transform.position = new Vector3(x, Position.y);
-        ActualObject.transform.localScale = new Vector3(3.99f, 1, size);
+        ActualObject.transform.localScale = new Vector3(DefaultScale.x, DefaultScale.y, size);
     }
 
     private void Shrink()
     {
         ActualObject.transform.position = new Vector3(Position.x, Position.y);
-        ActualObject.transform.localScale = new Vector3(3.99f, 1, 0.99f);
+        ActualObject.transform.localScale = DefaultScale;
     }
 
     // Return: the number of water blocks.

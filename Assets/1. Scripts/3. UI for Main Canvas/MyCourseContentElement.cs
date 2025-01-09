@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +13,7 @@ public sealed class MyCourseContentElement : MonoBehaviour
     private string title;
     private string description;
     private string mapData;
+
 
     [SerializeField] private Text text_Title;
 
@@ -29,6 +29,15 @@ public sealed class MyCourseContentElement : MonoBehaviour
         return $"Stage_{title}";
     }
 
+    public Dictionary<string, object> GetStageData()
+    {
+        return new Dictionary<string, object>
+        {
+            { "Map", mapData },
+            { "Title", title },
+            { "Description", description }
+        };
+    }
     public MyCourseContentElement SetTitle(string title)
     {
         text_Title.text = title;

@@ -19,7 +19,6 @@ public sealed class MyCourse : MonoBehaviour
     [SerializeField] private Text text_Description;
     [SerializeField] private Text text_Par;
 
-
     private void OnEnable()
     {
         LoadMyCourses();
@@ -43,7 +42,7 @@ public sealed class MyCourse : MonoBehaviour
         var loadingText = Instantiate(AssetManager.GetPrefab(Prefab.UI.Canvas_LoadingText));
 
         // Load data async.
-        var rawData = await SaveManager.DownloadStageDataAsync("000000_ADMIN");
+        var rawData = await SaveManager.DownloadStageDataAsync(GameManager.GetUserID());
 
         // After data loaded.
         loadingText.SetActive(false);
@@ -88,18 +87,27 @@ public sealed class MyCourse : MonoBehaviour
         elements.Clear();
     }
 
+    
     private async void DeleteElement(MyCourseContentElement element)
     {
         elements.Remove(element);
         Destroy(element.gameObject);
 
-        await CloudManager.DeleteStageDataAsnyc("000000_ADMIN", element.GetStageName());
+        await CloudManager.DeleteStageDataAsnyc(GameManager.GetUserID(), element.GetStageName());
     }
 
     public void DeleteCurrentlySelectedElement()
     {
         DeleteElement(MyCourseContentElement.CurrentlySelected);
         ShowCourseInfo(string.Empty, string.Empty, string.Empty);
+    }
+
+    public void PlayCurrentlySelectedCourse(bool isEditMode = false)
+    {
+        GameManager.SetUserStageData(MyCourseContentElement.CurrentlySelected.GetStageData());
+        if (GameManager.GetUserStageData() == null) return;
+
+        SceneLoader.LoadScene(isEditMode ? Scene.Maker : Scene.Main, TransitionEffect.FadeToBlack);
     }
 
     private void ShowCourseInfo(string title, string description, string mapDataHandler)

@@ -66,6 +66,8 @@ public sealed class PlayerCharacter : CharacterBase
         GameManager.OnGameStart                     += Reposition;
         GameManager.OnStageSetup                    += Reposition;
         LevelEditorManager.OnEditorModeToggled      += SetActiveAndReposition;
+
+        HealthSystem.OnCharacterDie += OnDie;
     }
 
     protected override void Start()
@@ -163,6 +165,11 @@ public sealed class PlayerCharacter : CharacterBase
         MovementController.SetPosition(newPosition);
         MovementController.ChangeMovementDirection(MovementDirection.Right, smoothRotation: false);
         MovementController.SetVelocityMultiplier(1, smoothTransition: false);
+    }
+
+    private void OnDie()
+    {
+        Reposition();
     }
 
     public override PlayerCharacter AsPlayer()
