@@ -126,7 +126,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
     private bool PlaceSelectedObject()
     {
         if (PlaceableObjectBase.CurrentlySelected == null) return false;
-        if (UI.IsMouseCursorOnTheArea(UI.ObjectSelectionGroup)) return false;
+        if (UI.IsMouseCursorOnUI()) return false;
         if (!PlaceableObjectBase.CurrentlySelected.NotOverlapped) return false;
 
         // Add the object to the Tile.
@@ -156,14 +156,12 @@ public sealed class System_LevelEditorManager : MonoBehaviour
 
     private void HandleObjectPlacement()
     {
+        if (!Input.GetKeyDown(placeObject)) return;
         if (Mode != PlayMode.Placing) return;
-        if (UI.IsMouseCursorOnTheArea(UI.ObjectSelectionGroup)) return;
-        if (Input.GetKeyDown(placeObject))
-        {
-            if (!PlaceSelectedObject()) return;
+        if (UI.IsMouseCursorOnUI()) return;
+        if (!PlaceSelectedObject()) return;
 
-            movementOffset = Vector3.zero;
-        }
+        movementOffset = Vector3.zero;
     }
 
     private void HandleObjectRemovement()
@@ -179,8 +177,8 @@ public sealed class System_LevelEditorManager : MonoBehaviour
     private void HandleObjectSelection()
     {
         if (Mode != PlayMode.Editing) return;
-        if (UI.IsMouseCursorOnTheArea(UI.ObjectSelectionGroup)) return;
         if (!Input.GetKeyDown(selectObject)) return;
+        if (UI.IsMouseCursorOnUI()) return;
 
         // Place if holding an object.
         if (PlaceableObjectBase.CurrentlySelected != null)
@@ -284,7 +282,7 @@ public sealed class System_LevelEditorManager : MonoBehaviour
 
     public async void TestUpload()
     {
-
         await SaveManager.UploadStageDataAync(UI.InputField_Title.text, UI.InputField_Description.text);
+        SceneLoader.LoadScene(Scene.Menu, TransitionEffect.FadeToBlack);
     }
 }

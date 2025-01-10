@@ -1382,6 +1382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39d672fb1306010428e08678a3970fa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  graphicRaycaster: {fileID: 4209639852058954931}
   mouseCursorDetectorImages:
   - {fileID: 5968726228608341828}
   - {fileID: 7904003822296067455}

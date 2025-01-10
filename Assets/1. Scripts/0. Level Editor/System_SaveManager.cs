@@ -17,12 +17,12 @@ public class System_SaveManager : MonoBehaviour
         dataHandler.AddGameData(clearedStages);
 
         var data = JsonUtility.ToJson(dataHandler);
-        saveSystem.SaveData(data, "GameData");
+        saveSystem.SaveData(data, "GameData", FileType.GameData);
     }
 
     public bool LoadGameData()
     {
-        var data = saveSystem.LoadData("GameData");
+        var data = saveSystem.LoadData("GameData", FileType.GameData);
         if (String.IsNullOrEmpty(data)) return false;
 
         GameDataHandler dataHandler = JsonUtility.FromJson<GameDataHandler>(data);
@@ -41,7 +41,7 @@ public class System_SaveManager : MonoBehaviour
         dataHandler.AddStageData(par: GameManager.Par, placeableObjects: POFactory.RegistedPOs);
 
         var data = JsonUtility.ToJson(dataHandler);
-        saveSystem.SaveData(data, $"{prefix}{stageNumber}");
+        saveSystem.SaveData(data, $"{prefix}{stageNumber}", FileType.StageData);
     }
 
     public StageDataHandler LoadStageData(int stageNumber)
@@ -51,7 +51,7 @@ public class System_SaveManager : MonoBehaviour
 
     public StageDataHandler LoadStageData(string title)
     {
-        var data = saveSystem.LoadData($"{prefix}{title}");
+        var data = saveSystem.LoadData($"{prefix}{title}", FileType.StageData);
         if (String.IsNullOrEmpty(data)) return null;
 
         return JsonUtility.FromJson<StageDataHandler>(data);
@@ -59,7 +59,7 @@ public class System_SaveManager : MonoBehaviour
 
     private T LoadStageData<T>(string name) where T : class
     {
-        var data = saveSystem.LoadData(name);
+        var data = saveSystem.LoadData(name, FileType.StageData);
         if (String.IsNullOrEmpty(data)) return null;
 
         return JsonUtility.FromJson<T>(data);
@@ -76,7 +76,7 @@ public class System_SaveManager : MonoBehaviour
 
         // Save it.
         var data = JsonUtility.ToJson(dataHandler);
-        saveSystem.SaveData(data, $"{prefix}{title}");
+        saveSystem.SaveData(data, $"{prefix}{title}", FileType.StageData);
 
         // Upload it.(The file name is the same with the title.)
         await CloudManager.UploadStageDataAsync(GameManager.GetUserID(), title, description);

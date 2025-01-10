@@ -21,7 +21,7 @@ public class System_CloudManager : MonoBehaviour
         db = FirebaseFirestore.DefaultInstance;
         functions = FirebaseFunctions.DefaultInstance;
     }
-    
+
     public async Task UploadStageDataAsync(string collectionName, string title, string description)
     {
         // Get map file from local disk.
@@ -39,7 +39,6 @@ public class System_CloudManager : MonoBehaviour
         await docRef.SetAsync(stageData).ContinueWithOnMainThread(task => {
             Debug.Log("<color=cyan>Upload Completed</color>");
         });
-
     }
 
     private string url_getRandomDocuments = "https://us-central1-golfer-a4ebb.cloudfunctions.net/getRandomDocument";

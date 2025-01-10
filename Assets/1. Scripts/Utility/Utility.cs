@@ -99,7 +99,7 @@ public static class Utility
 
     public static bool BetterThan(this ScoreType scoreType, ScoreType scoreToCompare)
     {
-        if (scoreToCompare == ScoreType.InComplete) return false;
+        if (scoreToCompare == ScoreType.InComplete) return true;
         else return (int)scoreType < (int)scoreToCompare;
     }
 

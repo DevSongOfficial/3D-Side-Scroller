@@ -25,6 +25,8 @@ public class Placard : MonoBehaviour
         if (SceneLoader.IsMakerScene)
         {
             par = par_Default;
+            GameManager.SetPar(par);
+
             canvas.worldCamera = GameObject.FindWithTag(Tag.EditorCamera.ToString()).GetComponent<Camera>();
         }
     }

@@ -189,8 +189,6 @@ public sealed class System_GameManager : MonoBehaviour
         OnGameStart?.Invoke();
     }
 
-    
-
     public event Action OnStageSetup;
     public void SetupStage(StageDataHandler dataHandler)
     {
@@ -227,7 +225,7 @@ public sealed class System_GameManager : MonoBehaviour
         // Show UIs.
         UIManager.PopupUI(UIManager.UI.Panel_StageClear);
         UIManager.SetText(UIManager.UI.Text_StageClear, UIManager.AddSpaceBeforeUppercase(scoreType.ToString()));
-
+        
         // Save clear data.
         if (SceneLoader.IsMainScene && scoreType.BetterThan(ClearedStages[GetStageNumber()]))
         {

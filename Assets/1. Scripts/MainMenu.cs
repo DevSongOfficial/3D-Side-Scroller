@@ -60,7 +60,6 @@ public class MainMenu : MonoBehaviour
         ShowMenuCoroutine = null;
     }
 
-
     private Coroutine SceneChangeCoroutine;
     #region Scene Change into Main Game
     public void StartGame()
@@ -92,23 +91,8 @@ public class MainMenu : MonoBehaviour
         if(SceneChangeCoroutine == null)
         {
             GameManager.SetUserStageData(null);
-            SceneChangeCoroutine = StartCoroutine(StartMakerRoutine());
+            SceneLoader.LoadScene(Scene.Maker, TransitionEffect.FadeToBlack);
         }
-    }
-
-    private IEnumerator StartMakerRoutine()
-    {
-        yield return ShowMenuCoroutine;
-
-        golfCartAnimator.enabled = true;
-
-        while (golfCart.position.x < 3.5f)
-        {
-            golfCart.Translate(Vector3.right * 2 * Time.fixedDeltaTime, Space.World);
-            yield return new WaitForFixedUpdate();
-        }
-
-        SceneLoader.LoadScene(Scene.Maker, TransitionEffect.FadeToBlack);
     }
     #endregion
     

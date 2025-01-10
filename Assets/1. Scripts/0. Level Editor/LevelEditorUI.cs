@@ -1,11 +1,17 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static GameSystem;
 
+[Flags] public enum StretchType { None = 0, Width = 1, Height = 2}
+
 public class LevelEditorUI : MonoBehaviour
 {
+    [SerializeField] private GraphicRaycaster graphicRaycaster;
+
+    [Space]
     // Screen Movement with Mouse Cursor Position
     private Dictionary<Vector2, Image> mouseAreas = new Dictionary<Vector2, Image>();
     [SerializeField] private Image[] mouseCursorDetectorImages;
@@ -60,11 +66,25 @@ public class LevelEditorUI : MonoBehaviour
 
     public bool IsMouseCursorOnTheArea(RectTransform area)
     {
-        var cursorPosition = Input.mousePosition;
-        return  cursorPosition.x >= area.position.x - area.rect.width  * 0.5f &&
+        Vector2 cursorPosition = Input.mousePosition;
+
+        return cursorPosition.x >= area.position.x - area.rect.width  * 0.5f &&
                 cursorPosition.x <= area.position.x + area.rect.width  * 0.5f &&
                 cursorPosition.y >= area.position.y - area.rect.height * 0.5f &&
                 cursorPosition.y <= area.position.y + area.rect.height * 0.5f;
+    }
+
+    public bool IsMouseCursorOnUI()
+    {
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current)
+        {
+            position = Input.mousePosition
+        };
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        graphicRaycaster.Raycast(pointerEventData, results);
+
+        return results.Count > 0;
     }
 
     public bool TryGetComponentFromMousePosition<T>(out T component, Layer layerMask, Camera cameraForRay = null) where T : Component

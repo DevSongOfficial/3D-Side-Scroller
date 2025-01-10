@@ -1,35 +1,43 @@
-using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+public enum FileType
+{
+    StageData,
+    GameData
+}
+
 public class SaveSystem
 {
-
     #region Data Handling
-    public void SaveData(string data, string path)
+    public void SaveData(string data, string name, FileType type)
     {
-        if (WriteToFile(path, data))
+        if (WriteToFile(name, data, type))
         {
             Debug.Log("<color=cyan>Save Completed</color>");
         }
     }
 
-    public string LoadData(string path)
+    public string LoadData(string name, FileType type)
     {
         string data = string.Empty;
-        if (ReadFromFile(path, out data))
+        if (ReadFromFile(name, out data, type))
         {
             Debug.Log("<color=cyan>Load Completed</color>");
         }
         return data;
     }
 
-    private bool WriteToFile(string name, string content)
+    private bool WriteToFile(string name, string content, FileType type)
     {
-        var fullPath = Path.Combine(Application.persistentDataPath, name);
+        string fullPath;
+        if (type == FileType.GameData)
+            fullPath = Path.Combine(Application.persistentDataPath, name);
+        else
+            fullPath = Path.Combine(Application.dataPath, "Stage Data", name);
 
         try
         {
@@ -44,9 +52,14 @@ public class SaveSystem
         return false;
     }
 
-    private bool ReadFromFile(string name, out string content)
+    private bool ReadFromFile(string name, out string content, FileType type)
     {
-        var fullPath = Path.Combine(Application.persistentDataPath, name);
+        string fullPath;
+        if (type == FileType.GameData)
+            fullPath = Path.Combine(Application.persistentDataPath, name);
+        else
+            fullPath = Path.Combine(Application.dataPath, "Stage Data", name);
+        
         try
         {
             content = File.ReadAllText(fullPath);
