@@ -229,7 +229,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 159195a555fe42245b0d21d7154dd57a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  probPrefab: {fileID: 209066232418378927, guid: 7bee0843fa2bc714b94075535b64f9cc, type: 3}
+  targetType: 0
   angleType: 0
   distanceFromTarget: 1
   priorityOnStart: 0
@@ -387,6 +387,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f276527bd5b2ad7419f86ccedfc3df9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefix: Stage_
 --- !u!1 &313034664 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6372970764467169031, guid: 6f07c38e6200dbe439b379cfae620a6b, type: 3}
@@ -640,7 +641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a978e4e8aef909c4a8a7dd7709d95857, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  probPrefab: {fileID: 2317770948685597492, guid: 6ec7826d7712a974998a9ce8dc18d3df, type: 3}
+  targetType: 0
   angleType: 90
   distanceFromTarget: 3
   priorityOnStart: -1
@@ -4091,9 +4092,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb8f0c8aa2d6fb5438f030605d049c8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  map: {fileID: 0}
-  lagacy: {fileID: 8113071625720310632}
-  input: {fileID: 5168848609361551485}
 --- !u!4 &4955216131874916913
 Transform:
   m_ObjectHideFlags: 0
@@ -4682,8 +4680,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cinemachineBrain: {fileID: 4782479680249010460}
-  camera_Green: {fileID: 565534782}
-  camera_GolfBall: {fileID: 100532209}
 --- !u!1 &6411534801059410933
 GameObject:
   m_ObjectHideFlags: 0
@@ -5835,11 +5831,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rawImage_ProbCameraOutput: {fileID: 1758958738}
   text_ballHeight: {fileID: 1996074969}
-  panel_ClubSelection: {fileID: 3578691346473648767}
-  group_FloatingAbovePlayer: {fileID: 7538765978471754550}
   image_SwingChargeIndicator: {fileID: 7892394289817615415}
   text_StageClear: {fileID: 0}
   panel_StageClear: {fileID: 0}
+  panel_ClubSelection: {fileID: 3578691346473648767}
+  images_golfClub: []
 --- !u!4 &8753711268247811514
 Transform:
   m_ObjectHideFlags: 0

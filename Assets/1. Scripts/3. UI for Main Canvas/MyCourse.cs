@@ -102,12 +102,12 @@ public sealed class MyCourse : MonoBehaviour
         ShowCourseInfo(string.Empty, string.Empty, string.Empty);
     }
 
-    public void PlayCurrentlySelectedCourse(bool isEditMode = false)
+    public void PlayCurrentlySelectedCourse()
     {
         GameManager.SetUserStageData(MyCourseContentElement.CurrentlySelected.GetStageData());
         if (GameManager.GetUserStageData() == null) return;
 
-        SceneLoader.LoadScene(isEditMode ? Scene.Maker : Scene.Main, TransitionEffect.FadeToBlack);
+        SceneLoader.LoadScene(Scene.Maker, TransitionEffect.FadeToBlack);
     }
 
     private void ShowCourseInfo(string title, string description, string mapDataHandler)

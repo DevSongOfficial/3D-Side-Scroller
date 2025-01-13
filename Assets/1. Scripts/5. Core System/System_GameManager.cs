@@ -1,14 +1,9 @@
-using Firebase.Functions;
-using Firebase;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.Networking;
 using static GameSystem;
 
 public enum Layer
@@ -64,6 +59,8 @@ public enum ScoreType
 
 public sealed class System_GameManager : MonoBehaviour
 {
+    [SerializeField] private GameObject panel_HowToPlay;
+
     private void Awake()
     {
         switch (SceneLoader.CurrentScene)
@@ -82,6 +79,21 @@ public sealed class System_GameManager : MonoBehaviour
 
     private void Start()
     {
+        // Temporary code - Load user ID.
+        if (SceneLoader.IsMenuScene && string.IsNullOrEmpty(GetUserID()))
+        {
+            var id = SaveManager.LoadID();
+            
+            // First sign in.
+            if (string.IsNullOrEmpty(id))
+            {
+                panel_HowToPlay?.SetActive(true);
+
+                id = DateTime.Now.ToString(("yyMMdd")) + Utility.GenerateSN();
+                SaveManager.SaveID(id);
+            }
+        }
+
         // Load and start the stage.
         if (SceneLoader.IsMainScene) 
             GameStart(stageToStart);
@@ -90,6 +102,10 @@ public sealed class System_GameManager : MonoBehaviour
 
     private void Update()
     {
+        // Temporary code
+        if (Input.GetKeyDown(KeyCode.Escape))
+            SceneLoader.LoadScene(Scene.Menu, TransitionEffect.FadeToBlack);
+        
         HandleEditorOnlyInput();
 
         ReloadSceneWhenPlayerOrGolfBallOutOfBounds();
@@ -97,9 +113,15 @@ public sealed class System_GameManager : MonoBehaviour
 
     // Handle player info.
     public PlayerCharacter Player { get; private set; }
-    private static string id = "000000_ADMIN"; // YYMMDD_ + random alphbets.
-    public string GetUserID() => id;
-
+    private static string id = string.Empty; // YYMMDD_ + random alphbets.
+    public string GetUserID()
+    {
+#if UNITY_EDITOR
+        return "000000_ADMIN";
+#else
+        return id;
+#endif
+    }
     // Hnadle user-made courses.
     private static Dictionary<string, object> userStageData;
     public Dictionary<string, object> GetUserStageData() => userStageData;
@@ -214,6 +236,12 @@ public sealed class System_GameManager : MonoBehaviour
 
     public void BallInTheCup()
     {
+        if (SceneLoader.IsMakerScene)
+        {
+            SceneLoader.LoadScene(Scene.Maker, TransitionEffect.FadeToBlack);
+            return;
+        }
+
         OnGameFinished?.Invoke();
 
         InputManager.ToggleInput(false);
@@ -250,8 +278,5 @@ public sealed class System_GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R) && SceneLoader.IsMainScene)
             SceneLoader.LoadScene(Scene.Main, TransitionEffect.FadeToBlack);
-
-        if(Input.GetKeyDown(KeyCode.Escape))
-            SceneLoader.LoadScene(Scene.Menu, TransitionEffect.FadeToBlack);
     }
 }

@@ -12,6 +12,7 @@ public class System_SceneLoader : MonoBehaviour
     public bool IsLoading { get; private set; }
     public bool IsMakerScene => CurrentScene == Scene.Maker;
     public bool IsMainScene => CurrentScene == Scene.Main;
+    public bool IsMenuScene => CurrentScene == Scene.Menu;
 
     private void Awake()
     {

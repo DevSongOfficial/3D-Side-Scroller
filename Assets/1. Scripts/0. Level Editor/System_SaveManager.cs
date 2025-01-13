@@ -9,6 +9,16 @@ public class System_SaveManager : MonoBehaviour
 { 
     private SaveSystem saveSystem = new SaveSystem();
 
+    public void SaveID(string id)
+    {
+        saveSystem.SaveData(id, "UserData", FileType.GameData);
+    }
+
+    public string LoadID()
+    {
+        return saveSystem.LoadData("UserData", FileType.GameData);
+    }
+
     public void SaveGameData(ScoreType[] clearedStages)
     {
         GameDataHandler dataHandler = new GameDataHandler();

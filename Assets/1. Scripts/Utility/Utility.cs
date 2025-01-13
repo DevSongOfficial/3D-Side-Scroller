@@ -183,6 +183,19 @@ public static class Utility
         }
     }
 
+    public static string GenerateSN()
+    {
+        string date = DateTime.Now.ToString(("yyyy-MM-dd HH:mm:ss tt"));
+        string result = "";
+        for (int i = 0; i < 5; i++)
+        {
+            char randomChar = (char)UnityEngine.Random.Range(65, 91);
+            result += randomChar;
+        }
+
+        return result;
+    }
+
     public class Timer
     {
         private event Action OnTimerEnd;
